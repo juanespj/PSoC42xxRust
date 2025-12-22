@@ -1,5 +1,7 @@
-Project based on [PSOC_RUST](https://github.com/9names/PSOC_Rust/tree/master). PSoC 5LP
 # PSoC 42xx CY8C4245AXI-485
+
+Project based on [PSOC_RUST](https://github.com/9names/PSOC_Rust/tree/master). PSoC 5LP
+
 Using PSoC4 Protoyping kit CY8CKIt-049-42XX I have created a project with PSOC Creator IDE and integrated it with an embedded rust application that uses all the HAL and the auto-generated code from the IDE
 
 This project shows a very interesting way to modernize existing C projects reusing existing and tested functionality
@@ -15,3 +17,6 @@ I have written a blog post in Medium explaining some of the process.
 the application is not finished yet but the process works.
 
 
+![PSoC integrating C & Rust](Doc/PSoCRust.png)
+
+![Top Level Design](Doc/TopDesign.png)
