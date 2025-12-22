@@ -1,0 +1,6 @@
+--------------- Clean Started: 12/22/2025 15:46:33 Project: PSoC42rs, Configuration: ARM GCC 5.4-2016-q2-update Debug ---------------
+Deleting file ".\PSoC42rs.cycdx"
+Deleting file ".\PSoC42rs.svd"
+Deleting file ".\PSoC42rs.rpt"
+Deleting file ".\PSoC42rs_timing.html"
+--------------- Clean Succeeded: 12/22/2025 15:46:33 ---------------

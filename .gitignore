@@ -1,0 +1,13 @@
+!PSoC4Embassy.cydsn/Export/prebuild.bat
+!PSoC4Embassy.cydsn/Export/prebuild.sh
+build/
+codegentemp/
+CortexM3/
+CortexM0/
+Generated_Source/
+Export/
+target/rust-analyzer/
+target/
+PSoC6/
+CortexM0p/
+PSoC4Embassy.cydsn/BUILD.log

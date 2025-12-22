@@ -1,0 +1,9 @@
+language = "C"
+
+# Configuration for standard C libraries
+# This ensures these standard libraries appear at the top of the generated header.
+sys_includes = ["stdint.h", "stdlib.h"] 
+
+# Configuration for local, project-specific headers
+# [includes]
+# includes = ["my_project_macros.h"]
