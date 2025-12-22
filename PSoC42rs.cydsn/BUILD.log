@@ -1,29 +1,211 @@
---------------- Build Started: 12/22/2025 15:46:36 Project: PSoC42rs, Configuration: ARM GCC 5.4-2016-q2-update Debug ---------------
-cydsfit.exe -.appdatapath "C:\Users\jzapn\AppData\Local\Cypress Semiconductor\PSoC Creator\4.4" -.fdsnotice -.fdswarpdepfile=warp_dependencies.txt -.fdselabdepfile=elab_dependencies.txt -.fdsbldfile=generated_files.txt -.fdsreffile=referenced_files.txt -p D:\EE\GitHub\PSoC42xxRust\PSoC42rs.cydsn\PSoC42rs.cyprj -d CY8C4245AXI-483 -s D:\EE\GitHub\PSoC42xxRust\PSoC42rs.cydsn\Generated_Source\PSoC4 -- -yv2 -q10 -ygs -o2 -v3 -.fftcfgtype=LE
-Elaborating Design...
-ADD: fit.M0032: warning: Clock Warning: (clkA's accuracy range '12 MHz +/- 2%, (11.76 MHz - 12.24 MHz)' is not within the specified tolerance range '10 MHz +/- 5%, (9.5 MHz - 10.5 MHz)'.).
- * D:\EE\GitHub\PSoC42xxRust\PSoC42rs.cydsn\PSoC42rs.cydwr (clkA)
- * D:\EE\GitHub\PSoC42xxRust\PSoC42rs.cydsn\TopDesign\TopDesign.cysch (Instance:clkA)
-ADD: sdb.M0061: information: Info from component: ADC_SAR_Seq. The actual sample rate (1736 SPS) differs from the desired sample rate (1953 SPS) due to the clock configuration in the DWR.
- * D:\EE\GitHub\PSoC42xxRust\PSoC42rs.cydsn\TopDesign\TopDesign.cysch (Instance:ADC_SAR_Seq)
-HDL Generation...
-Synthesis...
-Tech Mapping...
-ADD: pft.M0040: information: The following 6 pin(s) will be assigned a location by the fitter: dirY(0), dirZ(0), YchA(0), YchB(0), ZchA(0), ZchB(0)
-Analog Placement...
-Analog Routing...
-Analog Code Generation...
-Digital Placement...
-Digital Routing...
-Bitstream Generation...
-Bitstream Verification...
-Static timing analysis...
-API Generation...
-Dependency Generation...
-Cleanup...
+--------------- Build Started: 12/22/2025 17:46:43 Project: PSoC42rs, Configuration: ARM GCC 5.4-2016-q2-update Debug ---------------
+The code generation step is up to date.
 rustbuild.bat 
-bindgen_wrappers.h:3:10: fatal error: 'device.h' file not found
-Unable to generate bindings: clang diagnosed error: bindgen_wrappers.h:3:10: fatal error: 'device.h' file not found
-Error: bindgen failed with errorlevel: 1
-The command 'rustbuild.bat' failed with exit code '1'.
---------------- Build Failed: 12/22/2025 15:46:43 ---------------
+       Fresh unicode-ident v1.0.22
+       Fresh semver-parser v0.7.0
+       Fresh nb v1.1.0
+       Fresh critical-section v1.2.0
+       Fresh cfg-if v1.0.4
+       Fresh void v1.0.2
+       Fresh vcell v0.1.3
+       Fresh byteorder v1.5.0
+       Fresh bytemuck v1.24.0
+       Fresh bitfield v0.13.2
+       Fresh stable_deref_trait v1.2.1
+       Fresh local_static v0.1.1
+       Fresh cty v0.2.2
+       Fresh proc-macro2 v1.0.103
+       Fresh semver v0.9.0
+       Fresh nb v0.1.3
+       Fresh volatile-register v0.2.2
+       Fresh hash32 v0.3.1
+       Fresh quote v1.0.42
+       Fresh rustc_version v0.2.3
+       Fresh embedded-hal v0.2.7
+       Fresh az v1.2.1
+       Fresh portable-atomic v1.11.1
+       Fresh typenum v1.19.0
+       Fresh heapless v0.9.1
+       Fresh syn v2.0.110
+       Fresh static_cell v2.1.1
+       Fresh zerocopy-derive v0.8.31
+       Fresh bitfield-struct v0.11.0
+       Fresh zerocopy v0.8.31
+       Fresh bare-metal v0.2.5
+       Fresh half v2.7.1
+       Fresh cortex-m v0.7.7
+       Fresh fixed v1.29.0
+       Dirty rust_project v1.0.0 (D:\EE\GitHub\PSoC42xxRust\PSoC42rs.cydsn\rust_project): the file `src\bindings.rs` has changed (13410899203.934918100s, 46s after last build at 13410899157.667997700s)
+   Compiling rust_project v1.0.0 (D:\EE\GitHub\PSoC42xxRust\PSoC42rs.cydsn\rust_project)
+     Running `C:\Users\jzapn\.rustup\toolchains\stable-x86_64-pc-windows-msvc\bin\rustc.exe --crate-name rust_project --edition=2018 src\lib.rs --error-format=json --json=diagnostic-rendered-ansi,artifacts,future-incompat --crate-type staticlib --emit=dep-info,link -C opt-level=z -C lto -C codegen-units=1 -C debuginfo=2 --check-cfg cfg(docsrs,test) --check-cfg "cfg(feature, values())" -C metadata=58e6790ecfb279ae -C extra-filename=-14ccbe249c92e36d --out-dir D:\EE\GitHub\PSoC42xxRust\PSoC42rs.cydsn\rust_project\build\thumbv6m-none-eabi\release\deps --target thumbv6m-none-eabi -L dependency=D:\EE\GitHub\PSoC42xxRust\PSoC42rs.cydsn\rust_project\build\thumbv6m-none-eabi\release\deps -L dependency=D:\EE\GitHub\PSoC42xxRust\PSoC42rs.cydsn\rust_project\build\release\deps --extern bitfield_struct=D:\EE\GitHub\PSoC42xxRust\PSoC42rs.cydsn\rust_project\build\release\deps\bitfield_struct-8c91d1b564404426.dll --extern cortex_m=D:\EE\GitHub\PSoC42xxRust\PSoC42rs.cydsn\rust_project\build\thumbv6m-none-eabi\release\deps\libcortex_m-3ba28b02e7563900.rlib --extern cty=D:\EE\GitHub\PSoC42xxRust\PSoC42rs.cydsn\rust_project\build\thumbv6m-none-eabi\release\deps\libcty-ffc2c27566e094a3.rlib --extern fixed=D:\EE\GitHub\PSoC42xxRust\PSoC42rs.cydsn\rust_project\build\thumbv6m-none-eabi\release\deps\libfixed-8994c10970fa252c.rlib --extern heapless=D:\EE\GitHub\PSoC42xxRust\PSoC42rs.cydsn\rust_project\build\thumbv6m-none-eabi\release\deps\libheapless-65f1cb3e338f8b13.rlib --extern local_static=D:\EE\GitHub\PSoC42xxRust\PSoC42rs.cydsn\rust_project\build\thumbv6m-none-eabi\release\deps\liblocal_static-b957bcd20c35d83c.rlib --extern portable_atomic=D:\EE\GitHub\PSoC42xxRust\PSoC42rs.cydsn\rust_project\build\thumbv6m-none-eabi\release\deps\libportable_atomic-0e2ee2df0eb22861.rlib --extern static_cell=D:\EE\GitHub\PSoC42xxRust\PSoC42rs.cydsn\rust_project\build\thumbv6m-none-eabi\release\deps\libstatic_cell-d0d9771ef0862d31.rlib -C link-arg=-Tlink.x -C link-arg=-nostartfiles -C linker=arm-none-eabi-ld -C link-arg=-Tlinker_script.ld -Ctarget-cpu=cortex-m0 -L D:\EE\GitHub\PSoC42xxRust\PSoC42rs.cydsn\rust_project\build\thumbv6m-none-eabi\release\build\cortex-m-79cb8e4f1d4efd99\out`
+warning: unused import: `bitfield_struct::bitfield`
+ --> src\motor.rs:2:5
+  |
+2 | use bitfield_struct::bitfield;
+  |     ^^^^^^^^^^^^^^^^^^^^^^^^^
+  |
+  = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+warning: unused import: `core::marker::PhantomData`
+ --> src\motor.rs:3:5
+  |
+3 | use core::marker::PhantomData;
+  |     ^^^^^^^^^^^^^^^^^^^^^^^^^
+warning: unused imports: `FixedI32` and `consts`
+ --> src\motor.rs:5:13
+  |
+5 | use fixed::{consts, types::I16F16, FixedI32};
+  |             ^^^^^^                 ^^^^^^^^
+warning: unused import: `bitfield_struct::bitfield`
+ --> src\sys.rs:3:5
+  |
+3 | use bitfield_struct::bitfield;
+  |     ^^^^^^^^^^^^^^^^^^^^^^^^^
+warning: method `prev2` is never used
+  --> src\motor.rs:43:12
+   |
+13 | impl RingBuf {
+   | ------------ method in this implementation
+...
+43 |     pub fn prev2(&self) -> I16F16 {
+   |            ^^^^^
+   |
+   = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+warning: method `write_counter` is never used
+  --> src\motor.rs:51:8
+   |
+48 | pub trait EncoderOps {
+   |           ---------- method in this trait
+...
+51 |     fn write_counter(&self, value: u32);
+   |        ^^^^^^^^^^^^^
+warning: struct `YEncoder` is never constructed
+  --> src\motor.rs:56:12
+   |
+56 | pub struct YEncoder;
+   |            ^^^^^^^^
+warning: methods `init`, `get_speed`, `get_acc`, and `read_counter` are never used
+   --> src\motor.rs:118:12
+    |
+102 | impl<T: EncoderOps> Encoder<T> {
+    | ------------------------------ methods in this implementation
+...
+118 |     pub fn init(&mut self) {
+    |            ^^^^
+...
+189 |     pub fn get_speed(&self) -> I16F16 {
+    |            ^^^^^^^^^
+...
+192 |     pub fn get_acc(&self) -> I16F16 {
+    |            ^^^^^^^
+...
+197 |     pub fn read_counter(&mut self) {
+    |            ^^^^^^^^^^^^
+warning: variant `BWD` is never constructed
+   --> src\motor.rs:246:5
+    |
+244 | pub enum MotorDirection {
+    |          -------------- variant in this enum
+245 |     FWD,
+246 |     BWD,
+    |     ^^^
+warning: fields `dir`, `target_pos_steps`, and `curr_pos_steps` are never read
+   --> src\motor.rs:255:9
+    |
+250 | pub struct Stepper<T: EncoderOps> {
+    |            ------- fields in this struct
+...
+255 |     pub dir: MotorDirection,
+    |         ^^^
+256 |     step_pin: u8,
+257 |     target_pos_steps: i32,  // Target speed in Hz
+    |     ^^^^^^^^^^^^^^^^
+258 |     curr_pos_steps: i32,    // Target speed in Hz
+    |     ^^^^^^^^^^^^^^
+warning: methods `init_encoder`, `set_target_position`, `get_current_position`, `set_direction`, and `set_speed_period` are never used
+   --> src\motor.rs:285:12
+    |
+267 | impl<T: EncoderOps> Stepper<T> {
+    | ------------------------------ methods in this implementation
+...
+285 |     pub fn init_encoder(&mut self) {
+    |            ^^^^^^^^^^^^
+...
+288 |     pub fn set_target_position(&mut self, position_steps: i32) {
+    |            ^^^^^^^^^^^^^^^^^^^
+...
+291 |     pub fn get_current_position(&self) -> i32 {
+    |            ^^^^^^^^^^^^^^^^^^^^
+...
+299 |     pub fn set_direction(&mut self, direction: MotorDirection) {
+    |            ^^^^^^^^^^^^^
+...
+352 |     pub fn set_speed_period(&mut self, period: u32) {
+    |            ^^^^^^^^^^^^^^^^
+warning: enum `TermCmd` is never used
+  --> src\serial.rs:29:6
+   |
+29 | enum TermCmd {
+   |      ^^^^^^^
+warning: function `term` is never used
+  --> src\serial.rs:35:4
+   |
+35 | fn term(cmd: TermCmd) {
+   |    ^^^^
+warning: function `uart_write` is never used
+  --> src\serial.rs:99:4
+   |
+99 | fn uart_write(bytes: &[u8]) {
+   |    ^^^^^^^^^^
+warning: variant `MOVE_RAMP` is never constructed
+  --> src\sys.rs:12:5
+   |
+ 9 | pub enum System_State {
+   |          ------------ variant in this enum
+...
+12 |     MOVE_RAMP,
+   |     ^^^^^^^^^
+   |
+   = note: `System_State` has a derived impl for the trait `Clone`, but this is intentionally ignored during dead code analysis
+warning: constant `DEBOUNCE_PERIOD` is never used
+  --> src\ui.rs:30:7
+   |
+30 | const DEBOUNCE_PERIOD: u32 = 3000; //2_400_000 //max
+   |       ^^^^^^^^^^^^^^^
+warning: constant `HELD_PERIOD` is never used
+  --> src\ui.rs:31:7
+   |
+31 | const HELD_PERIOD: u32 = 12000; //2_400_000 //max
+   |       ^^^^^^^^^^^
+warning: fields `read_fn` and `last_change` are never read
+  --> src\ui.rs:46:5
+   |
+45 | pub struct DebouncedButton {
+   |            --------------- fields in this struct
+46 |     read_fn: fn() -> bool, // GPIO read function
+   |     ^^^^^^^
+47 |     btn: ButtonState,      // button compact state
+48 |     last_change: u32,      // last change time
+   |     ^^^^^^^^^^^
+warning: method `update` is never used
+  --> src\ui.rs:64:12
+   |
+51 | impl DebouncedButton {
+   | -------------------- method in this implementation
+...
+64 |     pub fn update(&mut self) -> bool {
+   |            ^^^^^^
+warning: `rust_project` (lib) generated 19 warnings (run `cargo fix --lib -p rust_project` to apply 4 suggestions)
+    Finished `release` profile [optimized + debuginfo] target(s) in 1.22s
+D:\EE\GitHub\PSoC42xxRust\PSoC42rs.cydsn\rust_project>cd /d "D:\EE\GitHub\PSoC42xxRust\PSoC42rs.cydsn\rust_project\" 
+arm-none-eabi-gcc.exe -mcpu=cortex-m0 -mthumb -I. -IGenerated_Source\PSoC4 -Wa,-alh=.\CortexM0\ARM_GCC_541\Debug/main.lst -g -D DEBUG -Wall -ffunction-sections -ffat-lto-objects -O0 -c main.c -o .\CortexM0\ARM_GCC_541\Debug\main.o
+arm-none-eabi-ar.exe -rs .\CortexM0\ARM_GCC_541\Debug\PSoC42rs.a .\CortexM0\ARM_GCC_541\Debug\BTN.o .\CortexM0\ARM_GCC_541\Debug\BTN_PM.o .\CortexM0\ARM_GCC_541\Debug\LED.o .\CortexM0\ARM_GCC_541\Debug\LED_PM.o .\CortexM0\ARM_GCC_541\Debug\XchA.o .\CortexM0\ARM_GCC_541\Debug\XchA_PM.o .\CortexM0\ARM_GCC_541\Debug\StepReg.o .\CortexM0\ARM_GCC_541\Debug\StepReg_PM.o .\CortexM0\ARM_GCC_541\Debug\stepX.o .\CortexM0\ARM_GCC_541\Debug\stepX_PM.o .\CortexM0\ARM_GCC_541\Debug\XchB.o .\CortexM0\ARM_GCC_541\Debug\XchB_PM.o .\CortexM0\ARM_GCC_541\Debug\EN.o .\CortexM0\ARM_GCC_541\Debug\EN_PM.o .\CortexM0\ARM_GCC_541\Debug\clkA.o .\CortexM0\ARM_GCC_541\Debug\ISR_Pulser.o .\CortexM0\ARM_GCC_541\Debug\UART.o .\CortexM0\ARM_GCC_541\Debug\UART_SPI_UART.o .\CortexM0\ARM_GCC_541\Debug\UART_SPI_UART_INT.o .\CortexM0\ARM_GCC_541\Debug\UART_PM.o .\CortexM0\ARM_GCC_541\Debug\UART_UART.o .\CortexM0\ARM_GCC_541\Debug\UART_BOOT.o .\CortexM0\ARM_GCC_541\Debug\UART_UART_BOOT.o .\CortexM0\ARM_GCC_541\Debug\DecX.o .\CortexM0\ARM_GCC_541\Debug\DecX_PM.o .\CortexM0\ARM_GCC_541\Debug\EN_GND.o .\CortexM0\ARM_GCC_541\Debug\EN_GND_PM.o .\CortexM0\ARM_GCC_541\Debug\I2CS.o .\CortexM0\ARM_GCC_541\Debug\I2CS_I2C_INT.o .\CortexM0\ARM_GCC_541\Debug\I2CS_I2C.o .\CortexM0\ARM_GCC_541\Debug\I2CS_I2C_BOOT.o .\CortexM0\ARM_GCC_541\Debug\I2CS_I2C_SLAVE.o .\CortexM0\ARM_GCC_541\Debug\I2CS_PM.o .\CortexM0\ARM_GCC_541\Debug\I2CS_BOOT.o .\CortexM0\ARM_GCC_541\Debug\ISR_QDecL.o .\CortexM0\ARM_GCC_541\Debug\Pulser_tmr.o .\CortexM0\ARM_GCC_541\Debug\Pulser_tmr_PM.o .\CortexM0\ARM_GCC_541\Debug\stepY.o .\CortexM0\ARM_GCC_541\Debug\stepY_PM.o .\CortexM0\ARM_GCC_541\Debug\stepZ.o .\CortexM0\ARM_GCC_541\Debug\stepZ_PM.o .\CortexM0\ARM_GCC_541\Debug\IDAC.o .\CortexM0\ARM_GCC_541\Debug\IDAC_PM.o .\CortexM0\ARM_GCC_541\Debug\ADC_SAR_Seq.o .\CortexM0\ARM_GCC_541\Debug\ADC_SAR_Seq_PM.o .\CortexM0\ARM_GCC_541\Debug\ADC_SAR_Seq_INT.o .\CortexM0\ARM_GCC_541\Debug\Iref.o .\CortexM0\ARM_GCC_541\Debug\Iref_PM.o .\CortexM0\ARM_GCC_541\Debug\SPD_REF.o .\CortexM0\ARM_GCC_541\Debug\SPD_REF_PM.o .\CortexM0\ARM_GCC_541\Debug\DecY.o .\CortexM0\ARM_GCC_541\Debug\DecY_PM.o .\CortexM0\ARM_GCC_541\Debug\DecZ.o .\CortexM0\ARM_GCC_541\Debug\DecZ_PM.o .\CortexM0\ARM_GCC_541\Debug\YchA.o .\CortexM0\ARM_GCC_541\Debug\YchA_PM.o .\CortexM0\ARM_GCC_541\Debug\YchB.o .\CortexM0\ARM_GCC_541\Debug\YchB_PM.o .\CortexM0\ARM_GCC_541\Debug\ZchA.o .\CortexM0\ARM_GCC_541\Debug\ZchA_PM.o .\CortexM0\ARM_GCC_541\Debug\ZchB.o .\CortexM0\ARM_GCC_541\Debug\ZchB_PM.o .\CortexM0\ARM_GCC_541\Debug\dirX.o .\CortexM0\ARM_GCC_541\Debug\dirX_PM.o .\CortexM0\ARM_GCC_541\Debug\DirReg.o .\CortexM0\ARM_GCC_541\Debug\DirReg_PM.o .\CortexM0\ARM_GCC_541\Debug\dirY.o .\CortexM0\ARM_GCC_541\Debug\dirY_PM.o .\CortexM0\ARM_GCC_541\Debug\dirZ.o .\CortexM0\ARM_GCC_541\Debug\dirZ_PM.o .\CortexM0\ARM_GCC_541\Debug\UART_SCBCLK.o .\CortexM0\ARM_GCC_541\Debug\UART_tx.o .\CortexM0\ARM_GCC_541\Debug\UART_tx_PM.o .\CortexM0\ARM_GCC_541\Debug\UART_SCB_IRQ.o .\CortexM0\ARM_GCC_541\Debug\UART_rx.o .\CortexM0\ARM_GCC_541\Debug\UART_rx_PM.o .\CortexM0\ARM_GCC_541\Debug\I2CS_SCBCLK.o .\CortexM0\ARM_GCC_541\Debug\I2CS_sda.o .\CortexM0\ARM_GCC_541\Debug\I2CS_sda_PM.o .\CortexM0\ARM_GCC_541\Debug\I2CS_scl.o .\CortexM0\ARM_GCC_541\Debug\I2CS_scl_PM.o .\CortexM0\ARM_GCC_541\Debug\I2CS_SCB_IRQ.o .\CortexM0\ARM_GCC_541\Debug\ADC_SAR_Seq_IRQ.o .\CortexM0\ARM_GCC_541\Debug\ADC_SAR_Seq_intClock.o .\CortexM0\ARM_GCC_541\Debug\CyFlash.o .\CortexM0\ARM_GCC_541\Debug\CyLib.o .\CortexM0\ARM_GCC_541\Debug\cyPm.o .\CortexM0\ARM_GCC_541\Debug\cyutils.o .\CortexM0\ARM_GCC_541\Debug\CyLFClk.o .\CortexM0\ARM_GCC_541\Debug\cy_em_eeprom.o .\CortexM0\ARM_GCC_541\Debug\CyBootAsmGnu.o
+arm-none-eabi-ar.exe: creating .\CortexM0\ARM_GCC_541\Debug\PSoC42rs.a
+arm-none-eabi-gcc.exe -Wl,--start-group -o D:\EE\GitHub\PSoC42xxRust\PSoC42rs.cydsn\CortexM0\ARM_GCC_541\Debug\PSoC42rs.elf .\CortexM0\ARM_GCC_541\Debug\main.o .\CortexM0\ARM_GCC_541\Debug\bindgen_wrappers.o .\CortexM0\ARM_GCC_541\Debug\cyfitter_cfg.o .\CortexM0\ARM_GCC_541\Debug\cymetadata.o .\CortexM0\ARM_GCC_541\Debug\Cm0Start.o .\CortexM0\ARM_GCC_541\Debug\PSoC42rs.a -mcpu=cortex-m0 -mthumb -l rust_project -L Generated_Source\PSoC4 -L .\rust_project\build\thumbv6m-none-eabi\release -Wl,-Map,.\CortexM0\ARM_GCC_541\Debug/PSoC42rs.map -T Generated_Source\PSoC4\cm0gcc.ld -specs=nano.specs -Wl,--gc-sections -g -ffunction-sections -O0 -ffat-lto-objects -Wl,--end-group
+cyelftool.exe -C D:\EE\GitHub\PSoC42xxRust\PSoC42rs.cydsn\CortexM0\ARM_GCC_541\Debug\PSoC42rs.elf --flash_row_size 128 --flash_size 32768 --flash_offset 0x00000000
+No ELF section .cychecksum found, creating one
+Application checksum calculated and stored in ELF section .cychecksum
+Checksum calculated and stored in ELF section .cymeta
+cyelftool.exe -S D:\EE\GitHub\PSoC42xxRust\PSoC42rs.cydsn\CortexM0\ARM_GCC_541\Debug\PSoC42rs.elf
+Flash used: 18016 of 32768 bytes (55.0%).
+SRAM used: 3148 of 4096 bytes (76.9%). Stack: 1536 bytes. Heap: 1024 bytes.
+--------------- Build Succeeded: 12/22/2025 17:46:45 ---------------

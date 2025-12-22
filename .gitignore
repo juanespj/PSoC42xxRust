@@ -1,5 +1,6 @@
 !PSoC4Embassy.cydsn/Export/prebuild.bat
 !PSoC4Embassy.cydsn/Export/prebuild.sh
+!PSoC42rs.cydsn\Export\ARM_GCC_Generic\CyComponentLibrary.a
 build/
 codegentemp/
 CortexM3/
@@ -8,6 +9,5 @@ Generated_Source/
 Export/
 target/rust-analyzer/
 target/
-PSoC6/
 CortexM0p/
 PSoC4Embassy.cydsn/BUILD.log

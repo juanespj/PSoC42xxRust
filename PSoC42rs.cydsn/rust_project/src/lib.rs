@@ -4,25 +4,24 @@
 #![cfg_attr(target_arch = "arm", no_std)]
 #![cfg_attr(not(target_arch = "arm"), allow(unused_variables))]
 
+pub mod ffi;
 mod motor;
 mod serial;
 mod sys;
 mod ui;
-// use cortex_m_rt::entry;
-pub mod ffi;
 use ffi::*;
 
 use crate::motor::*;
-// use core::sync::atomic::AtomicU8;
 use local_static::LocalStatic;
 use serial::*;
 use sys::*;
 use ui::*;
+
 static SYS: LocalStatic<System_T> = LocalStatic::new();
-static Xaxis: LocalStatic<Stepper<LeftEncoder>> = LocalStatic::new();
-// static Yaxis: LocalStatic<Stepper<RightEncoder>> = LocalStatic::new();
-// static Zaxis: LocalStatic<Stepper<LeftEncoder>> = LocalStatic::new();
-// static MS_TICK: LocalStatic<u32> = LocalStatic::new();
+static Xaxis: LocalStatic<Stepper<XEncoder>> = LocalStatic::new();
+static Yaxis: LocalStatic<Stepper<YEncoder>> = LocalStatic::new();
+static Zaxis: LocalStatic<Stepper<ZEncoder>> = LocalStatic::new();
+
 // ... SysTick() and systick_handler ...
 #[no_mangle]
 pub extern "C" fn tick_callback() {
@@ -48,7 +47,7 @@ pub extern "C" fn main() -> () {
     *SYS.get_mut() = System_T::new();
     // *Yaxis.get_mut() = Stepper::new(Box::new(RightEncoder));
     // *Zaxis.get_mut() = Stepper::new(Box::new(LeftEncoder));
-    *Xaxis.get_mut() = Stepper::new(LeftEncoder, 0);
+    *Xaxis.get_mut() = Stepper::new(XEncoder, 0);
     UI_init();
 
     unsafe {

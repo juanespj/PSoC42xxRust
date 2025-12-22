@@ -13,7 +13,7 @@
 <v>Output</v>
 </TreeKeys>
 <TreeStates>
-<CyGuid_2a325b3b-c96a-4e9f-b7a0-2c44ecb5f237 type_name="CyDesigner.Common.Base.Controls.CyTreeViewState" version="1" SelectedNodeId="PSoCRust\PSoC42rs\Generated_Source">
+<CyGuid_2a325b3b-c96a-4e9f-b7a0-2c44ecb5f237 type_name="CyDesigner.Common.Base.Controls.CyTreeViewState" version="1" SelectedNodeId="PSoCRust\PSoC42rs\Source Files\main.c">
 <ExpandedNodeIds>
 <v>PSoCRust</v>
 <v>PSoCRust\PSoC42rs</v>
@@ -28,6 +28,7 @@
 <v>PSoCRust\PSoC42rs\PSoC42rs.cydwr\Flash Security</v>
 <v>PSoCRust\PSoC42rs\Header Files</v>
 <v>PSoCRust\PSoC42rs\Header Files\cyapicallbacks.h</v>
+<v>PSoCRust\PSoC42rs\Source Files</v>
 <v>PSoCRust\PSoC42rs\Source Files\bindgen_wrappers.c</v>
 <v>PSoCRust\PSoC42rs\Source Files\bindgen_wrappers.h</v>
 <v>PSoCRust\PSoC42rs\Source Files\bindings.rs</v>
@@ -39,6 +40,7 @@
 <v>PSoCRust\PSoC42rs\Source Files\serial.rs</v>
 <v>PSoCRust\PSoC42rs\Source Files\sys.rs</v>
 <v>PSoCRust\PSoC42rs\Source Files\ui.rs</v>
+<v>PSoCRust\PSoC42rs\Generated_Source</v>
 <v>PSoCRust\PSoC42rs\Generated_Source\PSoC4</v>
 </ExpandedNodeIds>
 <VisibleNodeIds>
@@ -56,7 +58,51 @@
 <v>PSoCRust\PSoC42rs\Header Files</v>
 <v>PSoCRust\PSoC42rs\Header Files\cyapicallbacks.h</v>
 <v>PSoCRust\PSoC42rs\Source Files</v>
+<v>PSoCRust\PSoC42rs\Source Files\bindgen_wrappers.c</v>
+<v>PSoCRust\PSoC42rs\Source Files\bindgen_wrappers.h</v>
+<v>PSoCRust\PSoC42rs\Source Files\bindings.rs</v>
+<v>PSoCRust\PSoC42rs\Source Files\ffi.rs</v>
+<v>PSoCRust\PSoC42rs\Source Files\lib.rs</v>
+<v>PSoCRust\PSoC42rs\Source Files\libembassy.rs</v>
+<v>PSoCRust\PSoC42rs\Source Files\main.c</v>
+<v>PSoCRust\PSoC42rs\Source Files\motor.rs</v>
+<v>PSoCRust\PSoC42rs\Source Files\serial.rs</v>
+<v>PSoCRust\PSoC42rs\Source Files\sys.rs</v>
+<v>PSoCRust\PSoC42rs\Source Files\ui.rs</v>
 <v>PSoCRust\PSoC42rs\Generated_Source</v>
+<v>PSoCRust\PSoC42rs\Generated_Source\PSoC4</v>
+<v>PSoCRust\PSoC42rs\Generated_Source\PSoC4\ADC_SAR_Seq</v>
+<v>PSoCRust\PSoC42rs\Generated_Source\PSoC4\ADC_SAR_Seq_intClock</v>
+<v>PSoCRust\PSoC42rs\Generated_Source\PSoC4\ADC_SAR_Seq_IRQ</v>
+<v>PSoCRust\PSoC42rs\Generated_Source\PSoC4\BTN</v>
+<v>PSoCRust\PSoC42rs\Generated_Source\PSoC4\clkA</v>
+<v>PSoCRust\PSoC42rs\Generated_Source\PSoC4\cy_boot</v>
+<v>PSoCRust\PSoC42rs\Generated_Source\PSoC4\cy_lfclk</v>
+<v>PSoCRust\PSoC42rs\Generated_Source\PSoC4\DecX</v>
+<v>PSoCRust\PSoC42rs\Generated_Source\PSoC4\DecY</v>
+<v>PSoCRust\PSoC42rs\Generated_Source\PSoC4\DecZ</v>
+<v>PSoCRust\PSoC42rs\Generated_Source\PSoC4\DirReg</v>
+<v>PSoCRust\PSoC42rs\Generated_Source\PSoC4\dirX</v>
+<v>PSoCRust\PSoC42rs\Generated_Source\PSoC4\dirY</v>
+<v>PSoCRust\PSoC42rs\Generated_Source\PSoC4\dirZ</v>
+<v>PSoCRust\PSoC42rs\Generated_Source\PSoC4\Em_EEPROM_Dynamic</v>
+<v>PSoCRust\PSoC42rs\Generated_Source\PSoC4\EN</v>
+<v>PSoCRust\PSoC42rs\Generated_Source\PSoC4\EN_GND</v>
+<v>PSoCRust\PSoC42rs\Generated_Source\PSoC4\I2CS</v>
+<v>PSoCRust\PSoC42rs\Generated_Source\PSoC4\I2CS_SCB_IRQ</v>
+<v>PSoCRust\PSoC42rs\Generated_Source\PSoC4\I2CS_SCBCLK</v>
+<v>PSoCRust\PSoC42rs\Generated_Source\PSoC4\I2CS_scl</v>
+<v>PSoCRust\PSoC42rs\Generated_Source\PSoC4\I2CS_sda</v>
+<v>PSoCRust\PSoC42rs\Generated_Source\PSoC4\IDAC</v>
+<v>PSoCRust\PSoC42rs\Generated_Source\PSoC4\Iref</v>
+<v>PSoCRust\PSoC42rs\Generated_Source\PSoC4\ISR_Pulser</v>
+<v>PSoCRust\PSoC42rs\Generated_Source\PSoC4\ISR_QDecL</v>
+<v>PSoCRust\PSoC42rs\Generated_Source\PSoC4\LED</v>
+<v>PSoCRust\PSoC42rs\Generated_Source\PSoC4\Pulser_tmr</v>
+<v>PSoCRust\PSoC42rs\Generated_Source\PSoC4\SPD_REF</v>
+<v>PSoCRust\PSoC42rs\Generated_Source\PSoC4\StepReg</v>
+<v>PSoCRust\PSoC42rs\Generated_Source\PSoC4\stepX</v>
+<v>PSoCRust\PSoC42rs\Generated_Source\PSoC4\stepY</v>
 </VisibleNodeIds>
 </CyGuid_2a325b3b-c96a-4e9f-b7a0-2c44ecb5f237>
 <CyGuid_2a325b3b-c96a-4e9f-b7a0-2c44ecb5f237 type_name="CyDesigner.Common.Base.Controls.CyTreeViewState" version="1" SelectedNodeId="">
@@ -80,6 +126,103 @@
 <v>PSoCRust\PSoC42rs\CortexM0</v>
 <v>PSoCRust\PSoC42rs\CortexM0\ARM_GCC_541</v>
 <v>PSoCRust\PSoC42rs\CortexM0\ARM_GCC_541\Debug</v>
+<v>PSoCRust\PSoC42rs\CortexM0\ARM_GCC_541\Debug\Listing Files</v>
+<v>PSoCRust\PSoC42rs\CortexM0\ARM_GCC_541\Debug\Listing Files\ADC_SAR_Seq.lst</v>
+<v>PSoCRust\PSoC42rs\CortexM0\ARM_GCC_541\Debug\Listing Files\ADC_SAR_Seq_INT.lst</v>
+<v>PSoCRust\PSoC42rs\CortexM0\ARM_GCC_541\Debug\Listing Files\ADC_SAR_Seq_intClock.lst</v>
+<v>PSoCRust\PSoC42rs\CortexM0\ARM_GCC_541\Debug\Listing Files\ADC_SAR_Seq_IRQ.lst</v>
+<v>PSoCRust\PSoC42rs\CortexM0\ARM_GCC_541\Debug\Listing Files\ADC_SAR_Seq_PM.lst</v>
+<v>PSoCRust\PSoC42rs\CortexM0\ARM_GCC_541\Debug\Listing Files\bindgen_wrappers.lst</v>
+<v>PSoCRust\PSoC42rs\CortexM0\ARM_GCC_541\Debug\Listing Files\BTN.lst</v>
+<v>PSoCRust\PSoC42rs\CortexM0\ARM_GCC_541\Debug\Listing Files\BTN_PM.lst</v>
+<v>PSoCRust\PSoC42rs\CortexM0\ARM_GCC_541\Debug\Listing Files\clkA.lst</v>
+<v>PSoCRust\PSoC42rs\CortexM0\ARM_GCC_541\Debug\Listing Files\Cm0Start.lst</v>
+<v>PSoCRust\PSoC42rs\CortexM0\ARM_GCC_541\Debug\Listing Files\cy_em_eeprom.lst</v>
+<v>PSoCRust\PSoC42rs\CortexM0\ARM_GCC_541\Debug\Listing Files\CyBootAsmGnu.lst</v>
+<v>PSoCRust\PSoC42rs\CortexM0\ARM_GCC_541\Debug\Listing Files\cyfitter_cfg.lst</v>
+<v>PSoCRust\PSoC42rs\CortexM0\ARM_GCC_541\Debug\Listing Files\CyFlash.lst</v>
+<v>PSoCRust\PSoC42rs\CortexM0\ARM_GCC_541\Debug\Listing Files\CyLFClk.lst</v>
+<v>PSoCRust\PSoC42rs\CortexM0\ARM_GCC_541\Debug\Listing Files\CyLib.lst</v>
+<v>PSoCRust\PSoC42rs\CortexM0\ARM_GCC_541\Debug\Listing Files\cymetadata.lst</v>
+<v>PSoCRust\PSoC42rs\CortexM0\ARM_GCC_541\Debug\Listing Files\cyPm.lst</v>
+<v>PSoCRust\PSoC42rs\CortexM0\ARM_GCC_541\Debug\Listing Files\cyutils.lst</v>
+<v>PSoCRust\PSoC42rs\CortexM0\ARM_GCC_541\Debug\Listing Files\DecX.lst</v>
+<v>PSoCRust\PSoC42rs\CortexM0\ARM_GCC_541\Debug\Listing Files\DecX_PM.lst</v>
+<v>PSoCRust\PSoC42rs\CortexM0\ARM_GCC_541\Debug\Listing Files\DecY.lst</v>
+<v>PSoCRust\PSoC42rs\CortexM0\ARM_GCC_541\Debug\Listing Files\DecY_PM.lst</v>
+<v>PSoCRust\PSoC42rs\CortexM0\ARM_GCC_541\Debug\Listing Files\DecZ.lst</v>
+<v>PSoCRust\PSoC42rs\CortexM0\ARM_GCC_541\Debug\Listing Files\DecZ_PM.lst</v>
+<v>PSoCRust\PSoC42rs\CortexM0\ARM_GCC_541\Debug\Listing Files\DirReg.lst</v>
+<v>PSoCRust\PSoC42rs\CortexM0\ARM_GCC_541\Debug\Listing Files\DirReg_PM.lst</v>
+<v>PSoCRust\PSoC42rs\CortexM0\ARM_GCC_541\Debug\Listing Files\dirX.lst</v>
+<v>PSoCRust\PSoC42rs\CortexM0\ARM_GCC_541\Debug\Listing Files\dirX_PM.lst</v>
+<v>PSoCRust\PSoC42rs\CortexM0\ARM_GCC_541\Debug\Listing Files\dirY.lst</v>
+<v>PSoCRust\PSoC42rs\CortexM0\ARM_GCC_541\Debug\Listing Files\dirY_PM.lst</v>
+<v>PSoCRust\PSoC42rs\CortexM0\ARM_GCC_541\Debug\Listing Files\dirZ.lst</v>
+<v>PSoCRust\PSoC42rs\CortexM0\ARM_GCC_541\Debug\Listing Files\dirZ_PM.lst</v>
+<v>PSoCRust\PSoC42rs\CortexM0\ARM_GCC_541\Debug\Listing Files\EN.lst</v>
+<v>PSoCRust\PSoC42rs\CortexM0\ARM_GCC_541\Debug\Listing Files\EN_GND.lst</v>
+<v>PSoCRust\PSoC42rs\CortexM0\ARM_GCC_541\Debug\Listing Files\EN_GND_PM.lst</v>
+<v>PSoCRust\PSoC42rs\CortexM0\ARM_GCC_541\Debug\Listing Files\EN_PM.lst</v>
+<v>PSoCRust\PSoC42rs\CortexM0\ARM_GCC_541\Debug\Listing Files\I2CS.lst</v>
+<v>PSoCRust\PSoC42rs\CortexM0\ARM_GCC_541\Debug\Listing Files\I2CS_BOOT.lst</v>
+<v>PSoCRust\PSoC42rs\CortexM0\ARM_GCC_541\Debug\Listing Files\I2CS_I2C.lst</v>
+<v>PSoCRust\PSoC42rs\CortexM0\ARM_GCC_541\Debug\Listing Files\I2CS_I2C_BOOT.lst</v>
+<v>PSoCRust\PSoC42rs\CortexM0\ARM_GCC_541\Debug\Listing Files\I2CS_I2C_INT.lst</v>
+<v>PSoCRust\PSoC42rs\CortexM0\ARM_GCC_541\Debug\Listing Files\I2CS_I2C_SLAVE.lst</v>
+<v>PSoCRust\PSoC42rs\CortexM0\ARM_GCC_541\Debug\Listing Files\I2CS_PM.lst</v>
+<v>PSoCRust\PSoC42rs\CortexM0\ARM_GCC_541\Debug\Listing Files\I2CS_SCB_IRQ.lst</v>
+<v>PSoCRust\PSoC42rs\CortexM0\ARM_GCC_541\Debug\Listing Files\I2CS_SCBCLK.lst</v>
+<v>PSoCRust\PSoC42rs\CortexM0\ARM_GCC_541\Debug\Listing Files\I2CS_scl.lst</v>
+<v>PSoCRust\PSoC42rs\CortexM0\ARM_GCC_541\Debug\Listing Files\I2CS_scl_PM.lst</v>
+<v>PSoCRust\PSoC42rs\CortexM0\ARM_GCC_541\Debug\Listing Files\I2CS_sda.lst</v>
+<v>PSoCRust\PSoC42rs\CortexM0\ARM_GCC_541\Debug\Listing Files\I2CS_sda_PM.lst</v>
+<v>PSoCRust\PSoC42rs\CortexM0\ARM_GCC_541\Debug\Listing Files\IDAC.lst</v>
+<v>PSoCRust\PSoC42rs\CortexM0\ARM_GCC_541\Debug\Listing Files\IDAC_PM.lst</v>
+<v>PSoCRust\PSoC42rs\CortexM0\ARM_GCC_541\Debug\Listing Files\Iref.lst</v>
+<v>PSoCRust\PSoC42rs\CortexM0\ARM_GCC_541\Debug\Listing Files\Iref_PM.lst</v>
+<v>PSoCRust\PSoC42rs\CortexM0\ARM_GCC_541\Debug\Listing Files\ISR_Pulser.lst</v>
+<v>PSoCRust\PSoC42rs\CortexM0\ARM_GCC_541\Debug\Listing Files\ISR_QDecL.lst</v>
+<v>PSoCRust\PSoC42rs\CortexM0\ARM_GCC_541\Debug\Listing Files\LED.lst</v>
+<v>PSoCRust\PSoC42rs\CortexM0\ARM_GCC_541\Debug\Listing Files\LED_PM.lst</v>
+<v>PSoCRust\PSoC42rs\CortexM0\ARM_GCC_541\Debug\Listing Files\main.lst</v>
+<v>PSoCRust\PSoC42rs\CortexM0\ARM_GCC_541\Debug\Listing Files\Pulser_tmr.lst</v>
+<v>PSoCRust\PSoC42rs\CortexM0\ARM_GCC_541\Debug\Listing Files\Pulser_tmr_PM.lst</v>
+<v>PSoCRust\PSoC42rs\CortexM0\ARM_GCC_541\Debug\Listing Files\SPD_REF.lst</v>
+<v>PSoCRust\PSoC42rs\CortexM0\ARM_GCC_541\Debug\Listing Files\SPD_REF_PM.lst</v>
+<v>PSoCRust\PSoC42rs\CortexM0\ARM_GCC_541\Debug\Listing Files\StepReg.lst</v>
+<v>PSoCRust\PSoC42rs\CortexM0\ARM_GCC_541\Debug\Listing Files\StepReg_PM.lst</v>
+<v>PSoCRust\PSoC42rs\CortexM0\ARM_GCC_541\Debug\Listing Files\stepX.lst</v>
+<v>PSoCRust\PSoC42rs\CortexM0\ARM_GCC_541\Debug\Listing Files\stepX_PM.lst</v>
+<v>PSoCRust\PSoC42rs\CortexM0\ARM_GCC_541\Debug\Listing Files\stepY.lst</v>
+<v>PSoCRust\PSoC42rs\CortexM0\ARM_GCC_541\Debug\Listing Files\stepY_PM.lst</v>
+<v>PSoCRust\PSoC42rs\CortexM0\ARM_GCC_541\Debug\Listing Files\stepZ.lst</v>
+<v>PSoCRust\PSoC42rs\CortexM0\ARM_GCC_541\Debug\Listing Files\stepZ_PM.lst</v>
+<v>PSoCRust\PSoC42rs\CortexM0\ARM_GCC_541\Debug\Listing Files\UART.lst</v>
+<v>PSoCRust\PSoC42rs\CortexM0\ARM_GCC_541\Debug\Listing Files\UART_BOOT.lst</v>
+<v>PSoCRust\PSoC42rs\CortexM0\ARM_GCC_541\Debug\Listing Files\UART_PM.lst</v>
+<v>PSoCRust\PSoC42rs\CortexM0\ARM_GCC_541\Debug\Listing Files\UART_rx.lst</v>
+<v>PSoCRust\PSoC42rs\CortexM0\ARM_GCC_541\Debug\Listing Files\UART_rx_PM.lst</v>
+<v>PSoCRust\PSoC42rs\CortexM0\ARM_GCC_541\Debug\Listing Files\UART_SCB_IRQ.lst</v>
+<v>PSoCRust\PSoC42rs\CortexM0\ARM_GCC_541\Debug\Listing Files\UART_SCBCLK.lst</v>
+<v>PSoCRust\PSoC42rs\CortexM0\ARM_GCC_541\Debug\Listing Files\UART_SPI_UART.lst</v>
+<v>PSoCRust\PSoC42rs\CortexM0\ARM_GCC_541\Debug\Listing Files\UART_SPI_UART_INT.lst</v>
+<v>PSoCRust\PSoC42rs\CortexM0\ARM_GCC_541\Debug\Listing Files\UART_tx.lst</v>
+<v>PSoCRust\PSoC42rs\CortexM0\ARM_GCC_541\Debug\Listing Files\UART_tx_PM.lst</v>
+<v>PSoCRust\PSoC42rs\CortexM0\ARM_GCC_541\Debug\Listing Files\UART_UART.lst</v>
+<v>PSoCRust\PSoC42rs\CortexM0\ARM_GCC_541\Debug\Listing Files\UART_UART_BOOT.lst</v>
+<v>PSoCRust\PSoC42rs\CortexM0\ARM_GCC_541\Debug\Listing Files\XchA.lst</v>
+<v>PSoCRust\PSoC42rs\CortexM0\ARM_GCC_541\Debug\Listing Files\XchA_PM.lst</v>
+<v>PSoCRust\PSoC42rs\CortexM0\ARM_GCC_541\Debug\Listing Files\XchB.lst</v>
+<v>PSoCRust\PSoC42rs\CortexM0\ARM_GCC_541\Debug\Listing Files\XchB_PM.lst</v>
+<v>PSoCRust\PSoC42rs\CortexM0\ARM_GCC_541\Debug\Listing Files\YchA.lst</v>
+<v>PSoCRust\PSoC42rs\CortexM0\ARM_GCC_541\Debug\Listing Files\YchA_PM.lst</v>
+<v>PSoCRust\PSoC42rs\CortexM0\ARM_GCC_541\Debug\Listing Files\YchB.lst</v>
+<v>PSoCRust\PSoC42rs\CortexM0\ARM_GCC_541\Debug\Listing Files\YchB_PM.lst</v>
+<v>PSoCRust\PSoC42rs\CortexM0\ARM_GCC_541\Debug\Listing Files\ZchA.lst</v>
+<v>PSoCRust\PSoC42rs\CortexM0\ARM_GCC_541\Debug\Listing Files\ZchA_PM.lst</v>
+<v>PSoCRust\PSoC42rs\CortexM0\ARM_GCC_541\Debug\Listing Files\ZchB.lst</v>
+<v>PSoCRust\PSoC42rs\CortexM0\ARM_GCC_541\Debug\Listing Files\ZchB_PM.lst</v>
 <v>PSoCRust\PSoC42rs\CortexM0\ARM_GCC_541\Debug\PSoC42rs.elf</v>
 <v>PSoCRust\PSoC42rs\CortexM0\ARM_GCC_541\Debug\PSoC42rs.hex</v>
 <v>PSoCRust\PSoC42rs\CortexM0\ARM_GCC_541\Debug\PSoC42rs.map</v>
@@ -90,8 +233,63 @@
 <VisibleNodeIds>
 <v>PSoCRust</v>
 <v>PSoCRust\PSoC42rs</v>
-<v>PSoCRust\PSoC42rs\PSoC42rs.rpt</v>
-<v>PSoCRust\PSoC42rs\PSoC42rs_timing.html</v>
+<v>PSoCRust\PSoC42rs\CortexM0</v>
+<v>PSoCRust\PSoC42rs\CortexM0\ARM_GCC_541</v>
+<v>PSoCRust\PSoC42rs\CortexM0\ARM_GCC_541\Debug</v>
+<v>PSoCRust\PSoC42rs\CortexM0\ARM_GCC_541\Debug\Listing Files</v>
+<v>PSoCRust\PSoC42rs\CortexM0\ARM_GCC_541\Debug\Listing Files\ADC_SAR_Seq.lst</v>
+<v>PSoCRust\PSoC42rs\CortexM0\ARM_GCC_541\Debug\Listing Files\ADC_SAR_Seq_INT.lst</v>
+<v>PSoCRust\PSoC42rs\CortexM0\ARM_GCC_541\Debug\Listing Files\ADC_SAR_Seq_intClock.lst</v>
+<v>PSoCRust\PSoC42rs\CortexM0\ARM_GCC_541\Debug\Listing Files\ADC_SAR_Seq_IRQ.lst</v>
+<v>PSoCRust\PSoC42rs\CortexM0\ARM_GCC_541\Debug\Listing Files\ADC_SAR_Seq_PM.lst</v>
+<v>PSoCRust\PSoC42rs\CortexM0\ARM_GCC_541\Debug\Listing Files\bindgen_wrappers.lst</v>
+<v>PSoCRust\PSoC42rs\CortexM0\ARM_GCC_541\Debug\Listing Files\BTN.lst</v>
+<v>PSoCRust\PSoC42rs\CortexM0\ARM_GCC_541\Debug\Listing Files\BTN_PM.lst</v>
+<v>PSoCRust\PSoC42rs\CortexM0\ARM_GCC_541\Debug\Listing Files\clkA.lst</v>
+<v>PSoCRust\PSoC42rs\CortexM0\ARM_GCC_541\Debug\Listing Files\Cm0Start.lst</v>
+<v>PSoCRust\PSoC42rs\CortexM0\ARM_GCC_541\Debug\Listing Files\cy_em_eeprom.lst</v>
+<v>PSoCRust\PSoC42rs\CortexM0\ARM_GCC_541\Debug\Listing Files\CyBootAsmGnu.lst</v>
+<v>PSoCRust\PSoC42rs\CortexM0\ARM_GCC_541\Debug\Listing Files\cyfitter_cfg.lst</v>
+<v>PSoCRust\PSoC42rs\CortexM0\ARM_GCC_541\Debug\Listing Files\CyFlash.lst</v>
+<v>PSoCRust\PSoC42rs\CortexM0\ARM_GCC_541\Debug\Listing Files\CyLFClk.lst</v>
+<v>PSoCRust\PSoC42rs\CortexM0\ARM_GCC_541\Debug\Listing Files\CyLib.lst</v>
+<v>PSoCRust\PSoC42rs\CortexM0\ARM_GCC_541\Debug\Listing Files\cymetadata.lst</v>
+<v>PSoCRust\PSoC42rs\CortexM0\ARM_GCC_541\Debug\Listing Files\cyPm.lst</v>
+<v>PSoCRust\PSoC42rs\CortexM0\ARM_GCC_541\Debug\Listing Files\cyutils.lst</v>
+<v>PSoCRust\PSoC42rs\CortexM0\ARM_GCC_541\Debug\Listing Files\DecX.lst</v>
+<v>PSoCRust\PSoC42rs\CortexM0\ARM_GCC_541\Debug\Listing Files\DecX_PM.lst</v>
+<v>PSoCRust\PSoC42rs\CortexM0\ARM_GCC_541\Debug\Listing Files\DecY.lst</v>
+<v>PSoCRust\PSoC42rs\CortexM0\ARM_GCC_541\Debug\Listing Files\DecY_PM.lst</v>
+<v>PSoCRust\PSoC42rs\CortexM0\ARM_GCC_541\Debug\Listing Files\DecZ.lst</v>
+<v>PSoCRust\PSoC42rs\CortexM0\ARM_GCC_541\Debug\Listing Files\DecZ_PM.lst</v>
+<v>PSoCRust\PSoC42rs\CortexM0\ARM_GCC_541\Debug\Listing Files\DirReg.lst</v>
+<v>PSoCRust\PSoC42rs\CortexM0\ARM_GCC_541\Debug\Listing Files\DirReg_PM.lst</v>
+<v>PSoCRust\PSoC42rs\CortexM0\ARM_GCC_541\Debug\Listing Files\dirX.lst</v>
+<v>PSoCRust\PSoC42rs\CortexM0\ARM_GCC_541\Debug\Listing Files\dirX_PM.lst</v>
+<v>PSoCRust\PSoC42rs\CortexM0\ARM_GCC_541\Debug\Listing Files\dirY.lst</v>
+<v>PSoCRust\PSoC42rs\CortexM0\ARM_GCC_541\Debug\Listing Files\dirY_PM.lst</v>
+<v>PSoCRust\PSoC42rs\CortexM0\ARM_GCC_541\Debug\Listing Files\dirZ.lst</v>
+<v>PSoCRust\PSoC42rs\CortexM0\ARM_GCC_541\Debug\Listing Files\dirZ_PM.lst</v>
+<v>PSoCRust\PSoC42rs\CortexM0\ARM_GCC_541\Debug\Listing Files\EN.lst</v>
+<v>PSoCRust\PSoC42rs\CortexM0\ARM_GCC_541\Debug\Listing Files\EN_GND.lst</v>
+<v>PSoCRust\PSoC42rs\CortexM0\ARM_GCC_541\Debug\Listing Files\EN_GND_PM.lst</v>
+<v>PSoCRust\PSoC42rs\CortexM0\ARM_GCC_541\Debug\Listing Files\EN_PM.lst</v>
+<v>PSoCRust\PSoC42rs\CortexM0\ARM_GCC_541\Debug\Listing Files\I2CS.lst</v>
+<v>PSoCRust\PSoC42rs\CortexM0\ARM_GCC_541\Debug\Listing Files\I2CS_BOOT.lst</v>
+<v>PSoCRust\PSoC42rs\CortexM0\ARM_GCC_541\Debug\Listing Files\I2CS_I2C.lst</v>
+<v>PSoCRust\PSoC42rs\CortexM0\ARM_GCC_541\Debug\Listing Files\I2CS_I2C_BOOT.lst</v>
+<v>PSoCRust\PSoC42rs\CortexM0\ARM_GCC_541\Debug\Listing Files\I2CS_I2C_INT.lst</v>
+<v>PSoCRust\PSoC42rs\CortexM0\ARM_GCC_541\Debug\Listing Files\I2CS_I2C_SLAVE.lst</v>
+<v>PSoCRust\PSoC42rs\CortexM0\ARM_GCC_541\Debug\Listing Files\I2CS_PM.lst</v>
+<v>PSoCRust\PSoC42rs\CortexM0\ARM_GCC_541\Debug\Listing Files\I2CS_SCB_IRQ.lst</v>
+<v>PSoCRust\PSoC42rs\CortexM0\ARM_GCC_541\Debug\Listing Files\I2CS_SCBCLK.lst</v>
+<v>PSoCRust\PSoC42rs\CortexM0\ARM_GCC_541\Debug\Listing Files\I2CS_scl.lst</v>
+<v>PSoCRust\PSoC42rs\CortexM0\ARM_GCC_541\Debug\Listing Files\I2CS_scl_PM.lst</v>
+<v>PSoCRust\PSoC42rs\CortexM0\ARM_GCC_541\Debug\Listing Files\I2CS_sda.lst</v>
+<v>PSoCRust\PSoC42rs\CortexM0\ARM_GCC_541\Debug\Listing Files\I2CS_sda_PM.lst</v>
+<v>PSoCRust\PSoC42rs\CortexM0\ARM_GCC_541\Debug\Listing Files\IDAC.lst</v>
+<v>PSoCRust\PSoC42rs\CortexM0\ARM_GCC_541\Debug\Listing Files\IDAC_PM.lst</v>
+<v>PSoCRust\PSoC42rs\CortexM0\ARM_GCC_541\Debug\Listing Files\Iref.lst</v>
 </VisibleNodeIds>
 </CyGuid_2a325b3b-c96a-4e9f-b7a0-2c44ecb5f237>
 </TreeStates>

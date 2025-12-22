@@ -25,16 +25,14 @@ set(PSOC_GENERATED_C_SRC
     ${GEN_SOURCE_DIR}/BTN_PM.c
     ${GEN_SOURCE_DIR}/LED.c
     ${GEN_SOURCE_DIR}/LED_PM.c
-    ${GEN_SOURCE_DIR}/LchA.c
-    ${GEN_SOURCE_DIR}/LchA_PM.c
+    ${GEN_SOURCE_DIR}/XchA.c
+    ${GEN_SOURCE_DIR}/XchA_PM.c
     ${GEN_SOURCE_DIR}/StepReg.c
     ${GEN_SOURCE_DIR}/StepReg_PM.c
-    ${GEN_SOURCE_DIR}/stepX.c
-    ${GEN_SOURCE_DIR}/stepX_PM.c
-    ${GEN_SOURCE_DIR}/LchB.c
-    ${GEN_SOURCE_DIR}/LchB_PM.c
-    ${GEN_SOURCE_DIR}/DIR.c
-    ${GEN_SOURCE_DIR}/DIR_PM.c
+    ${GEN_SOURCE_DIR}/DirReg.c
+    ${GEN_SOURCE_DIR}/DirReg_PM.c
+    ${GEN_SOURCE_DIR}/XchB.c
+    ${GEN_SOURCE_DIR}/XchB_PM.c
     ${GEN_SOURCE_DIR}/EN.c
     ${GEN_SOURCE_DIR}/EN_PM.c
     ${GEN_SOURCE_DIR}/clkA.c
@@ -46,8 +44,8 @@ set(PSOC_GENERATED_C_SRC
     ${GEN_SOURCE_DIR}/UART_UART.c
     ${GEN_SOURCE_DIR}/UART_BOOT.c
     ${GEN_SOURCE_DIR}/UART_UART_BOOT.c
-    ${GEN_SOURCE_DIR}/DecL.c
-    ${GEN_SOURCE_DIR}/DecL_PM.c
+    ${GEN_SOURCE_DIR}/DecX.c
+    ${GEN_SOURCE_DIR}/DecX_PM.c
     ${GEN_SOURCE_DIR}/EN_GND.c
     ${GEN_SOURCE_DIR}/EN_GND_PM.c
     ${GEN_SOURCE_DIR}/I2CS.c

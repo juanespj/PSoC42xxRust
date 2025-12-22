@@ -54,6 +54,7 @@ pub trait EncoderOps {
 
 pub struct XEncoder;
 pub struct YEncoder;
+pub struct ZEncoder;
 
 impl EncoderOps for XEncoder {
     fn init_hardware(&self) {
@@ -71,20 +72,34 @@ impl EncoderOps for XEncoder {
     }
 }
 
-// impl EncoderOps for YEncoder {
-//     fn init_hardware(&self) {
-//         unsafe { DecY_Init() }
-//     }
-//     fn start_hardware(&self) {
-//         unsafe { DecY_Start() }
-//     }
-//     fn write_counter(&self, value: u32) {
-//         unsafe { DecY_WriteCounter(value) }
-//     }
-//     fn read_counter(&self) -> u32 {
-//         unsafe { DecY_ReadCounter() } // call your C binding
-//     }
-// }
+impl EncoderOps for YEncoder {
+    fn init_hardware(&self) {
+        unsafe { DecY_Init() }
+    }
+    fn start_hardware(&self) {
+        unsafe { DecY_Start() }
+    }
+    fn write_counter(&self, value: u32) {
+        unsafe { DecY_WriteCounter(value) }
+    }
+    fn read_counter(&self) -> u32 {
+        unsafe { DecY_ReadCounter() } // call your C binding
+    }
+}
+impl EncoderOps for ZEncoder {
+    fn init_hardware(&self) {
+        unsafe { DecZ_Init() }
+    }
+    fn start_hardware(&self) {
+        unsafe { DecZ_Start() }
+    }
+    fn write_counter(&self, value: u32) {
+        unsafe { DecZ_WriteCounter(value) }
+    }
+    fn read_counter(&self) -> u32 {
+        unsafe { DecZ_ReadCounter() } // call your C binding
+    }
+}
 pub struct Encoder<T: EncoderOps> {
     pub curr: u32,  // current raw counter value from hardware
     pub last: u32,  // last raw counter value
@@ -299,8 +314,8 @@ impl<T: EncoderOps> Stepper<T> {
     pub fn set_direction(&mut self, direction: MotorDirection) {
         unsafe {
             match direction {
-                MotorDirection::FWD => DIR_Write(0),
-                MotorDirection::BWD => DIR_Write(1),
+                MotorDirection::FWD => DirReg_Write(0),
+                MotorDirection::BWD => DirReg_Write(1),
             };
         }
         self.dir = direction;
