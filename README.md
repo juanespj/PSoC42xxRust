@@ -6,6 +6,7 @@
 
 __Project based on [PSOC_RUST](https://github.com/9names/PSOC_Rust/tree/master). for PSoC 5LP__
 
+[Article on Medium](https://medium.com/@juanespaz/embedded-rust-integration-to-existing-c-code-and-projects-part-1-844ee4e39dd9) 
 There are two things slowing down the adoption of Rust for Embedded projects,
 - Most of the existing projects are written in c/c++ and it makes no sense to spend time and resources in completely rewriting them if they are working as expected.
 - The examples and development done for embedded tools is limited to newer ICs (It is growing)
