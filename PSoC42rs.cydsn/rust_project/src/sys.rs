@@ -2,14 +2,15 @@ use crate::Xaxis;
 use crate::*;
 use bitfield_struct::bitfield;
 
-use ffi::*;
 #[derive(PartialEq, Clone)]
 #[repr(u8)]
 #[cfg_attr(not(target_arch = "arm"), derive(Debug))]
 pub enum System_State {
     IDLE,
     START_MOVE,
-    MOVE_RAMP,
+    START_SPD,
+    STOPPING,
+    SPEED,
     MOVING,
     KILL,
     WAIT,
@@ -22,6 +23,7 @@ pub struct System_T {
     pub next_state: System_State,
     tmr: u32,
     pub step_out: u8,
+    pub print_dbg: u8,
 }
 impl System_T {
     pub fn new() -> Self {
@@ -32,6 +34,7 @@ impl System_T {
             next_state: System_State::IDLE,
             tmr: 0,
             step_out: 0,
+            print_dbg: 0,
         }
     }
     pub fn sys_task(&mut self) {
@@ -65,12 +68,58 @@ impl System_T {
                         // }
                     }
                     MotorState::CONST_SPD => {
-                        self.tmr += 1;
-                        if self.tmr >= 50000 {
-                            Xaxis.get_mut().state = MotorState::DECEL;
-                            self.tmr = 0;
-                            uart_put_str("\n\r-End Const Speed\n\r");
-                        }
+                        // self.tmr += 1;
+                        // if self.tmr >= 50000 {
+                        //     Xaxis.get_mut().state = MotorState::DECEL;
+                        //     self.tmr = 0;
+                        //     uart_put_str("\n\r-End Const Speed\n\r");
+                        //     Xaxis.get_mut().set_speed(0);
+                        // }
+                    }
+                    MotorState::DECEL => {
+                        // if self.tmr >= 2000 {
+                        //     Xaxis.get_mut().state = MotorState::IDLE;
+                        //     self.tmr = 0;
+                        //     uart_put_str("\n\r-End DECEL\n\r");
+                        // }
+                    }
+                    MotorState::IDLE => {
+                        self.next_state = System_State::KILL;
+                        // if self.tmr >= 2000 {
+                        //     Xaxis.get_mut().state = MotorState::IDLE;
+                        //     self.tmr = 0;
+                        //     uart_put_str("\n\r-End DECEL\n\r");
+                        // }
+                    }
+                    _ => self.next_state = System_State::IDLE,
+                }
+            }
+            System_State::SPEED => {
+                if self.new_state {
+                    self.new_state = false;
+                    uart_put_str("\n\r-Speed\n\r");
+                    self.tmr = 0;
+                }
+                // self.step_out = !self.step_out;
+                // uart_printf(format_args!("\rSTEP_X {}", self.step_out));
+
+                match Xaxis.get().state {
+                    MotorState::ACCEL => {
+                        // if self.tmr >= 2000 {
+                        //     Xaxis.get_mut().state = MotorState::CONST_SPD;
+                        //     self.tmr = 0;
+                        //     uart_put_str("\n\r-END Acc\n\r");
+                        // }
+                    }
+                    MotorState::CONST_SPD => {
+                        // self.tmr += 1;
+                        // if self.tmr >= 50000000 {
+                        //     Xaxis.get_mut().state = MotorState::DECEL;
+                        //     self.tmr = 0;
+                        //     Xaxis.get_mut().set_speed(0);
+
+                        //     uart_put_str("\n\r-End Const Speed\n\r");
+                        // }
                     }
                     MotorState::DECEL => {
                         // if self.tmr >= 2000 {
@@ -96,8 +145,21 @@ impl System_T {
                     uart_put_str("\n\r-KILL\n\r");
                     Xaxis.get_mut().stop();
                     unsafe { EN_Write(1) };
+                    SYS.get_mut().print_dbg = 0;
                 }
                 self.next_state = System_State::IDLE;
+            }
+            System_State::STOPPING => {
+                if self.new_state {
+                    self.new_state = false;
+                    uart_put_str("\n\r-Stopping\n\r");
+                    Xaxis.get_mut().control_stop();
+                }
+                if Xaxis.get().state == MotorState::IDLE {
+                    uart_put_str("\n\r-Stopped\n\r");
+                    unsafe { EN_Write(1) };
+                    self.next_state = System_State::IDLE;
+                }
             }
             System_State::START_MOVE => {
                 if self.new_state {
@@ -105,6 +167,7 @@ impl System_T {
                     unsafe {
                         EN_Write(0);
                     }
+                    SYS.get_mut().print_dbg = 1;
                     uart_put_str("\n\r-Run\n\r");
                 }
 
@@ -112,11 +175,22 @@ impl System_T {
 
                 self.next_state = System_State::MOVING;
             }
-            System_State::MOVE_RAMP => {
+            System_State::START_SPD => {
                 if self.new_state {
                     self.new_state = false;
+                    unsafe {
+                        EN_Write(0);
+                    }
+                    SYS.get_mut().print_dbg = 1;
+                    uart_put_str("\n\r-Move_speed\n\r");
+                    Xaxis.get_mut().curr_target_speed_hz = Xaxis.get().target_speed_hz;
                 }
+
+                Xaxis.get_mut().state = MotorState::ACCEL;
+
+                self.next_state = System_State::SPEED;
             }
+
             System_State::WAIT => {
                 if self.new_state {
                     self.new_state = false;

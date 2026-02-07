@@ -7,3 +7,4 @@ void ClearInterrutpt_RX(void){
    UART_ClearRxInterruptSource(UART_GetRxInterruptSource());
 }
 
+CY_ISR_PROTO(IntDefaultHandler);

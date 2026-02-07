@@ -1,0 +1,11 @@
+OpenPort "MiniProg4 (CMSIS-DAP/BULK/0C07062303210400)" "C:\Program Files (x86)\Cypress\Programmer" 
+SetPowerVoltage 3.3
+PowerOn
+SetAcquireMode "Reset"
+SetProtocol 8
+SetProtocolClock 152
+DAP_Acquire    
+GetRowsPerArrayInFlash
+PowerOff
+ClosePort
+Quit

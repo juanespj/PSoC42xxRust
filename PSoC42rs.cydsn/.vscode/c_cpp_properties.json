@@ -1,0 +1,22 @@
+{
+    "configurations": [
+        {
+            "name": "Win32",
+            "includePath": [
+                "${workspaceFolder}/",
+                "${workspaceFolder}/Generated_Source/PSoC4", // Adjust if you use PSoC5 or PSoC6
+                "C:/Program Files (x86)/Cypress/PSoC Creator/4.4/PSoC Creator/import/gnu/arm/5.4.1/lib/gcc/arm-none-eabi/5.4.1/include", // PSoC Creator includes
+                // Add other library/include paths as needed
+                
+            ],
+            "defines": [
+                // Add any project-specific defines here
+            ],
+            "compilerPath": "C:/Program Files (x86)/Cypress/PSoC Creator/4.4/PSoC Creator/import/gnu/arm/5.4.1/bin/arm-none-eabi-gcc.exe", // Or the compiler you use
+            "cStandard": "c11",
+            "cppStandard": "c++17",
+            "intelliSenseMode": "windows-gcc-x64"
+        }
+    ],
+    "version": 4
+}

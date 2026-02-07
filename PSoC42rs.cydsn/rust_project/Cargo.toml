@@ -12,27 +12,8 @@ path = "src/lib.rs"
 [dependencies]
 cty = "0.2"
 cortex-m = { version = "0.7.6", features = ["critical-section-single-core"]}
-
-local_static = "0.1.1"
-portable-atomic = { version = "1.11.1",  features = ["critical-section"] }# needed for M0
-static_cell = "2.1.1"
-
-heapless = "0.9.1"
-bitfield-struct = "0.11"
-
-fixed = { version = "1.29" }
-
-[profile.release]
-# Optimize for size aggressively
-opt-level = 'z'      # Best balance between size and performance# (Optional) Smallest possible code, may be slower
-codegen-units = 1    # Enables more aggressive cross-module optimization
-lto = true#"fat"          # Enable Link-Time Optimization (critical for size)
-debug = true         # (Optional) Keep debug info for debugging release builds
-
-# [profile.test]
-# gnuplot = "0.0.46"
-
 # cortex-m-rt = "0.7.0" #calls core startup 
+
 
 #for embassy
 # embassy-executor = {version = "0.9.1",features = ["arch-cortex-m", "executor-thread"] }
@@ -41,3 +22,19 @@ debug = true         # (Optional) Keep debug info for debugging release builds
 # systick-timer = {version="0.2.1",features = ["embassy-time-driver"]}
 # embassy-time-driver = "0.2.1"
 # embassy-sync = "0.7.2"
+
+
+local_static = "0.1.1"
+portable-atomic = { version = "1.11.1",  features = ["critical-section"] }# needed for M0
+static_cell = "2.1.1"
+
+heapless = "0.9.1"
+bitfield-struct = "0.11"
+
+
+fixed = { version = "1.29", default-features = false }
+
+rust_core = { workspace = true, features = ["embedded"] }
+
+[build-dependencies]
+bindgen = "0.72.1"

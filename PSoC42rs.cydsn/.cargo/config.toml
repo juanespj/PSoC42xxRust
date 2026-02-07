@@ -1,0 +1,4 @@
+[alias]
+build-firmware = "build -p rust_project --target thumbv6m-none-eabi"
+test-host = "test -p rs_testing"
+run-host = "run -p rs_testing"

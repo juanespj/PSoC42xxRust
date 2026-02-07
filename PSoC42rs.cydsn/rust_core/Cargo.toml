@@ -1,0 +1,15 @@
+[package]
+name = "rust_core"
+version = "0.1.0"
+edition = "2024"
+
+[lib]
+path = "src/lib.rs"
+
+[dependencies]
+fixed = { version = "1.29", default-features = false }
+
+[features]
+default = ["std"]
+std = []
+embedded = []

@@ -2,6 +2,7 @@
 
 use core::ffi::c_char;
 use local_static::LocalStatic;
+use std::ffi::CStr;
 // This file only compiles when NOT building for the ARM target (i.e., your host PC).
 
 // Define mock functions for all your missing C bindings.
@@ -25,9 +26,20 @@ pub const Pulser_tmr__INTR_MASK_TC: u32 = 0x01;
 pub unsafe extern "C" fn DecL_Init() {}
 pub unsafe extern "C" fn DecL_Start() {}
 pub unsafe extern "C" fn DecL_WriteCounter(_value: u32) {}
-pub unsafe extern "C" fn DecL_ReadCounter() -> u32 {
+pub unsafe extern "C" fn DecL_ClearInterrupt(_value: u32) {}
+pub unsafe extern "C" fn ISR_DecL_ClearPending() {}
+pub unsafe extern "C" fn ISR_DecL_StartEx(_value: u32) {}
+pub static Encoder_count: LocalStatic<u32> = LocalStatic::new();
+pub unsafe extern "C" fn DecL_ReadCapture() -> u32 {
     0
+}
+pub unsafe extern "C" fn DecL_GetInterruptSourceMasked() -> u32 {
+    0
+}
+pub unsafe extern "C" fn DecL_ReadCounter() -> u32 {
+    Encoder_count.get().clone()
 } // Must return the expected type
+
 pub unsafe extern "C" fn Pulser_tmr_ClearInterrupt(_mask: u32) {}
 pub unsafe extern "C" fn ISR_Pulser_StartEx(_handler: Option<extern "C" fn()>) {}
 pub unsafe extern "C" fn Pulser_InterruptHandler() {}
@@ -35,8 +47,18 @@ pub unsafe extern "C" fn Pulser_tmr_Start() {}
 pub unsafe extern "C" fn DIR_Write(_value: u32) {}
 
 // Serial functions (from src/serial.rs errors)
+// pub unsafe extern "C" fn UART_UartPutString(s: *const c_char) {
+//     std::print!("{}", core::ffi::CStr::from_ptr(s).to_str().unwrap());
+// }
+
 pub unsafe extern "C" fn UART_UartPutString(s: *const c_char) {
-    print!("{}", core::ffi::CStr::from_ptr(s).to_str().unwrap());
+    // We use the 'unsafe' block because of Rust 2024 rules
+    // and 'std::print' because we are on the host.
+    unsafe {
+        if let Ok(string) = CStr::from_ptr(s).to_str() {
+            std::print!("{}", string);
+        }
+    }
 }
 
 pub unsafe extern "C" fn UART_Start() {}

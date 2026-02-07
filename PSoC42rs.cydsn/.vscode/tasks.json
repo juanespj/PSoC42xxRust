@@ -1,0 +1,137 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "Build PSoC Project",
+			"type": "process",
+			"command": "C:\\Program Files (x86)\\Cypress\\PSoC Creator\\4.4\\PSoC Creator\\bin\\cyprjmgr.exe",
+			"args": [
+				"-wrk",
+				"J:/Projects/PSoC-Rust/PSoC5Embassy.cydsn/PSoC-Rust.cywrk",
+				"-prj",
+				"PSoC4Embassy",
+				"-build"
+			],
+			"group": {
+				"kind": "build",
+				// "isDefault": true
+			},
+			"presentation": {
+				"echo": true,
+				"reveal": "always",
+				"focus": false,
+				"panel": "shared"
+			},
+			"problemMatcher": [
+				"$gcc"
+			]
+		},
+		{
+			"label": "CMakeBuild PSoC Project",
+			"type": "process",
+			"command": "cmakebuild.bat",
+			
+			"group": {
+				"kind": "build",
+				"isDefault": true
+			},
+			"presentation": {
+				"echo": true,
+				"reveal": "always",
+				"focus": false,
+				"panel": "shared"
+			},
+			"problemMatcher": [
+				"$gcc"
+			]
+		},
+		{
+			"label": "OpenOCD flash",
+			"type": "process",
+			"command": "D:\\Tools\\openocd\\bin\\openocd.exe",
+			"args": [
+				"-s",
+				"../scripts",
+				"-f",
+				"interface/kitprog3.cfg",
+				"-f",
+				"target/infineon/psoc4.cfg",
+				"-c",
+		"kitprog3 power_config on 3300",  
+			"-c",
+			"init",
+			
+				"-c",
+				"program ${workspaceFolder}\\CortexM0\\ARM_GCC_541\\Debug\\EncoderTest.elf verify reset 0x00000000",
+				"-c",
+		"shutdown"
+			],
+			"group": {
+				"kind": "build"
+			},
+			"presentation": {
+				"echo": true,
+				"reveal": "always",
+				"focus": false,
+				"panel": "shared"
+			},
+	
+		},
+		// -s ../scripts -f interface/kitprog3.cfg -f target/psoc4.cfg.
+		{
+			"label": "Program PSoC (PowerShell)",
+			"type": "shell",
+			"command": "powershell.exe",
+			"args": [
+				// 1. Path to your PowerShell script
+				"${workspaceFolder}\\.vscode\\psocflash.ps1",
+				// 2. Pass the absolute path of the HEX file as a script parameter
+				// Change 'firmware' and 'project.hex' to match your structure
+				"-HexFilePath",
+				"${workspaceFolder}\\CortexM0\\ARM_GCC_541\\Debug\\EncoderTest.hex"
+			],
+			"options": {
+				"cwd": "${workspaceFolder}"
+			},
+			"group": {
+				"kind": "build",
+			},
+			"presentation": {
+				"reveal": "always",
+				"panel": "new"
+			},
+			"problemMatcher": []
+		},
+		{
+			"label": "Program PSoCProgrammer",
+			"type": "process",
+			"command": "C:\\Program Files (x86)\\Cypress\\Programmer\\PSoCProgrammer.exe",
+			"args": [
+				"-P",
+				"CY8C4245AXI-483", // Replace with your device name
+				"-F",
+				"${workspaceFolder}\\CortexM0p\\ARM_GCC_541\\Debug\\Stepper.elf", // Path to your .hex file
+				"-T",
+				"USB", // Transport type (USB, MiniProg, etc.)
+				"-E",
+				"ERASE", // Optional: Erase before programming
+				"-S",
+				"AUTO" // Optional: Select first found device
+			],
+			"group": {
+				"kind": "build"
+			},
+			"presentation": {
+				"echo": true,
+				"reveal": "always",
+				"focus": false,
+				"panel": "shared"
+			},
+			"problemMatcher": []
+		}
+	]
+}
+// "C:\Program Files (x86)\Cypress\Programmer\ppcli.exe"
+// OpenPort MiniProg4/0C07062303210400 "C:/Program Files (x86)/Cypress/Programmer/
+// HEX_ReadFile "C:/730-0006-00/trunk/assets/bootloader.hex"
+// Acquire

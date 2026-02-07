@@ -1,22 +1,31 @@
+@echo off
+setlocal enabledelayedexpansion
 
-@set GNUPATH=C:\Program Files (x86)\Cypress\PSoC Creator\4.4\PSoC Creator\import\gnu\arm\5.4.1
+@REM Set paths (optional - can also set as system environment variables)
+set "PSOC_GNU_PATH=C:\Program Files (x86)\Cypress\PSoC Creator\4.4\PSoC Creator\import\gnu\arm\5.4.1"
+set "LIBCLANG_PATH=C:\Program Files\LLVM\bin"
 
-@REM *** MODIFIED: Cleaned up Clang flags to only include the Clang target triple and includes ***
-@bindgen bindgen_wrappers.h --ctypes-prefix "cty" --use-core -o rust_project/src/bindings.rs -- --target=arm -mfloat-abi=soft -mcpu=cortex-m0 -mthumb -Icodegentemp -IGenerated_Source/PSoC4 -I"%GNUPATH%\arm-none-eabi\include" 
+@REM Build the firmware project from workspace root
+echo Building rust_project from workspace...
+cargo build -p rust_project --target thumbv6m-none-eabi --release --verbose
 
-@if %errorlevel% neq 0 (
-    @echo Error: bindgen failed with errorlevel: %errorlevel%
-    @exit /b %errorlevel%
+if %errorlevel% neq 0 (
+    echo.
+    echo ============================================
+    echo Error: Build failed with errorlevel: %errorlevel%
+    echo ============================================
+    exit /b %errorlevel%
 )
-@pushd rust_project
-@REM This line is essential to compile the resulting bindings.rs file correctly.
-@cargo build --target thumbv6m-none-eabi --release --verbose
-@if %errorlevel% neq 0 (
-    @echo Error: bindgen failed with errorlevel: %errorlevel%
-    @exit /b %errorlevel%
-)
-cd /d "%~dp0"
 
-@REM to create rust api for C
+echo.
+echo ============================================
+echo Build completed successfully!
+echo ============================================
+echo Output: target\thumbv6m-none-eabi\release\rust_project.elf
+echo.
+
+@REM Optional: Generate C API header
+@REM echo Generating C API header...
 @REM cbindgen --crate rust_project --output rust_api.h
-@popd
+
+endlocal

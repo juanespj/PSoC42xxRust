@@ -1,6 +1,5 @@
 use crate::*;
 use bitfield_struct::bitfield;
-use ffi::*;
 
 // register data from LED.h not captured by bindgen
 // const LED_PS_ADDR: *const u32 = 0x40040104 as *const u32; // example address
@@ -12,17 +11,30 @@ use ffi::*;
 // }
 
 // static mut LAST_TOGGLE: u32 = 0;
-static mut TOGGLE_CNT: u16 = 0;
 
-const BLINK_PERIOD: u16 = 4_8000; //2_400_000 //max
-
-pub fn led_task() {
-    // duration in ticks between blinks
-    unsafe {
-        TOGGLE_CNT += 1;
-        if TOGGLE_CNT >= BLINK_PERIOD {
-            TOGGLE_CNT = 0;
-            LED_Write(!LED_Read());
+const BLINK_PERIOD: u32 = 48_000; //2_400_000 //max
+pub struct LED_CTRL {
+    counter: u32, // button compact state
+}
+impl LED_CTRL {
+    pub fn new() -> Self {
+        LED_CTRL { counter: 0 }
+    }
+    #[inline(always)]
+    fn write(&self, value: u8) {
+        unsafe { LED_Write(value) }
+    }
+    #[inline(always)]
+    fn read(&self) -> u8 {
+        unsafe { LED_Read() }
+    }
+    #[inline(always)]
+    pub fn led_task(&mut self) {
+        // duration in ticks between blinks
+        self.counter += 1;
+        if self.counter >= BLINK_PERIOD {
+            self.counter = 0;
+            self.write(!self.read());
         }
     }
 }

@@ -1,0 +1,33 @@
+IDE compiled ELF(Correct)
+744	0	66	.\CortexM0\ARM_GCC_541\Debug\PSoC4Embassy.a(CyLib.o)
+512	32	4	.\CortexM0\ARM_GCC_541\Debug\PSoC4Embassy.a(CyLFClk.o)
+284	0	0	.\CortexM0\ARM_GCC_541\Debug\Cm0Start.o
+156	0	1400	.\CortexM0\ARM_GCC_541\Debug\cyfitter_cfg.o
+108	0	0	.\CortexM0\ARM_GCC_541\Debug\PSoC4Embassy.a(LED.o)
+100	28	0	c:/program files (x86)/cypress/psoc creator/4.4/psoc creator/import/gnu/arm/5.4.1/bin/../lib/gcc/arm-none-eabi/5.4.1/armv6-m/crtbegin.o
+76	0	0	c:/program files (x86)/cypress/psoc creator/4.4/psoc creator/import/gnu/arm/5.4.1/bin/../lib/gcc/arm-none-eabi/5.4.1/../../../../arm-none-eabi/lib/armv6-m\libg_nano.a(lib_a-init.o)
+40	0	0	.\CortexM0\ARM_GCC_541\Debug\main.o
+36	0	0	.\CortexM0\ARM_GCC_541\Debug\PSoC4Embassy.a(CyBootAsmGnu.o)
+18	0	0	c:/program files (x86)/cypress/psoc creator/4.4/psoc creator/import/gnu/arm/5.4.1/bin/../lib/gcc/arm-none-eabi/5.4.1/../../../../arm-none-eabi/lib/armv6-m\libg_nano.a(lib_a-memcpy-stub.o)
+16	0	0	c:/program files (x86)/cypress/psoc creator/4.4/psoc creator/import/gnu/arm/5.4.1/bin/../lib/gcc/arm-none-eabi/5.4.1/../../../../arm-none-eabi/lib/armv6-m\libg_nano.a(lib_a-memset.o)
+12	0	0	c:/program files (x86)/cypress/psoc creator/4.4/psoc creator/import/gnu/arm/5.4.1/bin/../lib/gcc/arm-none-eabi/5.4.1/../../../../arm-none-eabi/lib/armv6-m\libg_nano.a(lib_a-errno.o)
+8	0	0	c:/program files (x86)/cypress/psoc creator/4.4/psoc creator/import/gnu/arm/5.4.1/bin/../lib/gcc/arm-none-eabi/5.4.1/armv6-m/crtn.o
+4	0	0	c:/program files (x86)/cypress/psoc creator/4.4/psoc creator/import/gnu/arm/5.4.1/bin/../lib/gcc/arm-none-eabi/5.4.1/armv6-m/crti.o
+0	0	102	c:/program files (x86)/cypress/psoc creator/4.4/psoc creator/import/gnu/arm/5.4.1/bin/../lib/gcc/arm-none-eabi/5.4.1/../../../../arm-none-eabi/lib/armv6-m\libg_nano.a(lib_a-impure.o)
+
+Cmake Compiled Elf(Incorrect)
+TEXT	text	BSS	data	Module
+100	28	0	c:/progra~2/cypress/psoccr~1/4.4/psoccr~1/import/gnu/arm/54b9b9~1.1/bin/../lib/gcc/arm-none-eabi/5.4.1/armv6-m/crtbegin.o
+86	0	0	libPSOC4_STARTUP_LIB.a(Cm0Start.c.obj)
+76	0	0	c:/progra~2/cypress/psoccr~1/4.4/psoccr~1/import/gnu/arm/54b9b9~1.1/bin/../lib/gcc/arm-none-eabi/5.4.1/../../../../arm-none-eabi/lib/armv6-m\libc_nano.a(lib_a-init.o)
+44	0	66	libPSOC4_GEN_LIB.a(CyLib.c.obj)
+36	0	0	libPSOC4_STARTUP_LIB.a(CyBootAsmGnu.s.obj)
+18	0	0	c:/progra~2/cypress/psoccr~1/4.4/psoccr~1/import/gnu/arm/54b9b9~1.1/bin/../lib/gcc/arm-none-eabi/5.4.1/../../../../arm-none-eabi/lib/armv6-m\libc_nano.a(lib_a-memcpy-stub.o)
+16	0	0	c:/progra~2/cypress/psoccr~1/4.4/psoccr~1/import/gnu/arm/54b9b9~1.1/bin/../lib/gcc/arm-none-eabi/5.4.1/../../../../arm-none-eabi/lib/armv6-m\libc_nano.a(lib_a-memset.o)
+12	0	0	c:/progra~2/cypress/psoccr~1/4.4/psoccr~1/import/gnu/arm/54b9b9~1.1/bin/../lib/gcc/arm-none-eabi/5.4.1/../../../../arm-none-eabi/lib/armv6-m\libc_nano.a(lib_a-errno.o)
+8	0	0	c:/progra~2/cypress/psoccr~1/4.4/psoccr~1/import/gnu/arm/54b9b9~1.1/bin/../lib/gcc/arm-none-eabi/5.4.1/armv6-m/crtn.o
+4	0	0	c:/progra~2/cypress/psoccr~1/4.4/psoccr~1/import/gnu/arm/54b9b9~1.1/bin/../lib/gcc/arm-none-eabi/5.4.1/armv6-m/crti.o
+0	0	1398	libPSOC4_STARTUP_LIB.a(cyfitter_cfg.c.obj)
+0	0	102	c:/progra~2/cypress/psoccr~1/4.4/psoccr~1/import/gnu/arm/54b9b9~1.1/bin/../lib/gcc/arm-none-eabi/5.4.1/../../../../arm-none-eabi/lib/armv6-m\libc_nano.a(lib_a-impure.o)
+0	32	4	libPSOC4_GEN_LIB.a(CyLFClk.c.obj)
+

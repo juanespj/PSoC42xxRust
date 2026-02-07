@@ -1,52 +1,57 @@
 #![allow(non_upper_case_globals)]
 #![allow(non_camel_case_types)]
 #![allow(non_snake_case)]
-#![cfg_attr(target_arch = "arm", no_std)]
-#![cfg_attr(not(target_arch = "arm"), allow(unused_variables))]
-
+#![no_std]
+// #![cfg_attr(not(target_arch = "arm"), allow(unused_variables))]
+//pub
 pub mod ffi;
-mod motor;
-mod serial;
-mod sys;
-mod ui;
-use ffi::*;
+use crate::ffi::*;
+pub mod Config;
+pub mod encoder;
+pub mod motor;
+pub mod serial;
+pub mod sys;
+pub mod ui;
+pub mod utils;
+// use cortex_m_rt::entry;
 
+use crate::encoder::*;
 use crate::motor::*;
+use crate::Config::*;
+// use core::sync::atomic::AtomicU8;
 use local_static::LocalStatic;
 use serial::*;
 use sys::*;
 use ui::*;
-
 static SYS: LocalStatic<System_T> = LocalStatic::new();
 static Xaxis: LocalStatic<Stepper<XEncoder>> = LocalStatic::new();
-static Yaxis: LocalStatic<Stepper<YEncoder>> = LocalStatic::new();
-static Zaxis: LocalStatic<Stepper<ZEncoder>> = LocalStatic::new();
 
+// static MS_TICK: LocalStatic<u32> = LocalStatic::new();
 // ... SysTick() and systick_handler ...
-#[no_mangle]
-pub extern "C" fn tick_callback() {
-    // *MS_TICK.get_mut() = MS_TICK.get().wrapping_add(1);
-}
-#[cfg(target_arch = "arm")]
+#[unsafe(no_mangle)]
+pub extern "C" fn tick_callback() {}
+
+#[cfg(not(feature = "std"))]
 #[panic_handler]
-fn panic(_info: &core::panic::PanicInfo) -> ! {
+fn panic(info: &core::panic::PanicInfo) -> ! {
     // Optionally log the panic location to a simple UART print if you have one,
     // otherwise, just halt.
     // Halt the CPU forever
-    unsafe {
-        UART_UartPutString("\n\rPanic!".as_ptr());
-    }
-
+    uart_printf(format_args!("Panic!->"));
+    uart_printf(format_args!(
+        "line {} file{}\n\r",
+        info.location().unwrap().line(),
+        info.location().unwrap().file()
+    ));
     loop {
         cortex_m::asm::bkpt(); // Use a breakpoint instruction to halt
     }
 }
-#[cfg(target_arch = "arm")]
-#[no_mangle]
+
+#[unsafe(no_mangle)]
 pub extern "C" fn main() -> () {
     *SYS.get_mut() = System_T::new();
-    // *Yaxis.get_mut() = Stepper::new(Box::new(RightEncoder));
-    // *Zaxis.get_mut() = Stepper::new(Box::new(LeftEncoder));
+    let mut led = LED_CTRL::new();
     *Xaxis.get_mut() = Stepper::new(XEncoder, 0);
     UI_init();
 
@@ -68,24 +73,46 @@ pub extern "C" fn main() -> () {
 
     let gpio_pin = || unsafe { BTN_Read() == 0 }; //change polarity if needed
     let mut btn = DebouncedButton::new(gpio_pin);
-    // UART_SetCustomInterruptHandler(Some(UARTRX));
-    uart_put_str("Initialized PSoCcmake.");
 
+    uart_put_str("Initialized PSoCcmake.");
+    let mut print_cnt: u32 = 0;
     let mut last_upd: u32 = 0;
-    let mut old_count: i16 = 0;
+    let mut enc_last_upd: u32 = 0;
+    let mut enc_last_dt: u32 = 0;
+
+    let mut old_count: i16 = -1;
     let mut spd_ref: u16;
 
     loop {
         let now = unsafe { CySysTickGetValue() };
         // duration in ticks between blinks
-        if last_upd.wrapping_sub(now) >= 50 {
-            last_upd = now;
-            led_task();
-            //  btn.update();
+        if last_upd.wrapping_sub(now) >= 10 {
+            led.led_task();
+            btn.update();
             SYS.get_mut().sys_task();
+            last_upd = now;
         }
-        //wfi or sleep?
+        Xaxis.get_mut().encoder.read_counter();
 
+        // if enc_last_dt != enc_last_upd.wrapping_sub(now) {
+        enc_last_dt = enc_last_upd.wrapping_sub(now);
+        // uart_printf(format_args!("dt: {}\n\r", enc_last_dt));
+        // }
+        Xaxis.get_mut().encoder.update(enc_last_dt);
+        enc_last_upd = now;
+        print_cnt += 1;
+        if print_cnt > 150 {
+            print_cnt = 0;
+            if Xaxis.get().state != MotorState::IDLE {
+                uart_printf(format_args!(
+                    "\n\r{},{}",
+                    Xaxis.get().encoder.alpha,
+                    // Xaxis.get().encoder.prev_enc_counts,
+                    Xaxis.get().encoder.omega // Xaxis.get().encoder.prev_enc_counts
+                ));
+            } else {
+            }
+        }
         unsafe {
             let mut count = ADC_SAR_Seq_GetResult16(0);
             if count <= 0 {
@@ -94,21 +121,25 @@ pub extern "C" fn main() -> () {
             if (count - old_count).saturating_abs() > 10 {
                 spd_ref = ADC_SAR_Seq_CountsTo_mVolts(0, count).saturating_abs() as u16;
                 // spd_ref = count as u32;
-                Xaxis.get_mut().set_speed(spd_ref as u32);
+                Xaxis.get_mut().set_speed(spd_ref as u32 * 4);
                 uart_printf(format_args!("SPD:{}\n\r", spd_ref));
 
                 old_count = count;
             }
         }
+        // print_cnt += 1;
+        // if print_cnt > 5000 {
+        //     print_cnt = 0;
+        // }
+        // enc_last_upd += 1;
 
-        // enc.read_counter();
         // uart_printf(format_args!("Encoder: {}\n\r", enc.curr));
 
         if btn.is_pressed() {
-            uart_printf(format_args!("Button Pressed!\n\r"));
+            uart_printf(format_args!("Pressed!\n\r"));
         }
         if btn.is_held() {
-            uart_printf(format_args!("Button Held!\n\r"));
+            uart_printf(format_args!("Held!\n\r"));
         }
     }
 }

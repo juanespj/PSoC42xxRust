@@ -25,7 +25,12 @@ pub fn uart_printf(args: core::fmt::Arguments<'_>) {
     let mut writer = UartWriter;
     writer.write_fmt(args).unwrap();
 }
-
+enum DebugPrint {
+    None,
+    X_Motor,
+    X_SPD,
+    DEBUG,
+}
 enum TermCmd {
     ClearScreen,
     // ClearLine,
@@ -34,9 +39,9 @@ enum TermCmd {
 
 fn term(cmd: TermCmd) {
     match cmd {
-        TermCmd::ClearScreen => uart_write(b"\x1B[2J\x1B[H"),
+        TermCmd::ClearScreen => uart_printf(format_args!("\x1B[2J\x1B[H")),
         // TermCmd::ClearLine => uart_write(b"\x1B[K"),
-        TermCmd::Home => uart_write(b"\x1B[H"),
+        TermCmd::Home => uart_printf(format_args!("\x1B[H")),
     }
 }
 
@@ -76,42 +81,18 @@ pub fn UI_init() {
         UART_SetCustomInterruptHandler(Some(RSUARTRX));
         UART_SpiUartClearRxBuffer();
     }
-    // term(TermCmd::ClearScreen);
-    //  term(TermCmd::Home);
+    term(TermCmd::ClearScreen);
+    term(TermCmd::Home);
     uart_put_str("\n\r-PSOC RS\r\n");
 }
-#[no_mangle]
+#[unsafe(no_mangle)]
 extern "C" fn RSUARTRX() {
     // RX_WAKER.signal(());
     unsafe {
         let ch: u32 = UART_UartGetChar();
-
-        //   UART_SpiUartWriteTxData(ch);
-        // data available
-        //  let ch_u8 = ch as u8;
-        //   let buffer = [ch_u8, 0]; // null-terminated
-        //   UART_UartPutString(buffer.as_ptr() as *const c_char);
-        //   serialEvent(ch); // verify the character that was read by the UART
         serial_event(ch);
         ClearInterrutpt_RX();
     }
-}
-fn uart_write(bytes: &[u8]) {
-    // null-terminate automatically
-    let mut buf = [0u8; 20];
-    let n = bytes.len().min(buf.len() - 1);
-    buf[..n].copy_from_slice(bytes);
-    buf[n] = 0;
-
-    unsafe { UART_UartPutString(buf.as_ptr() as *const core::ffi::c_char) }
-}
-
-fn uart_put_hex_byte(b: u8) {
-    const HEX: &[u8; 16] = b"0123456789ABCDEF";
-    let hi = HEX[(b >> 4) as usize];
-    let lo = HEX[(b & 0xF) as usize];
-    let buf = [b'0', b'x', hi, lo, b'\n', b'\r', 0];
-    unsafe { UART_UartPutString(buf.as_ptr() as *const c_char) }
 }
 
 pub fn uart_put_bytes(bytes: &[u8]) {
@@ -135,39 +116,48 @@ fn serial_event(in32: u32) {
     // unsafe { UART_UartPutString(one.as_ptr() as *const c_char) }
 
     match ch {
-        b'p' => {
-            uart_put_str("\n\r-Print\n\r");
-            // toggle section
-            // memset(input_arr,0,sizeof)
-            // INPUT_ARR.lock(|arr| arr.fill(0)); // example
+        b'd' | b'D' => {
+            let dir = if Xaxis.get_mut().dir == MotorDirection::BWD {
+                uart_printf(format_args!("\n\rchange dir: FWD "));
+                MotorDirection::FWD
+            } else {
+                uart_printf(format_args!("\n\rchange dir: BWD "));
+
+                MotorDirection::BWD
+            };
+            Xaxis.get_mut().set_direction(dir);
         }
 
-        b'r' => {
-            // r
-            SYS.get_mut().next_state = System_State::START_MOVE;
-        }
-        b'k' => {
+        b'k' | b'K' => {
             // k
             SYS.get_mut().next_state = System_State::KILL;
         }
+        b'p' => {
+            SYS.get_mut().print_dbg = !SYS.get().print_dbg;
+        }
 
+        b'r' | b'R' => {
+            // r
+            SYS.get_mut().next_state = System_State::START_MOVE;
+        }
+        b's' | b'S' => {
+            // r
+            SYS.get_mut().next_state = System_State::START_SPD;
+        }
+        b't' | b'T' => {
+            // r
+            SYS.get_mut().next_state = System_State::STOPPING;
+        }
+        0 => { //null char, do nothing
+        }
         other => {
-            let tmp = [other, 0];
-            unsafe {
-                uart_put_str("\n\rDBG: read byte: ");
-                uart_put_hex_byte(ch);
-                UART_SpiUartWriteTxData(in32);
-                UART_UartPutString(tmp.as_ptr() as *const c_char)
-            }
+            // {} calls the Display trait on the iterator, which prints the actual chars.
+
+            uart_printf(format_args!(
+                "\n\rDBG: {} [{}]",
+                other,
+                (other as u8).escape_ascii()
+            ));
         }
     }
 }
-
-// #[embassy_executor::task]
-// pub async fn uart_tx_task(mut tx: UarteTx<'static, embassy_nrf::peripherals::UARTE0>) {
-//     info!("UART TX TASK Running!");
-//     loop {
-//         let msg = CHANPRINT.receive().await;
-//         unwrap!(tx.write(msg.as_bytes()).await);
-//     }
-// }

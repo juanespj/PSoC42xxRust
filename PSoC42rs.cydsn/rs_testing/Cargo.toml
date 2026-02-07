@@ -1,0 +1,18 @@
+[package]
+name = "rs_testing"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+# Ensure the key name (left side) matches what you want to call in your code
+
+fixed = { version = "1.29" }
+bitfield-struct = "0.11"
+local_static = "0.1.1"
+static_cell = "2.1.1"
+cty = "0.2"
+
+heapless = "0.9.1"
+gnuplot = "0.0.46"
+rand = "0.9.2"
+rust_core = { workspace = true } # std enabled automatically

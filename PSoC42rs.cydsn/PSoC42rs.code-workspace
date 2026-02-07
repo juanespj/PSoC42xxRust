@@ -1,0 +1,31 @@
+{
+	 "folders": [
+        {
+            "path": ".",
+            "name": "PSoCProject"
+        },
+        {
+            "path": "rust_project",
+            "name": "rust_project (ARM)"
+        },
+        {
+            "path": "rs_testing",
+            "name": "rs_testing (Windows)"
+        },
+        {
+            "path": "rust_core",
+            "name": "rust_core (Common)"
+        }
+    ],
+    "settings": {
+        "rust-analyzer.linkedProjects": [
+        "Cargo.toml"
+        ],
+
+		"files.associations": {
+			"new": "cpp",
+			"system_error": "c",
+			"type_traits": "c"
+		}
+	}
+}

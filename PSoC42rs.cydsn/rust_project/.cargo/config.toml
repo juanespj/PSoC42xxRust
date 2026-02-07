@@ -2,11 +2,6 @@
 target = "thumbv6m-none-eabi"
 target-dir = "build"
 
-# For testing on Windows host
-# target = "x86_64-pc-windows-msvc"
-# target-dir = "test_build"
-
-
 [target.thumbv6m-none-eabi]
 runner = "arm-none-eabi-gdb"  # Or your preferred debugger
 rustflags = [
@@ -20,8 +15,3 @@ rustflags = [
 [unstable]
 build-std = ["core"]
 build-std-features = ["panic_immediate_abort"]
-
-# [test]
-# target = "thumbv6m-none-eabi"
-# target-dir = "build"
-# test-host = "test --target x86_64-pc-windows-msvc"

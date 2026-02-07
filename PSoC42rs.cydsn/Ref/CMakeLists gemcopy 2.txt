@@ -1,0 +1,157 @@
+# Set the minimum version of CMake required
+cmake_minimum_required(VERSION 3.10)
+
+
+
+# Define the project name (DESIGN is used as the project name)
+# This name will be used for the executable target.
+project(PSoc4Rust C ASM)
+
+# Define variables corresponding to Makefile OUT_DIR and CONFIG
+set(OUT_DIR "output" CACHE STRING "Output directory for build artifacts.")
+set(CONFIG "debug" CACHE STRING "Build configuration (e.g., debug/release).")
+
+# --- IMPORTANT: Toolchain Configuration ---
+# In a real CMake setup for embedded, you must use a toolchain file.
+# The compiler flags (CFLAGS_CortexM0, LDFLAGS_CortexM0, etc.)
+# and tool paths (LD, AR, CC) would be set in that file.
+
+# Map Makefile variables to CMake variables
+set(GEN_SOURCE_DIR "Generated_Source/PSoC4")
+set(TARGET_NAME "RustPSOC4") # Using DESIGN for the target name
+set(MCU_CORE "CortexM0") # Used for naming conventions
+
+# --- 2.1. Read Source Files (Mapping app_source.mk, gen_source.mk) ---
+# NOTE: In a complete conversion, you would run a script to parse
+# these .mk files and generate CMake lists. For this example, we define
+# dummy lists based on the Makefile structure:
+
+# Application Sources (APP_C_SOURCE_CortexM0)
+# (List all your main application C files here)
+set(APP_SOURCES
+    main.c
+    bindgen_wrappers.c
+    # ... add all other app C files here ...
+)
+
+# Generated Sources (GEN_C_SOURCE_CortexM0, GEN_SEP_C_SOURCE_CortexM0, GEN_ASM_SOURCE_CortexM0)
+# Use file(GLOB) to find files dynamically in the generated directory.
+file(GLOB GEN_C_SOURCES
+    "${GEN_SOURCE_DIR}/*.c"
+)
+file(GLOB GEN_ASM_SOURCES
+    # "${GEN_SOURCE_DIR}/*.s"
+        "${GEN_SOURCE_DIR}/CyBootAsmGNu.s" 
+)
+# 2. Exclude the files known to be incompatible with the GNU toolchain (arm-none-eabi-as).
+# list(REMOVE_ITEM GEN_ASM_SOURCES 
+#     "${GEN_SOURCE_DIR}/CyBootAsmRv.s" 
+#     "${GEN_SOURCE_DIR}/CyBootAsmIar.s"
+# )
+
+# Assuming GEN_SEP_C_SOURCE is just a subset of GEN_C_SOURCES, but kept separate for linking.
+# We'll treat them as one for compilation, then link appropriately.
+
+# Combine all source files for the executable target
+list(APPEND TARGET_SOURCES ${APP_SOURCES} ${GEN_C_SOURCES} ${GEN_ASM_SOURCES})
+# Define the main executable target (this maps to $(DESIGN).elf)
+add_executable(${TARGET_NAME}
+    ${APP_SOURCES}
+    # We include all generated sources in the static library, but if there
+    # were truly separate object lists (GEN_SEP_OBJECTS_CortexM0), you would
+    # add their corresponding source files here.
+)
+
+
+# --- 2.2. Include Directories ---
+# Add directories needed for header files
+target_include_directories(${TARGET_NAME} PUBLIC
+    . # Project root
+    ${GEN_SOURCE_DIR}
+    # Add other necessary include paths here
+)
+# Define a static library target for generated sources
+add_library(${TARGET_NAME}_gen_lib STATIC
+    ${GEN_C_SOURCES}
+    ${GEN_ASM_SOURCES}
+)
+# And if you defined a separate library for generated sources:
+target_include_directories(${TARGET_NAME}_gen_lib PRIVATE
+    .
+    ${GEN_SOURCE_DIR}
+)
+# This assumes the Gen sources are compiled with the same flags as the app.
+# If they need special flags, use target_compile_options() here.
+
+
+
+# Link the static library into the executable
+target_link_libraries(${TARGET_NAME} PRIVATE
+    ${TARGET_NAME}_gen_lib
+    ${PROJECT_SOURCE_DIR}/Export/ARM_GCC_Generic/CyComponentLibrary.a
+    # Map GEN_LIBS_CortexM0 and APP_LIBS_CortexM0 here:
+    # Example:
+    # cy_boot
+    # m
+)
+
+
+
+# --------------------------------------------------------------------------
+# 1. Compiler Options (C and ASM Flags)
+# --------------------------------------------------------------------------
+target_compile_options(${TARGET_NAME} PRIVATE
+    # Architecture and standard C flags
+    -g 
+    -ffunction-sections 
+    -O0 
+    -ffat-lto-objects
+
+    # Any other CFLAGS_CortexM0 that are pure compiler options
+    # e.g., -Wall -Wextra
+)
+# --------------------------------------------------------------------------
+# 2. Link Directories (-L flags)
+# --------------------------------------------------------------------------
+# Use target_link_directories to add the paths where the linker can find libraries.
+target_link_directories(${TARGET_NAME} PRIVATE
+    Generated_Source/PSoC4
+    ./rust_project/build/thumbv6m-none-eabi/release
+)
+# --------------------------------------------------------------------------
+# 3. Linker Options (-T, -Wl,-Map, -specs)
+# --------------------------------------------------------------------------
+target_link_options(${TARGET_NAME} PRIVATE
+    # Linker script
+    "-TGenerated_Source/PSoC4/cm0gcc.ld"
+)
+
+# --------------------------------------------------------------------------
+# 4. Libraries (-l flags)
+# --------------------------------------------------------------------------
+# The -l rust_project flag should be an argument to target_link_libraries
+target_link_libraries(${TARGET_NAME} PRIVATE
+    ${TARGET_NAME}_gen_lib
+    ${PROJECT_SOURCE_DIR}/Export/ARM_GCC_Generic/CyComponentLibrary.a
+    
+    # Map -l rust_project here:
+    rust_project 
+
+    # Map GEN_LIBS_CortexM0 and APP_LIBS_CortexM0 here (e.g., cy_boot, m)
+    # cy_boot
+    # m
+)
+# --- Set Output Directories ---
+# This ensures the output goes to the correct directory (OUT_DIR)
+set_target_properties(${TARGET_NAME} PROPERTIES
+    RUNTIME_OUTPUT_DIRECTORY "${OUT_DIR}/${MCU_CORE}"
+    LIBRARY_OUTPUT_DIRECTORY "${OUT_DIR}/${MCU_CORE}"
+    ARCHIVE_OUTPUT_DIRECTORY "${OUT_DIR}/${MCU_CORE}"
+)
+
+# --- Mapping clean target ---
+add_custom_target(clean_all
+    COMMAND ${CMAKE_COMMAND} -E remove_directory ${OUT_DIR}
+    # Tell CMake this target should not be built by default
+    ALL
+)

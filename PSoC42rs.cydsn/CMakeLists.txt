@@ -25,14 +25,10 @@ set(PSOC_GENERATED_C_SRC
     ${GEN_SOURCE_DIR}/BTN_PM.c
     ${GEN_SOURCE_DIR}/LED.c
     ${GEN_SOURCE_DIR}/LED_PM.c
-    ${GEN_SOURCE_DIR}/XchA.c
-    ${GEN_SOURCE_DIR}/XchA_PM.c
     ${GEN_SOURCE_DIR}/StepReg.c
     ${GEN_SOURCE_DIR}/StepReg_PM.c
-    ${GEN_SOURCE_DIR}/DirReg.c
-    ${GEN_SOURCE_DIR}/DirReg_PM.c
-    ${GEN_SOURCE_DIR}/XchB.c
-    ${GEN_SOURCE_DIR}/XchB_PM.c
+    ${GEN_SOURCE_DIR}/DIR.c
+    ${GEN_SOURCE_DIR}/DIR_PM.c
     ${GEN_SOURCE_DIR}/EN.c
     ${GEN_SOURCE_DIR}/EN_PM.c
     ${GEN_SOURCE_DIR}/clkA.c
@@ -44,8 +40,8 @@ set(PSOC_GENERATED_C_SRC
     ${GEN_SOURCE_DIR}/UART_UART.c
     ${GEN_SOURCE_DIR}/UART_BOOT.c
     ${GEN_SOURCE_DIR}/UART_UART_BOOT.c
-    ${GEN_SOURCE_DIR}/DecX.c
-    ${GEN_SOURCE_DIR}/DecX_PM.c
+    ${GEN_SOURCE_DIR}/DecL.c
+    ${GEN_SOURCE_DIR}/DecL_PM.c
     ${GEN_SOURCE_DIR}/EN_GND.c
     ${GEN_SOURCE_DIR}/EN_GND_PM.c
     ${GEN_SOURCE_DIR}/I2CS.c
@@ -55,13 +51,9 @@ set(PSOC_GENERATED_C_SRC
     ${GEN_SOURCE_DIR}/I2CS_I2C_SLAVE.c
     ${GEN_SOURCE_DIR}/I2CS_PM.c
     ${GEN_SOURCE_DIR}/I2CS_BOOT.c
-    ${GEN_SOURCE_DIR}/ISR_QDecL.c
+    ${GEN_SOURCE_DIR}/ISR_DecL.c
     ${GEN_SOURCE_DIR}/Pulser_tmr.c
     ${GEN_SOURCE_DIR}/Pulser_tmr_PM.c
-    ${GEN_SOURCE_DIR}/stepY.c
-    ${GEN_SOURCE_DIR}/stepY_PM.c
-    ${GEN_SOURCE_DIR}/stepZ.c
-    ${GEN_SOURCE_DIR}/stepZ_PM.c
     ${GEN_SOURCE_DIR}/IDAC.c
     ${GEN_SOURCE_DIR}/IDAC_PM.c
     ${GEN_SOURCE_DIR}/ADC_SAR_Seq.c
@@ -130,7 +122,7 @@ target_include_directories(PSOC4_GEN_LIB PRIVATE
 )
 
 set(RUST_LIB_PATH 
-    "${PROJECT_SOURCE_DIR}/rust_project/build/thumbv6m-none-eabi/release/librust_project.a"
+    "${PROJECT_SOURCE_DIR}/target/thumbv6m-none-eabi/release/librust_project.a"
 )
 
 # Build all in one project

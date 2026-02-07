@@ -1,17 +1,84 @@
---------------- Rebuild Started: 12/22/2025 15:42:56 Project: PSoC42rs, Configuration: ARM GCC 5.4-2016-q2-update Debug ---------------
-Deleting file ".\CortexM0\ARM_GCC_541\Debug\PSoC42rs.hex"
+--------------- Rebuild Started: 02/07/2026 09:10:52 Project: PSoC42rs, Configuration: ARM GCC 5.4-2016-q2-update Debug ---------------
+Deleting file ".\CortexM0\ARM_GCC_541\Debug\main.o"
+Deleting file ".\CortexM0\ARM_GCC_541\Debug\bindgen_wrappers.o"
+Deleting file ".\CortexM0\ARM_GCC_541\Debug\cyfitter_cfg.o"
+Deleting file ".\CortexM0\ARM_GCC_541\Debug\cymetadata.o"
+Deleting file ".\CortexM0\ARM_GCC_541\Debug\BTN.o"
+Deleting file ".\CortexM0\ARM_GCC_541\Debug\BTN_PM.o"
+Deleting file ".\CortexM0\ARM_GCC_541\Debug\LED.o"
+Deleting file ".\CortexM0\ARM_GCC_541\Debug\LED_PM.o"
+Deleting file ".\CortexM0\ARM_GCC_541\Debug\LchA.o"
+Deleting file ".\CortexM0\ARM_GCC_541\Debug\LchA_PM.o"
+Deleting file ".\CortexM0\ARM_GCC_541\Debug\StepReg.o"
+Deleting file ".\CortexM0\ARM_GCC_541\Debug\StepReg_PM.o"
+Deleting file ".\CortexM0\ARM_GCC_541\Debug\DIR.o"
+Deleting file ".\CortexM0\ARM_GCC_541\Debug\DIR_PM.o"
+Deleting file ".\CortexM0\ARM_GCC_541\Debug\EN.o"
+Deleting file ".\CortexM0\ARM_GCC_541\Debug\EN_PM.o"
+Deleting file ".\CortexM0\ARM_GCC_541\Debug\clkA.o"
+Deleting file ".\CortexM0\ARM_GCC_541\Debug\ISR_Pulser.o"
+Deleting file ".\CortexM0\ARM_GCC_541\Debug\UART.o"
+Deleting file ".\CortexM0\ARM_GCC_541\Debug\UART_SPI_UART.o"
+Deleting file ".\CortexM0\ARM_GCC_541\Debug\UART_SPI_UART_INT.o"
+Deleting file ".\CortexM0\ARM_GCC_541\Debug\UART_PM.o"
+Deleting file ".\CortexM0\ARM_GCC_541\Debug\UART_UART.o"
+Deleting file ".\CortexM0\ARM_GCC_541\Debug\UART_BOOT.o"
+Deleting file ".\CortexM0\ARM_GCC_541\Debug\UART_UART_BOOT.o"
+Deleting file ".\CortexM0\ARM_GCC_541\Debug\DecL.o"
+Deleting file ".\CortexM0\ARM_GCC_541\Debug\DecL_PM.o"
+Deleting file ".\CortexM0\ARM_GCC_541\Debug\EN_GND.o"
+Deleting file ".\CortexM0\ARM_GCC_541\Debug\EN_GND_PM.o"
+Deleting file ".\CortexM0\ARM_GCC_541\Debug\I2CS.o"
+Deleting file ".\CortexM0\ARM_GCC_541\Debug\I2CS_I2C_INT.o"
+Deleting file ".\CortexM0\ARM_GCC_541\Debug\I2CS_I2C.o"
+Deleting file ".\CortexM0\ARM_GCC_541\Debug\I2CS_I2C_BOOT.o"
+Deleting file ".\CortexM0\ARM_GCC_541\Debug\I2CS_I2C_SLAVE.o"
+Deleting file ".\CortexM0\ARM_GCC_541\Debug\I2CS_PM.o"
+Deleting file ".\CortexM0\ARM_GCC_541\Debug\I2CS_BOOT.o"
+Deleting file ".\CortexM0\ARM_GCC_541\Debug\Pulser_tmr.o"
+Deleting file ".\CortexM0\ARM_GCC_541\Debug\Pulser_tmr_PM.o"
+Deleting file ".\CortexM0\ARM_GCC_541\Debug\IDAC.o"
+Deleting file ".\CortexM0\ARM_GCC_541\Debug\IDAC_PM.o"
+Deleting file ".\CortexM0\ARM_GCC_541\Debug\ADC_SAR_Seq.o"
+Deleting file ".\CortexM0\ARM_GCC_541\Debug\ADC_SAR_Seq_PM.o"
+Deleting file ".\CortexM0\ARM_GCC_541\Debug\ADC_SAR_Seq_INT.o"
+Deleting file ".\CortexM0\ARM_GCC_541\Debug\UART_SCBCLK.o"
+Deleting file ".\CortexM0\ARM_GCC_541\Debug\UART_tx.o"
+Deleting file ".\CortexM0\ARM_GCC_541\Debug\UART_tx_PM.o"
+Deleting file ".\CortexM0\ARM_GCC_541\Debug\UART_SCB_IRQ.o"
+Deleting file ".\CortexM0\ARM_GCC_541\Debug\UART_rx.o"
+Deleting file ".\CortexM0\ARM_GCC_541\Debug\UART_rx_PM.o"
+Deleting file ".\CortexM0\ARM_GCC_541\Debug\I2CS_SCBCLK.o"
+Deleting file ".\CortexM0\ARM_GCC_541\Debug\I2CS_sda.o"
+Deleting file ".\CortexM0\ARM_GCC_541\Debug\I2CS_sda_PM.o"
+Deleting file ".\CortexM0\ARM_GCC_541\Debug\I2CS_scl.o"
+Deleting file ".\CortexM0\ARM_GCC_541\Debug\I2CS_scl_PM.o"
+Deleting file ".\CortexM0\ARM_GCC_541\Debug\I2CS_SCB_IRQ.o"
+Deleting file ".\CortexM0\ARM_GCC_541\Debug\ADC_SAR_Seq_IRQ.o"
+Deleting file ".\CortexM0\ARM_GCC_541\Debug\ADC_SAR_Seq_intClock.o"
+Deleting file ".\CortexM0\ARM_GCC_541\Debug\Cm0Start.o"
+Deleting file ".\CortexM0\ARM_GCC_541\Debug\CyFlash.o"
+Deleting file ".\CortexM0\ARM_GCC_541\Debug\CyLib.o"
+Deleting file ".\CortexM0\ARM_GCC_541\Debug\cyPm.o"
+Deleting file ".\CortexM0\ARM_GCC_541\Debug\cyutils.o"
+Deleting file ".\CortexM0\ARM_GCC_541\Debug\CyBootAsmGnu.o"
+Deleting file ".\CortexM0\ARM_GCC_541\Debug\CyLFClk.o"
+Deleting file ".\CortexM0\ARM_GCC_541\Debug\cy_em_eeprom.o"
+Deleting file ".\CortexM0\ARM_GCC_541\Debug\ISR_DecL.o"
+Deleting file ".\CortexM0\ARM_GCC_541\Debug\PSoC42rs.map"
+Deleting file ".\PSoC42rs.cycdx"
+Deleting file ".\PSoC42rs.svd"
 Deleting file ".\PSoC42rs.rpt"
+Deleting file ".\PSoC42rs_timing.html"
+Deleting file ".\CortexM0\ARM_GCC_541\Debug\.deps\SOURCE_C__ARM_GCC_GENERIC.P"
+Deleting file ".\CortexM0\ARM_GCC_541\Debug\.deps\SOURCE_ASM__ARM_GCC_GENERIC.P"
 cydsfit.exe -.appdatapath "C:\Users\jzapn\AppData\Local\Cypress Semiconductor\PSoC Creator\4.4" -.fdsnotice -.fdswarpdepfile=warp_dependencies.txt -.fdselabdepfile=elab_dependencies.txt -.fdsbldfile=generated_files.txt -.fdsreffile=referenced_files.txt -p D:\EE\GitHub\PSoC42xxRust\PSoC42rs.cydsn\PSoC42rs.cyprj -d CY8C4245AXI-483 -s D:\EE\GitHub\PSoC42xxRust\PSoC42rs.cydsn\Generated_Source\PSoC4 -- -yv2 -q10 -ygs -o2 -v3 -.fftcfgtype=LE
 Elaborating Design...
-ADD: fit.M0032: warning: Clock Warning: (clkA's accuracy range '12 MHz +/- 2%, (11.76 MHz - 12.24 MHz)' is not within the specified tolerance range '10 MHz +/- 5%, (9.5 MHz - 10.5 MHz)'.).
- * D:\EE\GitHub\PSoC42xxRust\PSoC42rs.cydsn\PSoC42rs.cydwr (clkA)
- * D:\EE\GitHub\PSoC42xxRust\PSoC42rs.cydsn\TopDesign\TopDesign.cysch (Instance:clkA)
-ADD: sdb.M0061: information: Info from component: ADC_SAR_Seq. The actual sample rate (1736 SPS) differs from the desired sample rate (1953 SPS) due to the clock configuration in the DWR.
+ADD: sdb.M0061: information: Info from component: ADC_SAR_Seq. The actual sample rate (1736 SPS) differs from the desired sample rate (1500 SPS) due to the clock configuration in the DWR.
  * D:\EE\GitHub\PSoC42xxRust\PSoC42rs.cydsn\TopDesign\TopDesign.cysch (Instance:ADC_SAR_Seq)
 HDL Generation...
 Synthesis...
 Tech Mapping...
-ADD: pft.M0040: information: The following 6 pin(s) will be assigned a location by the fitter: dirY(0), dirZ(0), YchA(0), YchB(0), ZchA(0), ZchB(0)
 Analog Placement...
 Analog Routing...
 Analog Code Generation...
@@ -24,8 +91,298 @@ API Generation...
 Dependency Generation...
 Cleanup...
 rustbuild.bat 
-bindgen_wrappers.h:3:10: fatal error: 'device.h' file not found
-Unable to generate bindings: clang diagnosed error: bindgen_wrappers.h:3:10: fatal error: 'device.h' file not found
-Error: bindgen failed with errorlevel: 1
-The command 'rustbuild.bat' failed with exit code '1'.
---------------- Rebuild Failed: 12/22/2025 15:43:04 ---------------
+Building rust_project from workspace...
+       Fresh unicode-ident v1.0.22
+       Fresh glob v0.3.3
+       Fresh semver-parser v0.7.0
+       Fresh memchr v2.8.0
+       Fresh windows-link v0.2.1
+       Fresh regex-syntax v0.8.9
+       Fresh minimal-lexical v0.2.1
+       Fresh either v1.15.0
+       Fresh shlex v1.3.0
+       Fresh nb v1.1.0
+       Fresh critical-section v1.2.0
+       Fresh log v0.4.29
+       Fresh cfg-if v1.0.4
+       Fresh rustc-hash v2.1.1
+       Fresh proc-macro2 v1.0.106
+       Fresh semver v0.9.0
+       Fresh nom v7.1.3
+       Fresh libloading v0.8.9
+       Fresh regex-automata v0.4.14
+       Fresh itertools v0.13.0
+       Fresh bitflags v2.10.0
+       Fresh nb v0.1.3
+       Fresh bytemuck v1.25.0
+       Fresh vcell v0.1.3
+       Fresh az v1.3.0
+       Fresh void v1.0.2
+       Fresh byteorder v1.5.0
+       Fresh stable_deref_trait v1.2.1
+       Fresh quote v1.0.44
+       Fresh libc v0.2.180
+       Fresh rustc_version v0.2.3
+       Fresh cexpr v0.6.0
+       Fresh regex v1.12.3
+       Fresh typenum v1.19.0
+       Fresh hash32 v0.3.1
+       Fresh embedded-hal v0.2.7
+       Fresh volatile-register v0.2.2
+       Fresh portable-atomic v1.13.1
+       Fresh bitfield v0.13.2
+       Fresh cty v0.2.2
+       Fresh local_static v0.1.1
+       Fresh syn v2.0.114
+       Fresh clang-sys v1.8.1
+       Fresh heapless v0.9.2
+       Fresh static_cell v2.1.1
+       Fresh zerocopy-derive v0.8.39
+       Fresh prettyplease v0.2.37
+       Fresh bitfield-struct v0.11.0
+       Fresh zerocopy v0.8.39
+       Fresh bindgen v0.72.1
+       Fresh bare-metal v0.2.5
+       Fresh half v2.7.1
+       Fresh cortex-m v0.7.7
+       Fresh fixed v1.30.0
+       Dirty rust_project v1.0.0 (D:\EE\GitHub\PSoC42xxRust\PSoC42rs.cydsn\rust_project): the file `rust_project\linker_script.ld` is missing
+   Compiling rust_project v1.0.0 (D:\EE\GitHub\PSoC42xxRust\PSoC42rs.cydsn\rust_project)
+       Fresh rust_core v0.1.0 (D:\EE\GitHub\PSoC42xxRust\PSoC42rs.cydsn\rust_core)
+warning: unused imports: `FixedI32`, `consts`, and `types::I32F32`
+ --> rust_core\src\encoder_core.rs:2:13
+  |
+2 | use fixed::{FixedI32, consts, types::I16F16, types::I32F32};
+  |             ^^^^^^^^  ^^^^^^                 ^^^^^^^^^^^^^
+  |
+  = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+warning: unused imports: `FixedI32`, `consts`, and `types::I32F32`
+  --> rust_core\src\utils_core.rs:59:13
+   |
+59 | use fixed::{FixedI32, consts, types::I16F16, types::I32F32};
+   |             ^^^^^^^^  ^^^^^^                 ^^^^^^^^^^^^^
+warning: associated constant `check` is never used
+  --> rust_core\src\utils_core.rs:11:11
+   |
+10 | impl<T: Copy, const N: usize> RingBuf<T, N> {
+   | ------------------------------------------- associated constant in this implementation
+11 |     const check: () = assert!(N.is_power_of_two());
+   |           ^^^^^
+   |
+   = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+warning: associated constant `check` should have an upper case name
+  --> rust_core\src\utils_core.rs:11:11
+   |
+11 |     const check: () = assert!(N.is_power_of_two());
+   |           ^^^^^ help: convert the identifier to upper case: `CHECK`
+   |
+   = note: `#[warn(non_upper_case_globals)]` (part of `#[warn(nonstandard_style)]`) on by default
+     Running `D:\EE\GitHub\PSoC42xxRust\PSoC42rs.cydsn\target\release\build\rust_project-cf40404c346236da\build-script-build`
+warning: `rust_core` (lib) generated 4 warnings (run `cargo fix --lib -p rust_core` to apply 2 suggestions)
+warning: rust_project@1.0.0: Using PSoC GNU path: C:\Program Files (x86)\Cypress\PSoC Creator\4.4\PSoC Creator\import\gnu\arm\5.4.1
+warning: rust_project@1.0.0: Using LIBCLANG path: C:\Program Files\LLVM\bin
+warning: rust_project@1.0.0: Bindings generated successfully
+     Running `C:\Users\jzapn\.rustup\toolchains\stable-x86_64-pc-windows-msvc\bin\rustc.exe --crate-name rust_project --edition=2021 rust_project\src\lib.rs --error-format=json --json=diagnostic-rendered-ansi,artifacts,future-incompat --crate-type staticlib --emit=dep-info,link -C opt-level=2 -C lto -C debuginfo=2 --check-cfg cfg(docsrs,test) --check-cfg "cfg(feature, values())" -C metadata=bca54247d94bf411 -C extra-filename=-e032ea92d1c50d78 --out-dir D:\EE\GitHub\PSoC42xxRust\PSoC42rs.cydsn\target\thumbv6m-none-eabi\release\deps --target thumbv6m-none-eabi -L dependency=D:\EE\GitHub\PSoC42xxRust\PSoC42rs.cydsn\target\thumbv6m-none-eabi\release\deps -L dependency=D:\EE\GitHub\PSoC42xxRust\PSoC42rs.cydsn\target\release\deps --extern bitfield_struct=D:\EE\GitHub\PSoC42xxRust\PSoC42rs.cydsn\target\release\deps\bitfield_struct-85ecae0dda13772d.dll --extern cortex_m=D:\EE\GitHub\PSoC42xxRust\PSoC42rs.cydsn\target\thumbv6m-none-eabi\release\deps\libcortex_m-23c1775f9ef9879c.rlib --extern cty=D:\EE\GitHub\PSoC42xxRust\PSoC42rs.cydsn\target\thumbv6m-none-eabi\release\deps\libcty-a99622c6d71014b5.rlib --extern fixed=D:\EE\GitHub\PSoC42xxRust\PSoC42rs.cydsn\target\thumbv6m-none-eabi\release\deps\libfixed-5b4c5e119ed0d749.rlib --extern heapless=D:\EE\GitHub\PSoC42xxRust\PSoC42rs.cydsn\target\thumbv6m-none-eabi\release\deps\libheapless-70882462073daa16.rlib --extern local_static=D:\EE\GitHub\PSoC42xxRust\PSoC42rs.cydsn\target\thumbv6m-none-eabi\release\deps\liblocal_static-8089178910baccaa.rlib --extern portable_atomic=D:\EE\GitHub\PSoC42xxRust\PSoC42rs.cydsn\target\thumbv6m-none-eabi\release\deps\libportable_atomic-b91813f4752e187c.rlib --extern rust_core=D:\EE\GitHub\PSoC42xxRust\PSoC42rs.cydsn\target\thumbv6m-none-eabi\release\deps\librust_core-edb6392f9b262ac6.rlib --extern static_cell=D:\EE\GitHub\PSoC42xxRust\PSoC42rs.cydsn\target\thumbv6m-none-eabi\release\deps\libstatic_cell-449d3181aa395076.rlib -L D:\EE\GitHub\PSoC42xxRust\PSoC42rs.cydsn\target\thumbv6m-none-eabi\release\build\cortex-m-40c340482ed65f43\out -C link-arg=-Tlink.x -C link-arg=-nostartfiles -C link-arg=-Tlinker_script.ld`
+warning: unexpected `cfg` condition value: `std`
+  --> rust_project\src\lib.rs:34:11
+   |
+34 | #[cfg(not(feature = "std"))]
+   |           ^^^^^^^^^^^^^^^ help: remove the condition
+   |
+   = note: no expected values for `feature`
+   = help: consider adding `std` as a feature in `Cargo.toml`
+   = note: see <https://doc.rust-lang.org/nightly/rustc/check-cfg/cargo-specifics.html> for more information about checking conditional configuration
+   = note: `#[warn(unexpected_cfgs)]` on by default
+warning: unused imports: `FixedI32`, `consts`, and `types::I32F32`
+ --> rust_project\src\Config.rs:1:13
+  |
+1 | use fixed::{consts, types::I16F16, types::I32F32, FixedI32};
+  |             ^^^^^^                 ^^^^^^^^^^^^^  ^^^^^^^^
+  |
+  = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+warning: unused import: `crate::uart_println`
+ --> rust_project\src\encoder.rs:3:5
+  |
+3 | use crate::uart_println;
+  |     ^^^^^^^^^^^^^^^^^^^
+warning: unused imports: `IirFilter` and `RingBuf`
+ --> rust_project\src\encoder.rs:4:20
+  |
+4 | use crate::utils::{IirFilter, RingBuf};
+  |                    ^^^^^^^^^  ^^^^^^^
+warning: unused import: `crate::Xaxis`
+ --> rust_project\src\encoder.rs:6:5
+  |
+6 | use crate::Xaxis;
+  |     ^^^^^^^^^^^^
+warning: unused import: `crate::SYS`
+ --> rust_project\src\encoder.rs:7:5
+  |
+7 | use crate::SYS;
+  |     ^^^^^^^^^^
+warning: unused import: `bitfield_struct::bitfield`
+ --> rust_project\src\encoder.rs:8:5
+  |
+8 | use bitfield_struct::bitfield;
+  |     ^^^^^^^^^^^^^^^^^^^^^^^^^
+warning: unused imports: `FixedI32`, `consts`, and `types::I32F32`
+ --> rust_project\src\encoder.rs:9:13
+  |
+9 | use fixed::{consts, types::I16F16, types::I32F32, FixedI32};
+  |             ^^^^^^                 ^^^^^^^^^^^^^  ^^^^^^^^
+warning: unused import: `Encoder`
+  --> rust_project\src\encoder.rs:10:31
+   |
+10 | use rust_core::encoder_core::{Encoder, EncoderOps};
+   |                               ^^^^^^^
+warning: unused import: `ffi::*`
+ --> rust_project\src\motor.rs:4:5
+  |
+4 | use ffi::*;
+  |     ^^^^^^
+warning: unused imports: `FixedI32`, `consts`, and `types::I32F32`
+ --> rust_project\src\motor.rs:5:13
+  |
+5 | use fixed::{consts, types::I16F16, types::I32F32, FixedI32};
+  |             ^^^^^^                 ^^^^^^^^^^^^^  ^^^^^^^^
+warning: unused import: `ffi::*`
+ --> rust_project\src\serial.rs:7:5
+  |
+7 | use ffi::*;
+  |     ^^^^^^
+warning: unused import: `bitfield_struct::bitfield`
+ --> rust_project\src\sys.rs:3:5
+  |
+3 | use bitfield_struct::bitfield;
+  |     ^^^^^^^^^^^^^^^^^^^^^^^^^
+warning: unused import: `core::num::Wrapping`
+ --> rust_project\src\utils.rs:1:5
+  |
+1 | use core::num::Wrapping;
+  |     ^^^^^^^^^^^^^^^^^^^
+warning: unused import: `core::ops::Sub`
+ --> rust_project\src\utils.rs:2:5
+  |
+2 | use core::ops::Sub;
+  |     ^^^^^^^^^^^^^^
+warning: unused imports: `FixedI32`, `consts`, and `types::I32F32`
+ --> rust_project\src\utils.rs:3:13
+  |
+3 | use fixed::{consts, types::I16F16, types::I32F32, FixedI32};
+  |             ^^^^^^                 ^^^^^^^^^^^^^  ^^^^^^^^
+warning: unused import: `crate::Config::*`
+  --> rust_project\src\lib.rs:20:5
+   |
+20 | use crate::Config::*;
+   |     ^^^^^^^^^^^^^^^^
+warning: value assigned to `enc_last_dt` is never read
+  --> rust_project\src\lib.rs:81:32
+   |
+81 |     let mut enc_last_dt: u32 = 0;
+   |                                ^
+   |
+   = help: maybe it is overwritten before being read?
+   = note: `#[warn(unused_assignments)]` (part of `#[warn(unused)]`) on by default
+warning: function `counts_to_theta` is never used
+  --> rust_project\src\encoder.rs:45:4
+   |
+45 | fn counts_to_theta(counts: i32) -> I16F16 {
+   |    ^^^^^^^^^^^^^^^
+   |
+   = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+warning: enum `DebugPrint` is never used
+  --> rust_project\src\serial.rs:28:6
+   |
+28 | enum DebugPrint {
+   |      ^^^^^^^^^^
+warning: associated constant `check` is never used
+  --> rust_project\src\utils.rs:34:11
+   |
+33 | impl<T: Copy, const N: usize> RingBuf<T, N> {
+   | ------------------------------------------- associated constant in this implementation
+34 |     const check: () = assert!(N.is_power_of_two());
+   |           ^^^^^
+warning: `rust_project` (lib) generated 21 warnings (run `cargo fix --lib -p rust_project` to apply 16 suggestions)
+    Finished `release` profile [optimized + debuginfo] target(s) in 3.26s
+============================================
+Build completed successfully
+============================================
+Output: target\thumbv6m-none-eabi\release\rust_project.elf
+arm-none-eabi-gcc.exe -mcpu=cortex-m0 -mthumb -I. -IGenerated_Source\PSoC4 -Wa,-alh=.\CortexM0\ARM_GCC_541\Debug/main.lst -g -D DEBUG -Wall -ffunction-sections -ffat-lto-objects -O0 -c main.c -o .\CortexM0\ARM_GCC_541\Debug\main.o
+arm-none-eabi-gcc.exe -mcpu=cortex-m0 -mthumb -I. -IGenerated_Source\PSoC4 -Wa,-alh=.\CortexM0\ARM_GCC_541\Debug/bindgen_wrappers.lst -g -D DEBUG -Wall -ffunction-sections -ffat-lto-objects -O0 -c bindgen_wrappers.c -o .\CortexM0\ARM_GCC_541\Debug\bindgen_wrappers.o
+arm-none-eabi-gcc.exe -mcpu=cortex-m0 -mthumb -I. -IGenerated_Source\PSoC4 -Wa,-alh=.\CortexM0\ARM_GCC_541\Debug/cyfitter_cfg.lst -g -D DEBUG -Wall -ffunction-sections -ffat-lto-objects -O0 -c Generated_Source\PSoC4\cyfitter_cfg.c -o .\CortexM0\ARM_GCC_541\Debug\cyfitter_cfg.o
+arm-none-eabi-gcc.exe -mcpu=cortex-m0 -mthumb -I. -IGenerated_Source\PSoC4 -Wa,-alh=.\CortexM0\ARM_GCC_541\Debug/cymetadata.lst -g -D DEBUG -Wall -ffunction-sections -ffat-lto-objects -O0 -c Generated_Source\PSoC4\cymetadata.c -o .\CortexM0\ARM_GCC_541\Debug\cymetadata.o
+arm-none-eabi-gcc.exe -mcpu=cortex-m0 -mthumb -I. -IGenerated_Source\PSoC4 -Wa,-alh=.\CortexM0\ARM_GCC_541\Debug/BTN.lst -g -D DEBUG -Wall -ffunction-sections -ffat-lto-objects -O0 -c Generated_Source\PSoC4\BTN.c -o .\CortexM0\ARM_GCC_541\Debug\BTN.o
+arm-none-eabi-gcc.exe -mcpu=cortex-m0 -mthumb -I. -IGenerated_Source\PSoC4 -Wa,-alh=.\CortexM0\ARM_GCC_541\Debug/BTN_PM.lst -g -D DEBUG -Wall -ffunction-sections -ffat-lto-objects -O0 -c Generated_Source\PSoC4\BTN_PM.c -o .\CortexM0\ARM_GCC_541\Debug\BTN_PM.o
+arm-none-eabi-gcc.exe -mcpu=cortex-m0 -mthumb -I. -IGenerated_Source\PSoC4 -Wa,-alh=.\CortexM0\ARM_GCC_541\Debug/LED.lst -g -D DEBUG -Wall -ffunction-sections -ffat-lto-objects -O0 -c Generated_Source\PSoC4\LED.c -o .\CortexM0\ARM_GCC_541\Debug\LED.o
+arm-none-eabi-gcc.exe -mcpu=cortex-m0 -mthumb -I. -IGenerated_Source\PSoC4 -Wa,-alh=.\CortexM0\ARM_GCC_541\Debug/LED_PM.lst -g -D DEBUG -Wall -ffunction-sections -ffat-lto-objects -O0 -c Generated_Source\PSoC4\LED_PM.c -o .\CortexM0\ARM_GCC_541\Debug\LED_PM.o
+arm-none-eabi-gcc.exe -mcpu=cortex-m0 -mthumb -I. -IGenerated_Source\PSoC4 -Wa,-alh=.\CortexM0\ARM_GCC_541\Debug/LchA.lst -g -D DEBUG -Wall -ffunction-sections -ffat-lto-objects -O0 -c Generated_Source\PSoC4\LchA.c -o .\CortexM0\ARM_GCC_541\Debug\LchA.o
+arm-none-eabi-gcc.exe -mcpu=cortex-m0 -mthumb -I. -IGenerated_Source\PSoC4 -Wa,-alh=.\CortexM0\ARM_GCC_541\Debug/LchA_PM.lst -g -D DEBUG -Wall -ffunction-sections -ffat-lto-objects -O0 -c Generated_Source\PSoC4\LchA_PM.c -o .\CortexM0\ARM_GCC_541\Debug\LchA_PM.o
+arm-none-eabi-gcc.exe -mcpu=cortex-m0 -mthumb -I. -IGenerated_Source\PSoC4 -Wa,-alh=.\CortexM0\ARM_GCC_541\Debug/StepReg.lst -g -D DEBUG -Wall -ffunction-sections -ffat-lto-objects -O0 -c Generated_Source\PSoC4\StepReg.c -o .\CortexM0\ARM_GCC_541\Debug\StepReg.o
+arm-none-eabi-gcc.exe -mcpu=cortex-m0 -mthumb -I. -IGenerated_Source\PSoC4 -Wa,-alh=.\CortexM0\ARM_GCC_541\Debug/StepReg_PM.lst -g -D DEBUG -Wall -ffunction-sections -ffat-lto-objects -O0 -c Generated_Source\PSoC4\StepReg_PM.c -o .\CortexM0\ARM_GCC_541\Debug\StepReg_PM.o
+arm-none-eabi-gcc.exe -mcpu=cortex-m0 -mthumb -I. -IGenerated_Source\PSoC4 -Wa,-alh=.\CortexM0\ARM_GCC_541\Debug/DIR.lst -g -D DEBUG -Wall -ffunction-sections -ffat-lto-objects -O0 -c Generated_Source\PSoC4\DIR.c -o .\CortexM0\ARM_GCC_541\Debug\DIR.o
+arm-none-eabi-gcc.exe -mcpu=cortex-m0 -mthumb -I. -IGenerated_Source\PSoC4 -Wa,-alh=.\CortexM0\ARM_GCC_541\Debug/DIR_PM.lst -g -D DEBUG -Wall -ffunction-sections -ffat-lto-objects -O0 -c Generated_Source\PSoC4\DIR_PM.c -o .\CortexM0\ARM_GCC_541\Debug\DIR_PM.o
+arm-none-eabi-gcc.exe -mcpu=cortex-m0 -mthumb -I. -IGenerated_Source\PSoC4 -Wa,-alh=.\CortexM0\ARM_GCC_541\Debug/EN.lst -g -D DEBUG -Wall -ffunction-sections -ffat-lto-objects -O0 -c Generated_Source\PSoC4\EN.c -o .\CortexM0\ARM_GCC_541\Debug\EN.o
+arm-none-eabi-gcc.exe -mcpu=cortex-m0 -mthumb -I. -IGenerated_Source\PSoC4 -Wa,-alh=.\CortexM0\ARM_GCC_541\Debug/EN_PM.lst -g -D DEBUG -Wall -ffunction-sections -ffat-lto-objects -O0 -c Generated_Source\PSoC4\EN_PM.c -o .\CortexM0\ARM_GCC_541\Debug\EN_PM.o
+arm-none-eabi-gcc.exe -mcpu=cortex-m0 -mthumb -I. -IGenerated_Source\PSoC4 -Wa,-alh=.\CortexM0\ARM_GCC_541\Debug/clkA.lst -g -D DEBUG -Wall -ffunction-sections -ffat-lto-objects -O0 -c Generated_Source\PSoC4\clkA.c -o .\CortexM0\ARM_GCC_541\Debug\clkA.o
+arm-none-eabi-gcc.exe -mcpu=cortex-m0 -mthumb -I. -IGenerated_Source\PSoC4 -Wa,-alh=.\CortexM0\ARM_GCC_541\Debug/ISR_Pulser.lst -g -D DEBUG -Wall -ffunction-sections -ffat-lto-objects -O0 -c Generated_Source\PSoC4\ISR_Pulser.c -o .\CortexM0\ARM_GCC_541\Debug\ISR_Pulser.o
+arm-none-eabi-gcc.exe -mcpu=cortex-m0 -mthumb -I. -IGenerated_Source\PSoC4 -Wa,-alh=.\CortexM0\ARM_GCC_541\Debug/UART.lst -g -D DEBUG -Wall -ffunction-sections -ffat-lto-objects -O0 -c Generated_Source\PSoC4\UART.c -o .\CortexM0\ARM_GCC_541\Debug\UART.o
+arm-none-eabi-gcc.exe -mcpu=cortex-m0 -mthumb -I. -IGenerated_Source\PSoC4 -Wa,-alh=.\CortexM0\ARM_GCC_541\Debug/UART_SPI_UART.lst -g -D DEBUG -Wall -ffunction-sections -ffat-lto-objects -O0 -c Generated_Source\PSoC4\UART_SPI_UART.c -o .\CortexM0\ARM_GCC_541\Debug\UART_SPI_UART.o
+arm-none-eabi-gcc.exe -mcpu=cortex-m0 -mthumb -I. -IGenerated_Source\PSoC4 -Wa,-alh=.\CortexM0\ARM_GCC_541\Debug/UART_SPI_UART_INT.lst -g -D DEBUG -Wall -ffunction-sections -ffat-lto-objects -O0 -c Generated_Source\PSoC4\UART_SPI_UART_INT.c -o .\CortexM0\ARM_GCC_541\Debug\UART_SPI_UART_INT.o
+arm-none-eabi-gcc.exe -mcpu=cortex-m0 -mthumb -I. -IGenerated_Source\PSoC4 -Wa,-alh=.\CortexM0\ARM_GCC_541\Debug/UART_PM.lst -g -D DEBUG -Wall -ffunction-sections -ffat-lto-objects -O0 -c Generated_Source\PSoC4\UART_PM.c -o .\CortexM0\ARM_GCC_541\Debug\UART_PM.o
+arm-none-eabi-gcc.exe -mcpu=cortex-m0 -mthumb -I. -IGenerated_Source\PSoC4 -Wa,-alh=.\CortexM0\ARM_GCC_541\Debug/UART_UART.lst -g -D DEBUG -Wall -ffunction-sections -ffat-lto-objects -O0 -c Generated_Source\PSoC4\UART_UART.c -o .\CortexM0\ARM_GCC_541\Debug\UART_UART.o
+arm-none-eabi-gcc.exe -mcpu=cortex-m0 -mthumb -I. -IGenerated_Source\PSoC4 -Wa,-alh=.\CortexM0\ARM_GCC_541\Debug/UART_BOOT.lst -g -D DEBUG -Wall -ffunction-sections -ffat-lto-objects -O0 -c Generated_Source\PSoC4\UART_BOOT.c -o .\CortexM0\ARM_GCC_541\Debug\UART_BOOT.o
+arm-none-eabi-gcc.exe -mcpu=cortex-m0 -mthumb -I. -IGenerated_Source\PSoC4 -Wa,-alh=.\CortexM0\ARM_GCC_541\Debug/UART_UART_BOOT.lst -g -D DEBUG -Wall -ffunction-sections -ffat-lto-objects -O0 -c Generated_Source\PSoC4\UART_UART_BOOT.c -o .\CortexM0\ARM_GCC_541\Debug\UART_UART_BOOT.o
+arm-none-eabi-gcc.exe -mcpu=cortex-m0 -mthumb -I. -IGenerated_Source\PSoC4 -Wa,-alh=.\CortexM0\ARM_GCC_541\Debug/DecL.lst -g -D DEBUG -Wall -ffunction-sections -ffat-lto-objects -O0 -c Generated_Source\PSoC4\DecL.c -o .\CortexM0\ARM_GCC_541\Debug\DecL.o
+arm-none-eabi-gcc.exe -mcpu=cortex-m0 -mthumb -I. -IGenerated_Source\PSoC4 -Wa,-alh=.\CortexM0\ARM_GCC_541\Debug/DecL_PM.lst -g -D DEBUG -Wall -ffunction-sections -ffat-lto-objects -O0 -c Generated_Source\PSoC4\DecL_PM.c -o .\CortexM0\ARM_GCC_541\Debug\DecL_PM.o
+arm-none-eabi-gcc.exe -mcpu=cortex-m0 -mthumb -I. -IGenerated_Source\PSoC4 -Wa,-alh=.\CortexM0\ARM_GCC_541\Debug/EN_GND.lst -g -D DEBUG -Wall -ffunction-sections -ffat-lto-objects -O0 -c Generated_Source\PSoC4\EN_GND.c -o .\CortexM0\ARM_GCC_541\Debug\EN_GND.o
+arm-none-eabi-gcc.exe -mcpu=cortex-m0 -mthumb -I. -IGenerated_Source\PSoC4 -Wa,-alh=.\CortexM0\ARM_GCC_541\Debug/EN_GND_PM.lst -g -D DEBUG -Wall -ffunction-sections -ffat-lto-objects -O0 -c Generated_Source\PSoC4\EN_GND_PM.c -o .\CortexM0\ARM_GCC_541\Debug\EN_GND_PM.o
+arm-none-eabi-gcc.exe -mcpu=cortex-m0 -mthumb -I. -IGenerated_Source\PSoC4 -Wa,-alh=.\CortexM0\ARM_GCC_541\Debug/I2CS.lst -g -D DEBUG -Wall -ffunction-sections -ffat-lto-objects -O0 -c Generated_Source\PSoC4\I2CS.c -o .\CortexM0\ARM_GCC_541\Debug\I2CS.o
+arm-none-eabi-gcc.exe -mcpu=cortex-m0 -mthumb -I. -IGenerated_Source\PSoC4 -Wa,-alh=.\CortexM0\ARM_GCC_541\Debug/I2CS_I2C_INT.lst -g -D DEBUG -Wall -ffunction-sections -ffat-lto-objects -O0 -c Generated_Source\PSoC4\I2CS_I2C_INT.c -o .\CortexM0\ARM_GCC_541\Debug\I2CS_I2C_INT.o
+arm-none-eabi-gcc.exe -mcpu=cortex-m0 -mthumb -I. -IGenerated_Source\PSoC4 -Wa,-alh=.\CortexM0\ARM_GCC_541\Debug/I2CS_I2C.lst -g -D DEBUG -Wall -ffunction-sections -ffat-lto-objects -O0 -c Generated_Source\PSoC4\I2CS_I2C.c -o .\CortexM0\ARM_GCC_541\Debug\I2CS_I2C.o
+arm-none-eabi-gcc.exe -mcpu=cortex-m0 -mthumb -I. -IGenerated_Source\PSoC4 -Wa,-alh=.\CortexM0\ARM_GCC_541\Debug/I2CS_I2C_BOOT.lst -g -D DEBUG -Wall -ffunction-sections -ffat-lto-objects -O0 -c Generated_Source\PSoC4\I2CS_I2C_BOOT.c -o .\CortexM0\ARM_GCC_541\Debug\I2CS_I2C_BOOT.o
+arm-none-eabi-gcc.exe -mcpu=cortex-m0 -mthumb -I. -IGenerated_Source\PSoC4 -Wa,-alh=.\CortexM0\ARM_GCC_541\Debug/I2CS_I2C_SLAVE.lst -g -D DEBUG -Wall -ffunction-sections -ffat-lto-objects -O0 -c Generated_Source\PSoC4\I2CS_I2C_SLAVE.c -o .\CortexM0\ARM_GCC_541\Debug\I2CS_I2C_SLAVE.o
+arm-none-eabi-gcc.exe -mcpu=cortex-m0 -mthumb -I. -IGenerated_Source\PSoC4 -Wa,-alh=.\CortexM0\ARM_GCC_541\Debug/I2CS_PM.lst -g -D DEBUG -Wall -ffunction-sections -ffat-lto-objects -O0 -c Generated_Source\PSoC4\I2CS_PM.c -o .\CortexM0\ARM_GCC_541\Debug\I2CS_PM.o
+arm-none-eabi-gcc.exe -mcpu=cortex-m0 -mthumb -I. -IGenerated_Source\PSoC4 -Wa,-alh=.\CortexM0\ARM_GCC_541\Debug/I2CS_BOOT.lst -g -D DEBUG -Wall -ffunction-sections -ffat-lto-objects -O0 -c Generated_Source\PSoC4\I2CS_BOOT.c -o .\CortexM0\ARM_GCC_541\Debug\I2CS_BOOT.o
+arm-none-eabi-gcc.exe -mcpu=cortex-m0 -mthumb -I. -IGenerated_Source\PSoC4 -Wa,-alh=.\CortexM0\ARM_GCC_541\Debug/Pulser_tmr.lst -g -D DEBUG -Wall -ffunction-sections -ffat-lto-objects -O0 -c Generated_Source\PSoC4\Pulser_tmr.c -o .\CortexM0\ARM_GCC_541\Debug\Pulser_tmr.o
+arm-none-eabi-gcc.exe -mcpu=cortex-m0 -mthumb -I. -IGenerated_Source\PSoC4 -Wa,-alh=.\CortexM0\ARM_GCC_541\Debug/Pulser_tmr_PM.lst -g -D DEBUG -Wall -ffunction-sections -ffat-lto-objects -O0 -c Generated_Source\PSoC4\Pulser_tmr_PM.c -o .\CortexM0\ARM_GCC_541\Debug\Pulser_tmr_PM.o
+arm-none-eabi-gcc.exe -mcpu=cortex-m0 -mthumb -I. -IGenerated_Source\PSoC4 -Wa,-alh=.\CortexM0\ARM_GCC_541\Debug/IDAC.lst -g -D DEBUG -Wall -ffunction-sections -ffat-lto-objects -O0 -c Generated_Source\PSoC4\IDAC.c -o .\CortexM0\ARM_GCC_541\Debug\IDAC.o
+arm-none-eabi-gcc.exe -mcpu=cortex-m0 -mthumb -I. -IGenerated_Source\PSoC4 -Wa,-alh=.\CortexM0\ARM_GCC_541\Debug/IDAC_PM.lst -g -D DEBUG -Wall -ffunction-sections -ffat-lto-objects -O0 -c Generated_Source\PSoC4\IDAC_PM.c -o .\CortexM0\ARM_GCC_541\Debug\IDAC_PM.o
+arm-none-eabi-gcc.exe -mcpu=cortex-m0 -mthumb -I. -IGenerated_Source\PSoC4 -Wa,-alh=.\CortexM0\ARM_GCC_541\Debug/ADC_SAR_Seq.lst -g -D DEBUG -Wall -ffunction-sections -ffat-lto-objects -O0 -c Generated_Source\PSoC4\ADC_SAR_Seq.c -o .\CortexM0\ARM_GCC_541\Debug\ADC_SAR_Seq.o
+arm-none-eabi-gcc.exe -mcpu=cortex-m0 -mthumb -I. -IGenerated_Source\PSoC4 -Wa,-alh=.\CortexM0\ARM_GCC_541\Debug/ADC_SAR_Seq_PM.lst -g -D DEBUG -Wall -ffunction-sections -ffat-lto-objects -O0 -c Generated_Source\PSoC4\ADC_SAR_Seq_PM.c -o .\CortexM0\ARM_GCC_541\Debug\ADC_SAR_Seq_PM.o
+arm-none-eabi-gcc.exe -mcpu=cortex-m0 -mthumb -I. -IGenerated_Source\PSoC4 -Wa,-alh=.\CortexM0\ARM_GCC_541\Debug/ADC_SAR_Seq_INT.lst -g -D DEBUG -Wall -ffunction-sections -ffat-lto-objects -O0 -c Generated_Source\PSoC4\ADC_SAR_Seq_INT.c -o .\CortexM0\ARM_GCC_541\Debug\ADC_SAR_Seq_INT.o
+arm-none-eabi-gcc.exe -mcpu=cortex-m0 -mthumb -I. -IGenerated_Source\PSoC4 -Wa,-alh=.\CortexM0\ARM_GCC_541\Debug/UART_SCBCLK.lst -g -D DEBUG -Wall -ffunction-sections -ffat-lto-objects -O0 -c Generated_Source\PSoC4\UART_SCBCLK.c -o .\CortexM0\ARM_GCC_541\Debug\UART_SCBCLK.o
+arm-none-eabi-gcc.exe -mcpu=cortex-m0 -mthumb -I. -IGenerated_Source\PSoC4 -Wa,-alh=.\CortexM0\ARM_GCC_541\Debug/UART_tx.lst -g -D DEBUG -Wall -ffunction-sections -ffat-lto-objects -O0 -c Generated_Source\PSoC4\UART_tx.c -o .\CortexM0\ARM_GCC_541\Debug\UART_tx.o
+arm-none-eabi-gcc.exe -mcpu=cortex-m0 -mthumb -I. -IGenerated_Source\PSoC4 -Wa,-alh=.\CortexM0\ARM_GCC_541\Debug/UART_tx_PM.lst -g -D DEBUG -Wall -ffunction-sections -ffat-lto-objects -O0 -c Generated_Source\PSoC4\UART_tx_PM.c -o .\CortexM0\ARM_GCC_541\Debug\UART_tx_PM.o
+arm-none-eabi-gcc.exe -mcpu=cortex-m0 -mthumb -I. -IGenerated_Source\PSoC4 -Wa,-alh=.\CortexM0\ARM_GCC_541\Debug/UART_SCB_IRQ.lst -g -D DEBUG -Wall -ffunction-sections -ffat-lto-objects -O0 -c Generated_Source\PSoC4\UART_SCB_IRQ.c -o .\CortexM0\ARM_GCC_541\Debug\UART_SCB_IRQ.o
+arm-none-eabi-gcc.exe -mcpu=cortex-m0 -mthumb -I. -IGenerated_Source\PSoC4 -Wa,-alh=.\CortexM0\ARM_GCC_541\Debug/UART_rx.lst -g -D DEBUG -Wall -ffunction-sections -ffat-lto-objects -O0 -c Generated_Source\PSoC4\UART_rx.c -o .\CortexM0\ARM_GCC_541\Debug\UART_rx.o
+arm-none-eabi-gcc.exe -mcpu=cortex-m0 -mthumb -I. -IGenerated_Source\PSoC4 -Wa,-alh=.\CortexM0\ARM_GCC_541\Debug/UART_rx_PM.lst -g -D DEBUG -Wall -ffunction-sections -ffat-lto-objects -O0 -c Generated_Source\PSoC4\UART_rx_PM.c -o .\CortexM0\ARM_GCC_541\Debug\UART_rx_PM.o
+arm-none-eabi-gcc.exe -mcpu=cortex-m0 -mthumb -I. -IGenerated_Source\PSoC4 -Wa,-alh=.\CortexM0\ARM_GCC_541\Debug/I2CS_SCBCLK.lst -g -D DEBUG -Wall -ffunction-sections -ffat-lto-objects -O0 -c Generated_Source\PSoC4\I2CS_SCBCLK.c -o .\CortexM0\ARM_GCC_541\Debug\I2CS_SCBCLK.o
+arm-none-eabi-gcc.exe -mcpu=cortex-m0 -mthumb -I. -IGenerated_Source\PSoC4 -Wa,-alh=.\CortexM0\ARM_GCC_541\Debug/I2CS_sda.lst -g -D DEBUG -Wall -ffunction-sections -ffat-lto-objects -O0 -c Generated_Source\PSoC4\I2CS_sda.c -o .\CortexM0\ARM_GCC_541\Debug\I2CS_sda.o
+arm-none-eabi-gcc.exe -mcpu=cortex-m0 -mthumb -I. -IGenerated_Source\PSoC4 -Wa,-alh=.\CortexM0\ARM_GCC_541\Debug/I2CS_sda_PM.lst -g -D DEBUG -Wall -ffunction-sections -ffat-lto-objects -O0 -c Generated_Source\PSoC4\I2CS_sda_PM.c -o .\CortexM0\ARM_GCC_541\Debug\I2CS_sda_PM.o
+arm-none-eabi-gcc.exe -mcpu=cortex-m0 -mthumb -I. -IGenerated_Source\PSoC4 -Wa,-alh=.\CortexM0\ARM_GCC_541\Debug/I2CS_scl.lst -g -D DEBUG -Wall -ffunction-sections -ffat-lto-objects -O0 -c Generated_Source\PSoC4\I2CS_scl.c -o .\CortexM0\ARM_GCC_541\Debug\I2CS_scl.o
+arm-none-eabi-gcc.exe -mcpu=cortex-m0 -mthumb -I. -IGenerated_Source\PSoC4 -Wa,-alh=.\CortexM0\ARM_GCC_541\Debug/I2CS_scl_PM.lst -g -D DEBUG -Wall -ffunction-sections -ffat-lto-objects -O0 -c Generated_Source\PSoC4\I2CS_scl_PM.c -o .\CortexM0\ARM_GCC_541\Debug\I2CS_scl_PM.o
+arm-none-eabi-gcc.exe -mcpu=cortex-m0 -mthumb -I. -IGenerated_Source\PSoC4 -Wa,-alh=.\CortexM0\ARM_GCC_541\Debug/I2CS_SCB_IRQ.lst -g -D DEBUG -Wall -ffunction-sections -ffat-lto-objects -O0 -c Generated_Source\PSoC4\I2CS_SCB_IRQ.c -o .\CortexM0\ARM_GCC_541\Debug\I2CS_SCB_IRQ.o
+arm-none-eabi-gcc.exe -mcpu=cortex-m0 -mthumb -I. -IGenerated_Source\PSoC4 -Wa,-alh=.\CortexM0\ARM_GCC_541\Debug/ADC_SAR_Seq_IRQ.lst -g -D DEBUG -Wall -ffunction-sections -ffat-lto-objects -O0 -c Generated_Source\PSoC4\ADC_SAR_Seq_IRQ.c -o .\CortexM0\ARM_GCC_541\Debug\ADC_SAR_Seq_IRQ.o
+arm-none-eabi-gcc.exe -mcpu=cortex-m0 -mthumb -I. -IGenerated_Source\PSoC4 -Wa,-alh=.\CortexM0\ARM_GCC_541\Debug/ADC_SAR_Seq_intClock.lst -g -D DEBUG -Wall -ffunction-sections -ffat-lto-objects -O0 -c Generated_Source\PSoC4\ADC_SAR_Seq_intClock.c -o .\CortexM0\ARM_GCC_541\Debug\ADC_SAR_Seq_intClock.o
+arm-none-eabi-gcc.exe -mcpu=cortex-m0 -mthumb -I. -IGenerated_Source\PSoC4 -Wa,-alh=.\CortexM0\ARM_GCC_541\Debug/Cm0Start.lst -g -D DEBUG -Wall -ffunction-sections -ffat-lto-objects -O0 -c Generated_Source\PSoC4\Cm0Start.c -o .\CortexM0\ARM_GCC_541\Debug\Cm0Start.o
+arm-none-eabi-gcc.exe -mcpu=cortex-m0 -mthumb -I. -IGenerated_Source\PSoC4 -Wa,-alh=.\CortexM0\ARM_GCC_541\Debug/CyFlash.lst -g -D DEBUG -Wall -ffunction-sections -ffat-lto-objects -O0 -c Generated_Source\PSoC4\CyFlash.c -o .\CortexM0\ARM_GCC_541\Debug\CyFlash.o
+arm-none-eabi-gcc.exe -mcpu=cortex-m0 -mthumb -I. -IGenerated_Source\PSoC4 -Wa,-alh=.\CortexM0\ARM_GCC_541\Debug/CyLib.lst -g -D DEBUG -Wall -ffunction-sections -ffat-lto-objects -O0 -c Generated_Source\PSoC4\CyLib.c -o .\CortexM0\ARM_GCC_541\Debug\CyLib.o
+arm-none-eabi-gcc.exe -mcpu=cortex-m0 -mthumb -I. -IGenerated_Source\PSoC4 -Wa,-alh=.\CortexM0\ARM_GCC_541\Debug/cyPm.lst -g -D DEBUG -Wall -ffunction-sections -ffat-lto-objects -O0 -c Generated_Source\PSoC4\cyPm.c -o .\CortexM0\ARM_GCC_541\Debug\cyPm.o
+arm-none-eabi-gcc.exe -mcpu=cortex-m0 -mthumb -I. -IGenerated_Source\PSoC4 -Wa,-alh=.\CortexM0\ARM_GCC_541\Debug/cyutils.lst -g -D DEBUG -Wall -ffunction-sections -ffat-lto-objects -O0 -c Generated_Source\PSoC4\cyutils.c -o .\CortexM0\ARM_GCC_541\Debug\cyutils.o
+arm-none-eabi-gcc.exe -mcpu=cortex-m0 -mthumb -I. -IGenerated_Source\PSoC4 -Wa,-alh=.\CortexM0\ARM_GCC_541\Debug/CyLFClk.lst -g -D DEBUG -Wall -ffunction-sections -ffat-lto-objects -O0 -c Generated_Source\PSoC4\CyLFClk.c -o .\CortexM0\ARM_GCC_541\Debug\CyLFClk.o
+arm-none-eabi-gcc.exe -mcpu=cortex-m0 -mthumb -I. -IGenerated_Source\PSoC4 -Wa,-alh=.\CortexM0\ARM_GCC_541\Debug/cy_em_eeprom.lst -g -D DEBUG -Wall -ffunction-sections -ffat-lto-objects -O0 -c Generated_Source\PSoC4\cy_em_eeprom.c -o .\CortexM0\ARM_GCC_541\Debug\cy_em_eeprom.o
+arm-none-eabi-gcc.exe -mcpu=cortex-m0 -mthumb -I. -IGenerated_Source\PSoC4 -Wa,-alh=.\CortexM0\ARM_GCC_541\Debug/ISR_DecL.lst -g -D DEBUG -Wall -ffunction-sections -ffat-lto-objects -O0 -c Generated_Source\PSoC4\ISR_DecL.c -o .\CortexM0\ARM_GCC_541\Debug\ISR_DecL.o
+arm-none-eabi-as.exe -mcpu=cortex-m0 -mthumb -I. -IGenerated_Source\PSoC4 -alh=.\CortexM0\ARM_GCC_541\Debug/CyBootAsmGnu.lst -g -o .\CortexM0\ARM_GCC_541\Debug\CyBootAsmGnu.o Generated_Source\PSoC4\CyBootAsmGnu.s
+arm-none-eabi-ar.exe -rs .\CortexM0\ARM_GCC_541\Debug\PSoC42rs.a .\CortexM0\ARM_GCC_541\Debug\BTN.o .\CortexM0\ARM_GCC_541\Debug\BTN_PM.o .\CortexM0\ARM_GCC_541\Debug\LED.o .\CortexM0\ARM_GCC_541\Debug\LED_PM.o .\CortexM0\ARM_GCC_541\Debug\LchA.o .\CortexM0\ARM_GCC_541\Debug\LchA_PM.o .\CortexM0\ARM_GCC_541\Debug\StepReg.o .\CortexM0\ARM_GCC_541\Debug\StepReg_PM.o .\CortexM0\ARM_GCC_541\Debug\DIR.o .\CortexM0\ARM_GCC_541\Debug\DIR_PM.o .\CortexM0\ARM_GCC_541\Debug\EN.o .\CortexM0\ARM_GCC_541\Debug\EN_PM.o .\CortexM0\ARM_GCC_541\Debug\clkA.o .\CortexM0\ARM_GCC_541\Debug\ISR_Pulser.o .\CortexM0\ARM_GCC_541\Debug\UART.o .\CortexM0\ARM_GCC_541\Debug\UART_SPI_UART.o .\CortexM0\ARM_GCC_541\Debug\UART_SPI_UART_INT.o .\CortexM0\ARM_GCC_541\Debug\UART_PM.o .\CortexM0\ARM_GCC_541\Debug\UART_UART.o .\CortexM0\ARM_GCC_541\Debug\UART_BOOT.o .\CortexM0\ARM_GCC_541\Debug\UART_UART_BOOT.o .\CortexM0\ARM_GCC_541\Debug\DecL.o .\CortexM0\ARM_GCC_541\Debug\DecL_PM.o .\CortexM0\ARM_GCC_541\Debug\EN_GND.o .\CortexM0\ARM_GCC_541\Debug\EN_GND_PM.o .\CortexM0\ARM_GCC_541\Debug\I2CS.o .\CortexM0\ARM_GCC_541\Debug\I2CS_I2C_INT.o .\CortexM0\ARM_GCC_541\Debug\I2CS_I2C.o .\CortexM0\ARM_GCC_541\Debug\I2CS_I2C_BOOT.o .\CortexM0\ARM_GCC_541\Debug\I2CS_I2C_SLAVE.o .\CortexM0\ARM_GCC_541\Debug\I2CS_PM.o .\CortexM0\ARM_GCC_541\Debug\I2CS_BOOT.o .\CortexM0\ARM_GCC_541\Debug\Pulser_tmr.o .\CortexM0\ARM_GCC_541\Debug\Pulser_tmr_PM.o .\CortexM0\ARM_GCC_541\Debug\IDAC.o .\CortexM0\ARM_GCC_541\Debug\IDAC_PM.o .\CortexM0\ARM_GCC_541\Debug\ADC_SAR_Seq.o .\CortexM0\ARM_GCC_541\Debug\ADC_SAR_Seq_PM.o .\CortexM0\ARM_GCC_541\Debug\ADC_SAR_Seq_INT.o .\CortexM0\ARM_GCC_541\Debug\UART_SCBCLK.o .\CortexM0\ARM_GCC_541\Debug\UART_tx.o .\CortexM0\ARM_GCC_541\Debug\UART_tx_PM.o .\CortexM0\ARM_GCC_541\Debug\UART_SCB_IRQ.o .\CortexM0\ARM_GCC_541\Debug\UART_rx.o .\CortexM0\ARM_GCC_541\Debug\UART_rx_PM.o .\CortexM0\ARM_GCC_541\Debug\I2CS_SCBCLK.o .\CortexM0\ARM_GCC_541\Debug\I2CS_sda.o .\CortexM0\ARM_GCC_541\Debug\I2CS_sda_PM.o .\CortexM0\ARM_GCC_541\Debug\I2CS_scl.o .\CortexM0\ARM_GCC_541\Debug\I2CS_scl_PM.o .\CortexM0\ARM_GCC_541\Debug\I2CS_SCB_IRQ.o .\CortexM0\ARM_GCC_541\Debug\ADC_SAR_Seq_IRQ.o .\CortexM0\ARM_GCC_541\Debug\ADC_SAR_Seq_intClock.o .\CortexM0\ARM_GCC_541\Debug\CyFlash.o .\CortexM0\ARM_GCC_541\Debug\CyLib.o .\CortexM0\ARM_GCC_541\Debug\cyPm.o .\CortexM0\ARM_GCC_541\Debug\cyutils.o .\CortexM0\ARM_GCC_541\Debug\CyLFClk.o .\CortexM0\ARM_GCC_541\Debug\cy_em_eeprom.o .\CortexM0\ARM_GCC_541\Debug\ISR_DecL.o .\CortexM0\ARM_GCC_541\Debug\CyBootAsmGnu.o
+arm-none-eabi-ar.exe: creating .\CortexM0\ARM_GCC_541\Debug\PSoC42rs.a
+arm-none-eabi-gcc.exe -Wl,--start-group -o D:\EE\GitHub\PSoC42xxRust\PSoC42rs.cydsn\CortexM0\ARM_GCC_541\Debug\PSoC42rs.elf .\CortexM0\ARM_GCC_541\Debug\main.o .\CortexM0\ARM_GCC_541\Debug\bindgen_wrappers.o .\CortexM0\ARM_GCC_541\Debug\cyfitter_cfg.o .\CortexM0\ARM_GCC_541\Debug\cymetadata.o .\CortexM0\ARM_GCC_541\Debug\Cm0Start.o .\CortexM0\ARM_GCC_541\Debug\PSoC42rs.a -mcpu=cortex-m0 -mthumb -l rust_project -L Generated_Source\PSoC4 -L .\rust_project\build\thumbv6m-none-eabi\release -Wl,-Map,.\CortexM0\ARM_GCC_541\Debug/PSoC42rs.map -T Generated_Source\PSoC4\cm0gcc.ld -specs=nano.specs -Wl,--gc-sections -g -ffunction-sections -O0 -ffat-lto-objects -Wl,--end-group
+.\rust_project\build\thumbv6m-none-eabi\release\librust_project.a(rust_project-14ccbe249c92e36d.rust_project.746220bfb6c9d328-cgu.0.rcgu.o): In function `_$LT$rust_project..motor..XEncoder$u20$as$u20$rust_project..motor..EncoderOps$GT$::read_counter::h388ccc2e7bfc2049':
+D:\EE\GitHub\PSoC42xxRust\PSoC42rs.cydsn\rust_project/src/motor.rs:71: undefined reference to `DecX_ReadCounter'
+.\rust_project\build\thumbv6m-none-eabi\release\librust_project.a(rust_project-14ccbe249c92e36d.rust_project.746220bfb6c9d328-cgu.0.rcgu.o): In function `_$LT$rust_project..motor..XEncoder$u20$as$u20$rust_project..motor..EncoderOps$GT$::init_hardware::hd8457105ebae8c69':
+D:\EE\GitHub\PSoC42xxRust\PSoC42rs.cydsn\rust_project/src/motor.rs:61: undefined reference to `DecX_Init'
+.\rust_project\build\thumbv6m-none-eabi\release\librust_project.a(rust_project-14ccbe249c92e36d.rust_project.746220bfb6c9d328-cgu.0.rcgu.o): In function `_$LT$rust_project..motor..XEncoder$u20$as$u20$rust_project..motor..EncoderOps$GT$::start_hardware::h06f94b05aecbbe3a':
+D:\EE\GitHub\PSoC42xxRust\PSoC42rs.cydsn\rust_project/src/motor.rs:64: undefined reference to `DecX_Start'
+collect2.exe: error: ld returned 1 exit status
+The command 'arm-none-eabi-gcc.exe' failed with exit code '1'.
+--------------- Rebuild Failed: 02/07/2026 09:11:08 ---------------
