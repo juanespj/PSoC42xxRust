@@ -1,8 +1,5 @@
 // rust_core/src/serial.rs
-#![no_std]
-
 use core::fmt;
-
 use core::prelude::rust_2024::*; // for #[derive] support
 use core::result::Result::Ok;
 pub trait SerialWrite {
@@ -11,7 +8,7 @@ pub trait SerialWrite {
     fn write_str(&self, s: &str) {
         self.write_bytes(s.as_bytes())
     }
-    fn write_fmt(&self, args: fmt::Arguments<'_>) {}
+    fn write_fmt(&self, args: fmt::Arguments<'_>);
 }
 
 pub struct FmtWriter<'a, T: SerialWrite>(pub &'a T);

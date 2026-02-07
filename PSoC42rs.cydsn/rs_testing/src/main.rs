@@ -9,7 +9,7 @@ fn main() {
 }
 
 #[cfg(test)]
-mod Encoder_tests {
+mod encoder_tests {
 
     use super::*;
     use core::f32;
@@ -90,7 +90,7 @@ mod Encoder_tests {
         0.5 - 0.5 * (core::f32::consts::PI * x).cos()
     }
     #[test]
-    fn test_ringBuf() {
+    fn test_ring_buf() {
         let mut _v_t: Vec<u32> = vec![];
         let mut counts: Vec<u32> = vec![];
         let mut prev: Vec<f32> = vec![];

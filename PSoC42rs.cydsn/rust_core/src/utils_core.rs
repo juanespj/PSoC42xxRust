@@ -1,8 +1,7 @@
-use core::fmt;
-use core::prelude::rust_2024::*; // for #[derive] support
-
 #[cfg(target_arch = "arm")]
 use core::option::{Option, Option::*};
+use core::prelude::rust_2024::*; // for #[derive] support
+
 #[derive(Copy, Clone)]
 pub struct RingBuf<T, const N: usize> {
     buf: [T; N],
@@ -11,7 +10,11 @@ pub struct RingBuf<T, const N: usize> {
 }
 
 impl<T: Copy, const N: usize> RingBuf<T, N> {
-    const check: () = assert!(N.is_power_of_two());
+    const fn check() {
+        if !N.is_power_of_two() {
+            panic!("RingBuf size N must be a power of two");
+        }
+    }
     /// Creates a new `RingBuf` with all elements set to `zero`.
     /// Requires `T` to implement `Copy` and `From<i32>` (or similar) for `zero`.
     pub const fn new(zero: T) -> Self {
@@ -59,7 +62,7 @@ impl<T: Copy, const N: usize> RingBuf<T, N> {
     }
 }
 
-use fixed::{FixedI32, consts, types::I16F16, types::I32F32};
+use fixed::types::I16F16; //FixedI32, consts, types::I32F32
 
 #[derive(Copy, Clone)]
 pub struct IirFilter {

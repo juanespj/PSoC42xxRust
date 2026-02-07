@@ -1,5 +1,5 @@
 use crate::utils_core::{IirFilter, RingBuf};
-use fixed::{FixedI32, consts, types::I16F16, types::I32F32};
+use fixed::types::I16F16; //FixedI32, consts,types::I32F32
 
 pub const COUNT_PER_REVI32: i32 = 1250;
 // const COUNT_PER_REV: I16F16 = I16F16::from_bits(81_920_000);

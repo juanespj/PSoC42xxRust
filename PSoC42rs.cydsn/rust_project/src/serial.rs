@@ -43,6 +43,7 @@ impl Uart {
         uart_put_str("\n\r-PSOC RS\r\n");
     }
 }
+
 #[inline(always)]
 pub fn uart_printf(args: fmt::Arguments<'_>) {
     UART.get_mut().write_fmt(args);
@@ -63,19 +64,6 @@ extern "C" fn RSUARTRX() {
         on_rx_byte(ch);
         ClearInterrutpt_RX();
     }
-}
-
-pub fn uart_put_bytes(bytes: &[u8]) {
-    // ensure null-terminated
-    let mut buf = [0u8; 64];
-    let len = bytes.len().min(buf.len() - 1);
-    buf[..len].copy_from_slice(&bytes[..len]);
-    buf[len] = 0;
-    unsafe { UART_UartPutString(buf.as_ptr() as *const c_char) }
-}
-
-pub fn uart_put_str(s: &str) {
-    uart_put_bytes(s.as_bytes())
 }
 
 pub fn on_rx_byte(ch: u8) {
