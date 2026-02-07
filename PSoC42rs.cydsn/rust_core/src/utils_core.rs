@@ -1,3 +1,6 @@
+use core::fmt;
+use core::prelude::rust_2024::*; // for #[derive] support
+
 #[cfg(target_arch = "arm")]
 use core::option::{Option, Option::*};
 #[derive(Copy, Clone)]

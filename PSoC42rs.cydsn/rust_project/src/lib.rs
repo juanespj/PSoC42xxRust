@@ -24,6 +24,8 @@ use serial::*;
 use sys::*;
 use ui::*;
 static SYS: LocalStatic<System_T> = LocalStatic::new();
+static UART: LocalStatic<Uart> = LocalStatic::new();
+
 static Xaxis: LocalStatic<Stepper<XEncoder>> = LocalStatic::new();
 
 // static MS_TICK: LocalStatic<u32> = LocalStatic::new();
@@ -31,7 +33,7 @@ static Xaxis: LocalStatic<Stepper<XEncoder>> = LocalStatic::new();
 #[unsafe(no_mangle)]
 pub extern "C" fn tick_callback() {}
 
-#[cfg(not(feature = "std"))]
+#[cfg(not(target_os = "windows"))]
 #[panic_handler]
 fn panic(info: &core::panic::PanicInfo) -> ! {
     // Optionally log the panic location to a simple UART print if you have one,
@@ -53,7 +55,8 @@ pub extern "C" fn main() -> () {
     *SYS.get_mut() = System_T::new();
     let mut led = LED_CTRL::new();
     *Xaxis.get_mut() = Stepper::new(XEncoder, 0);
-    UI_init();
+    *UART.get_mut() = Uart::new();
+    UART.get_mut().UI_init();
 
     unsafe {
         CySysTickInit();

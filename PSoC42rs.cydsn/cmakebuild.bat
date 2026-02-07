@@ -28,4 +28,19 @@
 @echo Running Ninja build...
 @ninja
 
+@REM ELF analytics
+set ELF_FILE=..\build\PSoC4rs.elf
 
+@if exist %ELF_FILE% (
+    @echo.
+    @echo === ELF Analytics ===
+
+    @"%TOOLCHAIN_PREFIX%/bin/arm-none-eabi-size.exe" %ELF_FILE%
+     @echo.
+    @REM @"%TOOLCHAIN_PREFIX%/bin/arm-none-eabi-nm.exe" -S %ELF_FILE% | findstr "stack"
+
+    @REM @"%TOOLCHAIN_PREFIX%/bin/arm-none-eabi-readelf.exe" -S %ELF_FILE%
+)
+
+@REM Symbol table outside parentheses to avoid cmd parsing issues
+@REM @"%TOOLCHAIN_PREFIX%/bin/arm-none-eabi-nm.exe" -S --size-sort %ELF_FILE% | more

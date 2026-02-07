@@ -7,11 +7,10 @@ use ffi::*;
 
 // rust_project/src/uart.rs
 use crate::ffi::*;
-use crate::{MotorDirection, SYS, Xaxis};
+use crate::{MotorDirection, Xaxis, SYS};
 use core::ffi::c_char;
-use rust_core::commands::{Command, parse_byte};
-use rust_core::serial::FmtWriter;
-use rust_core::serial::SerialWrite;
+use rust_core::commands::{parse_byte, Command};
+use rust_core::serial::{FmtWriter, SerialWrite};
 
 pub struct Uart;
 
@@ -24,6 +23,10 @@ impl SerialWrite for Uart {
         unsafe {
             UART_UartPutString(buf.as_ptr() as *const c_char);
         }
+    }
+    fn write_str(&mut self, s: &str) -> fmt::Result {
+        uart_put_str(s);
+        Ok(())
     }
 }
 

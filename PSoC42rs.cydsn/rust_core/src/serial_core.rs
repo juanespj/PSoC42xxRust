@@ -1,12 +1,17 @@
 // rust_core/src/serial.rs
+#![no_std]
+
 use core::fmt;
 
+use core::prelude::rust_2024::*; // for #[derive] support
+use core::result::Result::Ok;
 pub trait SerialWrite {
     fn write_bytes(&self, bytes: &[u8]);
 
     fn write_str(&self, s: &str) {
         self.write_bytes(s.as_bytes())
     }
+    fn write_fmt(&self, args: fmt::Arguments<'_>) {}
 }
 
 pub struct FmtWriter<'a, T: SerialWrite>(pub &'a T);
@@ -46,6 +51,7 @@ pub enum TermCmd {
 // pub const UART_FCLEAR: &[u8; 4] = b"\x1B[m\0";
 // pub const UART_FRED: &[u8; 8] = b"\x1B[0;31m\0";
 // pub const UART_FGRN: &[u8; 8] = b"\x1B[1;32m\0";
+
 pub fn term<W: SerialWrite>(w: &W, cmd: TermCmd) {
     match cmd {
         TermCmd::ClearScreen => w.write_str("\x1B[2J\x1B[H"),
