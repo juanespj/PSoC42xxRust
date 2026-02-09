@@ -45,10 +45,10 @@ impl Default for EncoderApp {
             amplitude: 5000.0,
             smooth_ramp: true,
             vars: vec![
-                TestVariable::new("Sample Rate", 1.0, (0.5, 3.0, 0.10)),
-                TestVariable::new("gain A", 0.001, (0.000001, 1.0, 0.00001)),
-                TestVariable::new("gain B", 0.001, (0.000001, 1.0, 0.00001)),
-                TestVariable::new("gain C", 0.001, (0.000001, 1.0, 0.00001)),
+                TestVariable::new("Sample Rate us", 10.0, (10.0, 1500.0, 1.0)),
+                TestVariable::new("gain A", 0.4, (0.000001, 1.0, 0.0001)),
+                TestVariable::new("gain B", 0.1, (0.001, 1.0, 0.001)),
+                TestVariable::new("gain C", 0.01, (0.001, 1.0, 0.001)),
                 // TestVariable::new("Sample Rate", 1.0, (0.5, 3.0, 0.10)),
                 // TestVariable::new("omega_alpha", 0.5, (0.5, 1.0, 0.01)),
                 // TestVariable::new("omega_eps", 0.8, (0.001, 10.0, 0.1)),
@@ -141,7 +141,7 @@ impl EncoderApp {
 
         // config::set_omega_alpha(I32F32::from_num(self.vars[1].value));
         // config::set_omega_eps(I32F32::from_num(self.vars[2].value));
-        let dt = self.vars[0].value;
+        let sample_time = self.vars[0].value;//us
         config::set_gain_a(I32F32::from_num(self.vars[1].value));
         config::set_gain_b(I32F32::from_num(self.vars[2].value));
         config::set_gain_c(I32F32::from_num(self.vars[3].value));
@@ -151,15 +151,16 @@ impl EncoderApp {
         // config::set_alpha_eps(I32F32::from_num(self.vars[5].value));
         // test_encoder.alpha_filter = IirFilter::new(I32F32::from_num(self.vars[6].value));
 
-        let mut last_sample_time = 0;
+        let mut last_sample_time = 0.0;
         let mut current_sampled_value = 0.0;
-
+let dt=I32F32::from_num(sample_time/1_000.0);//ms
         for t in 0..1000 {
+            let t_ms=t as f32;
             // 1. Simulate the PSoC4 sampling interval
-            if t == 0 || t >= last_sample_time + (dt * 10.0) as u32 {
+            if t_ms == 0.0 || t_ms >= last_sample_time + (sample_time/1_000.0)   {
                 current_sampled_value =
-                    ramp_hold_ramp(t, 200, 400, 200, self.amplitude, self.smooth_ramp);
-                last_sample_time = t;
+                    ramp_hold_ramp(t_ms, 200.0, 400.0, 200.0, self.amplitude, self.smooth_ramp);
+                last_sample_time = t_ms;
             }
 
             // 2. Wrap and push to encoder
@@ -170,7 +171,7 @@ impl EncoderApp {
             test_encoder.read_counter();
 
             // 3. Update filter (using the loop dt)
-            test_encoder.update((dt * 10.0) as u32);
+            test_encoder.update(dt  );
 
             // 4. Record for Plotting
             raw_pts.push([t as f64, current_sampled_value as f64]);

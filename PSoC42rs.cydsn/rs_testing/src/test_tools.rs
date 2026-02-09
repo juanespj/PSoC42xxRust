@@ -7,30 +7,30 @@ use rust_core::encoder_core::*;
 //   |______/           \______
 //            time →
 pub fn ramp_hold_ramp(
-    t_ms: u32,
-    up_ms: u32,
-    hold_ms: u32,
-    down_ms: u32,
+    t_ms: f32,
+    up_ms: f32,
+    hold_ms: f32,
+    down_ms: f32,
     amplitude: f32,
     smooth: bool,
 ) -> f32 {
     let value = if t_ms < up_ms {
         // Ramp up
         if smooth {
-            amplitude * smooth_ramp(t_ms as f32 / up_ms as f32)
+            amplitude * smooth_ramp(t_ms  / up_ms )
         } else {
-            amplitude * (t_ms as f32 / up_ms as f32)
+            amplitude * (t_ms  / up_ms )
         }
     } else if t_ms < up_ms + hold_ms {
         // Hold
         amplitude
     } else if t_ms < up_ms + hold_ms + down_ms {
         // Ramp down
-        let t = (t_ms - up_ms - hold_ms) as f32;
+        let t = (t_ms - up_ms - hold_ms) ;
         if smooth {
-            amplitude * smooth_ramp(1.0 - t / down_ms as f32)
+            amplitude * smooth_ramp(1.0 - t / down_ms )
         } else {
-            amplitude * (1.0 - t / down_ms as f32)
+            amplitude * (1.0 - t / down_ms )
         }
     } else {
         // Done

@@ -6,6 +6,9 @@ pub const RAD_TO_COUNTS: I32F32 = I32F32::from_bits(330); // TWO_PI / COUNT_PER_
 pub const ONE_I32F32: I32F32 = I32F32::from_bits(200);
 pub const TS: I32F32 = I32F32::from_bits(1);
 pub const ZERO_FIVE: I32F32 = I32F32::from_bits(0x3FE0000000000000);
+pub const ONE_K_I32F32:I32F32=I32F32::from_bits(65536000);
+pub const FIVEH_K_I32F32:I32F32=I32F32::from_bits(2147483648000000);
+
 #[cfg(feature = "embedded")]
 pub mod config {
 
@@ -243,8 +246,8 @@ impl<T: EncoderOps> Encoder<T> {
     // self.vel: I32F32
     // self.accel: I32F32
 
-    pub fn update(&mut self, dt_ticks: u32) {
-        let dt = I32F32::from_num(dt_ticks) / I32F32::from_num(24);
+    pub fn update(&mut self, dt_ticks: I32F32) {
+        let dt = dt_ticks * ONE_K_I32F32;//us
         if dt <= 0 {
             return;
         }
@@ -261,7 +264,7 @@ impl<T: EncoderOps> Encoder<T> {
 
         self.pos = p_pred + (gain_a() * residual);
         self.vel = v_pred + (gain_b() * residual) / dt;
-        self.accel = self.accel + (gain_c() * residual) / (dt * dt * ZERO_FIVE);
+        self.accel = self.accel + (gain_c() * residual) / (dt*  dt * ZERO_FIVE);
 
         // Update your output fields
         self.theta = self.pos;

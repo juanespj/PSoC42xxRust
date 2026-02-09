@@ -32,7 +32,9 @@ mod encoder_tests {
 
         let mut count: RingBuf<u32, 4> = RingBuf::new(0);
         for t in 0..4000 {
-            let ramp_value = ramp_hold_ramp(t, 200, 400, 200, 2000.0, true); // ramp up 200ms, hold 400ms, ramp down 200ms
+            let t_ms=t as f32;
+
+            let ramp_value = ramp_hold_ramp(t_ms, 200.0, 400.0, 200.0, 2000.0, true); // ramp up 200ms, hold 400ms, ramp down 200ms
 
             count.push(0x8000 + (ramp_value as u32));
 
@@ -59,7 +61,7 @@ mod encoder_tests {
     #[test]
     fn test_constants() {
         eprint!("COUNT_PER_REV: {}\n\r", COUNT_PER_REVI32);
-        eprint!("NUM:   {}\n\r", I16F16::from_num(0.00503).to_bits());
+        eprint!("NUM:   {}\n\r", I32F32::from_num(500_000).to_bits());
 
         eprint!("NUM:   {}\n\r", I32F32::from_num(0.00503).to_bits());
 
