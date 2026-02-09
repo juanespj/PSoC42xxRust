@@ -17,14 +17,14 @@ pub mod utils;
 
 use crate::encoder::*;
 use crate::motor::*;
-use crate::Config::*;
 // use core::sync::atomic::AtomicU8;
 use local_static::LocalStatic;
 use serial::*;
+
 use sys::*;
 use ui::*;
 static SYS: LocalStatic<System_T> = LocalStatic::new();
-static UART: LocalStatic<Uart> = LocalStatic::new();
+// static UART: LocalStatic<Uart> = LocalStatic::new();
 
 static Xaxis: LocalStatic<Stepper<XEncoder>> = LocalStatic::new();
 
@@ -49,20 +49,20 @@ fn panic(info: &core::panic::PanicInfo) -> ! {
         cortex_m::asm::bkpt(); // Use a breakpoint instruction to halt
     }
 }
-
+const RELOAD: u32 = 2_400_000;
 #[unsafe(no_mangle)]
 pub extern "C" fn main() -> () {
     *SYS.get_mut() = System_T::new();
     let mut led = LED_CTRL::new();
     *Xaxis.get_mut() = Stepper::new(XEncoder, 0);
-    *UART.get_mut() = Uart::new();
-    UART.get_mut().UI_init();
-
+    // *UART.get_mut() = Uart::new();
+    // UART.get_mut().
+    UI_init();
     unsafe {
         CySysTickInit();
         CySysTickStart();
         CySysTickEnable();
-        CySysTickSetReload(CYDEV_BCLK__SYSCLK__HZ / 10);
+        CySysTickSetReload(RELOAD);
 
         CySysTickSetCallback(0, Some(tick_callback));
         CySysTickClear();
@@ -76,7 +76,12 @@ pub extern "C" fn main() -> () {
 
     let gpio_pin = || unsafe { BTN_Read() == 0 }; //change polarity if needed
     let mut btn = DebouncedButton::new(gpio_pin);
-
+    // if btn.is_pressed() {
+    //     uart_printf(format_args!("Pressed!\n\r"));
+    // }
+    // if btn.is_held() {
+    //     uart_printf(format_args!("Held!\n\r"));
+    // }
     uart_put_str("Initialized PSoCcmake.");
     let mut print_cnt: u32 = 0;
     let mut last_upd: u32 = 0;
@@ -89,60 +94,54 @@ pub extern "C" fn main() -> () {
     loop {
         let now = unsafe { CySysTickGetValue() };
         // duration in ticks between blinks
-        if last_upd.wrapping_sub(now) >= 10 {
+        let dt = if now <= enc_last_upd {
+            // Normal case: counts down from 100 to 80 (dt = 20)
+            enc_last_upd - now
+        } else {
+            // Wrap case: last was 10, now is 23,990
+            // distance is (10 - 0) + (reload - 23,990)
+            enc_last_upd + (RELOAD - now)
+        };
+        if dt > 500 {
+            //highest priority
+            enc_last_upd = now;
+            // uart_send_u32_hex(dt);
+            unsafe { LED_Write(1) }
+            Xaxis.get_mut().encoder.read_counter();
+            Xaxis.get_mut().encoder.update(dt);
+            unsafe { LED_Write(0) }
+        }
+        if dt > 100 && last_upd == 0 {
+            unsafe { LED_Write(1) }
             led.led_task();
             btn.update();
+            last_upd += 1;
+            unsafe { LED_Write(0) }
+        }
+        if dt > 300 && last_upd == 1 {
+            unsafe { LED_Write(1) }
             SYS.get_mut().sys_task();
-            last_upd = now;
+            last_upd += 1;
+            unsafe { LED_Write(0) }
         }
-        Xaxis.get_mut().encoder.read_counter();
+        if dt > 400 && last_upd == 2 {
+            unsafe { LED_Write(1) }
+            unsafe {
+                let mut count = ADC_SAR_Seq_GetResult16(0);
+                if count <= 0 {
+                    count = 1;
+                }
+                if (count - old_count).saturating_abs() > 10 {
+                    spd_ref = ADC_SAR_Seq_CountsTo_mVolts(0, count).saturating_abs() as u16;
+                    // spd_ref = count as u32;
+                    Xaxis.get_mut().set_speed(spd_ref as u32 * 4);
+                    // uart_printf(format_args!("SPD:{}\n\r", spd_ref));
 
-        // if enc_last_dt != enc_last_upd.wrapping_sub(now) {
-        enc_last_dt = enc_last_upd.wrapping_sub(now);
-        // uart_printf(format_args!("dt: {}\n\r", enc_last_dt));
-        // }
-        //  Xaxis.get_mut().encoder.update(enc_last_dt);
-        enc_last_upd = now;
-        print_cnt += 1;
-        if print_cnt > 100 {
-            print_cnt = 0;
-            if Xaxis.get().state != MotorState::IDLE {
-                uart_printf(format_args!(
-                    "{},{}\n\r",
-                    Xaxis.get().encoder.alpha,
-                    // Xaxis.get().encoder.prev_enc_counts,
-                    Xaxis.get().encoder.omega // Xaxis.get().encoder.prev_enc_counts
-                ));
-            } else {
+                    old_count = count;
+                }
             }
-        }
-        unsafe {
-            let mut count = ADC_SAR_Seq_GetResult16(0);
-            if count <= 0 {
-                count = 1;
-            }
-            if (count - old_count).saturating_abs() > 10 {
-                spd_ref = ADC_SAR_Seq_CountsTo_mVolts(0, count).saturating_abs() as u16;
-                // spd_ref = count as u32;
-                Xaxis.get_mut().set_speed(spd_ref as u32 * 4);
-                uart_printf(format_args!("SPD:{}\n\r", spd_ref));
-
-                old_count = count;
-            }
-        }
-        // print_cnt += 1;
-        // if print_cnt > 5000 {
-        //     print_cnt = 0;
-        // }
-        // enc_last_upd += 1;
-
-        // uart_printf(format_args!("Encoder: {}\n\r", enc.curr));
-
-        if btn.is_pressed() {
-            uart_printf(format_args!("Pressed!\n\r"));
-        }
-        if btn.is_held() {
-            uart_printf(format_args!("Held!\n\r"));
+            last_upd = 0;
+            unsafe { LED_Write(0) }
         }
     }
 }

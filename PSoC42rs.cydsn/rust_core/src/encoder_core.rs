@@ -6,9 +6,11 @@ pub const RAD_TO_COUNTS: I32F32 = I32F32::from_bits(330); // TWO_PI / COUNT_PER_
 pub const ONE_I32F32: I32F32 = I32F32::from_bits(200);
 pub const TS: I32F32 = I32F32::from_bits(1);
 pub const ZERO_FIVE: I32F32 = I32F32::from_bits(0x3FE0000000000000);
-pub const ONE_K_I32F32:I32F32=I32F32::from_bits(65536000);
-pub const FIVEH_K_I32F32:I32F32=I32F32::from_bits(2147483648000000);
-
+pub const ONE_K_I32F32: I32F32 = I32F32::from_bits(65536000);
+pub const FIVEH_K_I32F32: I32F32 = I32F32::from_bits(2147483648000000);
+const DT_SCALE: I32F32 = I32F32::from_bits(0x0000_AAAB); // ~1/24 in fixed point
+// Use ticks directly in prediction (scale back at the end)
+const SCALE_24: I32F32 = I32F32::from_bits(24 << 16);
 #[cfg(feature = "embedded")]
 pub mod config {
 
@@ -32,15 +34,15 @@ pub mod config {
     //     I32F32::from_bits(0x80000000) //0.5
     // }
     pub fn gain_a() -> I32F32 {
-        I32F32::from_bits(0x80000000) //0.5
+        I32F32::from_bits(0x947AE200) //0.5
     }
 
     pub fn gain_b() -> I32F32 {
-        I32F32::from_bits(0x80000000) //0.5
+        I32F32::from_bits(0x3AE147C0) //0.5
     }
 
     pub fn gain_c() -> I32F32 {
-        I32F32::from_bits(0x80000000) //0.5
+        I32F32::from_bits(0x0CCCCCD0) //0.5
     }
 }
 
@@ -77,9 +79,9 @@ pub mod config {
         }
     }
     // Now define your statics with their defaults directly
-    pub static GAIN_A: Tunable = Tunable::new(19660);
-    pub static GAIN_B: Tunable = Tunable::new(3276);
-    pub static GAIN_C: Tunable = Tunable::new(13107);
+    pub static GAIN_A: Tunable = Tunable::new(0x947AE200);
+    pub static GAIN_B: Tunable = Tunable::new(0x3AE147C0);
+    pub static GAIN_C: Tunable = Tunable::new(0x0CCCCCD0);
     // pub static ALPHA_EPS: Tunable = Tunable::new(32768);
 
     // Your existing helper functions will now work perfectly:
@@ -246,31 +248,37 @@ impl<T: EncoderOps> Encoder<T> {
     // self.vel: I32F32
     // self.accel: I32F32
 
-    pub fn update(&mut self, dt_ticks: I32F32) {
-        let dt = dt_ticks * ONE_K_I32F32;//us
-        if dt <= 0 {
+    pub fn update(&mut self, dt_ticks: u32) {
+        // Pre-multiply by reciprocal instead of dividing
+        let dt_ticks_i32 = I32F32::from_num(dt_ticks);
+        if dt_ticks < 96 {
+            // 96/24 = 4, equivalent to your check
             return;
         }
 
-        // 1. Prediction (Physics Update)
-        let p_pred = self.pos + (self.vel * dt) + (self.accel * dt * dt * ZERO_FIVE);
-        let v_pred = self.vel + (self.accel * dt);
+        // 1. Prediction
+        let dt_sq_half_ticks = (dt_ticks * dt_ticks) >> 1;
+        let p_pred = self.pos
+            + (self.vel * dt_ticks_i32 / SCALE_24)
+            + (self.accel * I32F32::from_num(dt_sq_half_ticks) / (SCALE_24 * SCALE_24));
+        let v_pred = self.vel + (self.accel * dt_ticks_i32 / SCALE_24);
 
-        // 2. Innovation (How wrong were we?)
+        // 2. Innovation
         let residual = I32F32::from_num(self.counts.curr().unwrap()) - p_pred;
 
-        // 3. Correction (Gains)
-        // Adjust these constants to tune smoothness vs lag
+        // 3. Correction - precompute reciprocals
+        // Use pre-scaled gains
+        self.pos = p_pred.saturating_add(gain_a() * residual);
+        self.vel = v_pred.saturating_add(gain_b() * residual / dt_ticks_i32);
+        self.accel = self
+            .accel
+            .saturating_add(gain_c() * residual / I32F32::from_num(dt_sq_half_ticks));
 
-        self.pos = p_pred + (gain_a() * residual);
-        self.vel = v_pred + (gain_b() * residual) / dt;
-        self.accel = self.accel + (gain_c() * residual) / (dt*  dt * ZERO_FIVE);
-
-        // Update your output fields
         self.theta = self.pos;
         self.omega = self.vel;
         self.alpha = self.accel;
     }
+
     /// Full encoder position as i32
     pub fn _read_position(&mut self) -> i32 {
         match self.counts.curr() {

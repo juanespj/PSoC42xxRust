@@ -272,6 +272,25 @@
 <v>PSoC42rs-000\PSoC42rs\PSoC 4 Architecture TRM</v>
 <v>PSoC42rs-000\PSoC42rs\PSoC 4200 Family Datasheet</v>
 <v>PSoC42rs-000\PSoC42rs\System Reference Guides</v>
+<v>PSoC42rs-000\PSoC42rs\System Reference Guides\cy_boot_v6_10</v>
+<v>PSoC42rs-000\PSoC42rs\System Reference Guides\cy_lfclk_v1_20</v>
+<v>PSoC42rs-000\PSoC42rs\ADC_SAR_SEQ_P4_v2_50.pdf</v>
+<v>PSoC42rs-000\PSoC42rs\cy_clock_v2_20.pdf</v>
+<v>PSoC42rs-000\PSoC42rs\cy_isr_v1_70</v>
+<v>PSoC42rs-000\PSoC42rs\cy_isr_v1_70\cy_isr_v1_70.pdf</v>
+<v>PSoC42rs-000\PSoC42rs\cy_pins_v2_20</v>
+<v>PSoC42rs-000\PSoC42rs\cy_pins_v2_20\cy_pins_v2_20.pdf</v>
+<v>PSoC42rs-000\PSoC42rs\CyControlReg_v1_80.pdf</v>
+<v>PSoC42rs-000\PSoC42rs\Gnd_v1_0.pdf</v>
+<v>PSoC42rs-000\PSoC42rs\IDAC_P4_v1_10.pdf</v>
+<v>PSoC42rs-000\PSoC42rs\Potentiometer_v1_0.pdf</v>
+<v>PSoC42rs-000\PSoC42rs\Power_v1_0.pdf</v>
+<v>PSoC42rs-000\PSoC42rs\Resistor_v1_0</v>
+<v>PSoC42rs-000\PSoC42rs\Resistor_v1_0\Resistor_v1_0.pdf</v>
+<v>PSoC42rs-000\PSoC42rs\SCB_P4_v4_0</v>
+<v>PSoC42rs-000\PSoC42rs\SCB_P4_v4_0\SCB_P4_v4_0.pdf</v>
+<v>PSoC42rs-000\PSoC42rs\TCPWM_P4_v2_10</v>
+<v>PSoC42rs-000\PSoC42rs\TCPWM_P4_v2_10\TCPWM_P4_v2_10.pdf</v>
 </ExpandedNodeIds>
 <VisibleNodeIds>
 <v>PSoC42rs-000</v>
@@ -279,6 +298,25 @@
 <v>PSoC42rs-000\PSoC42rs\PSoC 4 Architecture TRM</v>
 <v>PSoC42rs-000\PSoC42rs\PSoC 4200 Family Datasheet</v>
 <v>PSoC42rs-000\PSoC42rs\System Reference Guides</v>
+<v>PSoC42rs-000\PSoC42rs\System Reference Guides\cy_boot_v6_10</v>
+<v>PSoC42rs-000\PSoC42rs\System Reference Guides\cy_lfclk_v1_20</v>
+<v>PSoC42rs-000\PSoC42rs\ADC_SAR_SEQ_P4_v2_50.pdf</v>
+<v>PSoC42rs-000\PSoC42rs\cy_clock_v2_20.pdf</v>
+<v>PSoC42rs-000\PSoC42rs\cy_isr_v1_70</v>
+<v>PSoC42rs-000\PSoC42rs\cy_isr_v1_70\cy_isr_v1_70.pdf</v>
+<v>PSoC42rs-000\PSoC42rs\cy_pins_v2_20</v>
+<v>PSoC42rs-000\PSoC42rs\cy_pins_v2_20\cy_pins_v2_20.pdf</v>
+<v>PSoC42rs-000\PSoC42rs\CyControlReg_v1_80.pdf</v>
+<v>PSoC42rs-000\PSoC42rs\Gnd_v1_0.pdf</v>
+<v>PSoC42rs-000\PSoC42rs\IDAC_P4_v1_10.pdf</v>
+<v>PSoC42rs-000\PSoC42rs\Potentiometer_v1_0.pdf</v>
+<v>PSoC42rs-000\PSoC42rs\Power_v1_0.pdf</v>
+<v>PSoC42rs-000\PSoC42rs\Resistor_v1_0</v>
+<v>PSoC42rs-000\PSoC42rs\Resistor_v1_0\Resistor_v1_0.pdf</v>
+<v>PSoC42rs-000\PSoC42rs\SCB_P4_v4_0</v>
+<v>PSoC42rs-000\PSoC42rs\SCB_P4_v4_0\SCB_P4_v4_0.pdf</v>
+<v>PSoC42rs-000\PSoC42rs\TCPWM_P4_v2_10</v>
+<v>PSoC42rs-000\PSoC42rs\TCPWM_P4_v2_10\TCPWM_P4_v2_10.pdf</v>
 </VisibleNodeIds>
 </CyGuid_2a325b3b-c96a-4e9f-b7a0-2c44ecb5f237>
 </TreeStatesV2>

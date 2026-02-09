@@ -1,7 +1,7 @@
+use crate::serial::*;
 use crate::Xaxis;
 use crate::*;
 use bitfield_struct::bitfield;
-
 #[derive(PartialEq, Clone)]
 #[repr(u8)]
 #[cfg_attr(not(target_arch = "arm"), derive(Debug))]

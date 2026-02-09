@@ -1,6 +1,5 @@
 pub struct XEncoder;
 use crate::ffi::*;
-use crate::uart_println;
 use crate::utils::{IirFilter, RingBuf};
 use crate::Config::*;
 use crate::Xaxis;
