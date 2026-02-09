@@ -8,8 +8,10 @@ path = "src/lib.rs"
 
 [dependencies]
 fixed = { version = "1.29", default-features = false }
+local_static = "0.1.1"
+
+
 
 [features]
-default = ["std"]
-std = []
 embedded = []
+

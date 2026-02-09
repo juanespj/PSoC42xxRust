@@ -1,0 +1,14 @@
+title = "Run 1"
+id = "2be394db-7a1c-4667-951c-7a36a2c63964"
+created = "2026-01-31T08:38:54.7487082Z"
+output_cells = []
+
+[kernel_state]
+type = "Closed"
+
+[globals]
+name = ""
+
+[globals.variables]
+
+[globals.children]

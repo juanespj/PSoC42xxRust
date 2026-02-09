@@ -1,0 +1,20 @@
+version = "twinsong 0.0.1"
+
+[editor_root]
+id = "40655bba-1421-4fb1-be11-bfce927cf7fb"
+name = "project"
+scope = "Own"
+
+[[editor_root.children]]
+type = "Cell"
+id = "191a07c7-0b68-499b-9c10-fae9014f5538"
+code = '''
+print("Hello world")
+
+x = 10
+x'''
+
+[[editor_root.children]]
+type = "Cell"
+id = "c2afc8dd-4b84-4b16-ae2f-e204172889f6"
+code = ""

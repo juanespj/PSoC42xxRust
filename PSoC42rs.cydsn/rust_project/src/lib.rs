@@ -101,14 +101,14 @@ pub extern "C" fn main() -> () {
         enc_last_dt = enc_last_upd.wrapping_sub(now);
         // uart_printf(format_args!("dt: {}\n\r", enc_last_dt));
         // }
-        Xaxis.get_mut().encoder.update(enc_last_dt);
+        //  Xaxis.get_mut().encoder.update(enc_last_dt);
         enc_last_upd = now;
         print_cnt += 1;
-        if print_cnt > 150 {
+        if print_cnt > 100 {
             print_cnt = 0;
             if Xaxis.get().state != MotorState::IDLE {
                 uart_printf(format_args!(
-                    "\n\r{},{}",
+                    "{},{}\n\r",
                     Xaxis.get().encoder.alpha,
                     // Xaxis.get().encoder.prev_enc_counts,
                     Xaxis.get().encoder.omega // Xaxis.get().encoder.prev_enc_counts

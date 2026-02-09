@@ -1,0 +1,6 @@
+deg_per_rev=1.8
+steps_per_rev=360/deg_per_rev #steps
+microstepping=4
+target_spd=300#rpm
+target_rps=target_spd/60
+print("Target RPS: "target_rps)'''

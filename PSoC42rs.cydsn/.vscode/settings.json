@@ -1,7 +1,12 @@
+// {
+//     "rust-analyzer.cargo.target": "thumbv6m-none-eabi",
+//     "rust-analyzer.check.allTargets": false,
+//     "rust-analyzer.cargo.buildScripts.enable": true,
+//     "rust-analyzer.procMacro.enable": true,
+//     "rust-analyzer.cargo.sysroot": "discover"
+// }
+//for pc
 {
-    "rust-analyzer.cargo.target": "thumbv6m-none-eabi",
-    "rust-analyzer.check.allTargets": false,
-    "rust-analyzer.cargo.buildScripts.enable": true,
-    "rust-analyzer.procMacro.enable": true,
-    "rust-analyzer.cargo.sysroot": "discover"
+  "rust-analyzer.cargo.target": "x86_64-pc-windows-msvc",
+  // "rust-analyzer.cargo.features": ["pc"]
 }

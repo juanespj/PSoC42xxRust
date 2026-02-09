@@ -1,20 +1,135 @@
 use crate::utils_core::{IirFilter, RingBuf};
-use fixed::types::I16F16; //FixedI32, consts,types::I32F32
-
+use fixed::types::I32F32; //FixedI32, consts,types::I32F32
+use local_static::LocalStatic;
 pub const COUNT_PER_REVI32: i32 = 1250;
-// const COUNT_PER_REV: I16F16 = I16F16::from_bits(81_920_000);
-pub const RAD_TO_COUNTS: I16F16 = I16F16::from_bits(330); // TWO_PI / COUNT_PER_REV
-// IIR filter factors
+pub const RAD_TO_COUNTS: I32F32 = I32F32::from_bits(330); // TWO_PI / COUNT_PER_REV
+pub const ONE_I32F32: I32F32 = I32F32::from_bits(200);
+pub const TS: I32F32 = I32F32::from_bits(1);
+pub const ZERO_FIVE: I32F32 = I32F32::from_bits(0x3FE0000000000000);
+#[cfg(feature = "embedded")]
+pub mod config {
 
-// Deadbands
-pub const ONE_I16F16: I16F16 = I16F16::from_bits(200);
+    use fixed::types::I32F32;
 
-pub const TS: I16F16 = I16F16::from_bits(1); // 1 ms
-pub const OMEGA_ALPHA: I16F16 = I16F16::from_bits(19660);
-pub const OMEGA_EPS: I16F16 = I16F16::from_bits(3276);
-pub const ALPHA_ALPHA: I16F16 = I16F16::from_bits(13107);
-pub const ALPHA_EPS: I16F16 = I16F16::from_bits(32768);
+    #[inline(always)]
+    pub fn omega_alpha() -> I32F32 {
+        I32F32::from_bits(0x80000000) //0.5
+    }
+    #[inline(always)]
+    pub fn alpha_alpha() -> I32F32 {
+        I32F32::from_bits(0xCF5C2900) //0.81
+    }
+    // #[inline(always)]
+    // pub fn omega_eps() -> I32F32 {
+    //     I32F32::from_bits(3276)
+    // }
 
+    // #[inline(always)]
+    // pub fn alpha_eps() -> I32F32 {
+    //     I32F32::from_bits(0x80000000) //0.5
+    // }
+    pub fn gain_a() -> I32F32 {
+        I32F32::from_bits(0x80000000) //0.5
+    }
+
+    pub fn gain_b() -> I32F32 {
+        I32F32::from_bits(0x80000000) //0.5
+    }
+
+    pub fn gain_c() -> I32F32 {
+        I32F32::from_bits(0x80000000) //0.5
+    }
+}
+
+#[cfg(not(feature = "embedded"))] // PC target
+pub mod config {
+    use core::cell::Cell;
+    use fixed::types::I32F32;
+
+    // We need a wrapper that is Sync so it can live in a static
+    pub struct Tunable {
+        value: Cell<I32F32>,
+    }
+
+    // This is "unsafe" in theory, but on a single-core MCU like PSoC4,
+    // it is practically safe as long as you aren't writing in an ISR
+    // and reading in the main loop simultaneously.
+    unsafe impl Sync for Tunable {}
+
+    impl Tunable {
+        pub const fn new(default_bits: i64) -> Self {
+            Self {
+                value: Cell::new(I32F32::from_bits(default_bits)),
+            }
+        }
+
+        #[inline(always)]
+        pub fn get(&self) -> I32F32 {
+            self.value.get() // Returns a copy (I32F32 is Copy)
+        }
+
+        #[inline(always)]
+        pub fn set(&self, v: I32F32) {
+            self.value.set(v);
+        }
+    }
+    // Now define your statics with their defaults directly
+    pub static GAIN_A: Tunable = Tunable::new(19660);
+    pub static GAIN_B: Tunable = Tunable::new(3276);
+    pub static GAIN_C: Tunable = Tunable::new(13107);
+    // pub static ALPHA_EPS: Tunable = Tunable::new(32768);
+
+    // Your existing helper functions will now work perfectly:
+    pub fn gain_a() -> I32F32 {
+        GAIN_A.get()
+    }
+
+    pub fn set_gain_a(v: I32F32) {
+        GAIN_A.set(v);
+    }
+
+    pub fn gain_b() -> I32F32 {
+        GAIN_B.get()
+    }
+
+    pub fn set_gain_b(v: I32F32) {
+        GAIN_B.set(v);
+    }
+    pub fn gain_c() -> I32F32 {
+        GAIN_C.get()
+    }
+
+    pub fn set_gain_c(v: I32F32) {
+        GAIN_C.set(v);
+    }
+    // #[inline(always)]
+    // pub fn omega_eps() -> I32F32 {
+    //     OMEGA_EPS.get()
+    // }
+
+    // pub fn set_omega_eps(v: I32F32) {
+    //     OMEGA_EPS.set(v);
+    // }
+
+    // #[inline(always)]
+    // pub fn alpha_alpha() -> I32F32 {
+    //     ALPHA_ALPHA.get()
+    // }
+
+    // pub fn set_alpha_alpha(v: I32F32) {
+    //     ALPHA_ALPHA.set(v);
+    // }
+
+    // #[inline(always)]
+    // pub fn alpha_eps() -> I32F32 {
+    //     ALPHA_EPS.get()
+    // }
+
+    // pub fn set_alpha_eps(v: I32F32) {
+    //     ALPHA_EPS.set(v);
+    // }
+}
+use config::*;
 pub trait EncoderOps {
     fn init_hardware(&self);
     fn start_hardware(&self);
@@ -29,12 +144,16 @@ pub struct Encoder<T: EncoderOps> {
     pub counts: RingBuf<i32, 4>, // current raw counter value from hardware
     pub prev_enc_counts: i32,
     pub turns: i32, // number of overflows/underflows counted
-    pub theta: I16F16,
-    pub omega: I16F16,
-    pub prev_omega: I16F16,
-    pub alpha: I16F16,
-    pub omega_filter: IirFilter,
-    pub alpha_filter: IirFilter,
+    pub pos: I32F32,
+    pub vel: I32F32,
+    pub accel: I32F32,
+
+    pub theta: I32F32,
+    pub omega: I32F32,
+    pub prev_omega: I32F32,
+    pub alpha: I32F32,
+    pub omega_filter: IirFilter<I32F32>,
+    pub alpha_filter: IirFilter<I32F32>,
     pub delta_ticks: u32,
     ops: T,
 }
@@ -46,15 +165,18 @@ impl<T: EncoderOps> Encoder<T> {
         Self {
             counts: RingBuf::new(0),
             turns: 0,
-            theta: I16F16::from_bits(0),
-            omega: I16F16::from_bits(0),
-            alpha: I16F16::from_bits(0),
-            omega_filter: IirFilter::new(I16F16::from_bits(11000)),
-            alpha_filter: IirFilter::new(I16F16::from_bits(5000)),
+            theta: I32F32::from_bits(0),
+            omega: I32F32::from_bits(0),
+            alpha: I32F32::from_bits(0),
+            omega_filter: IirFilter::new(I32F32::from_bits(0x99999A00)), //0.6
+            alpha_filter: IirFilter::new(I32F32::from_bits(0x100000000)),
             ops,
-            prev_omega: I16F16::from_bits(0),
+            prev_omega: I32F32::from_bits(0),
             prev_enc_counts: 0,
             delta_ticks: 0,
+            pos: I32F32::from_bits(0),
+            vel: I32F32::from_bits(0),
+            accel: I32F32::from_bits(0),
         }
     }
     #[cfg(not(target_arch = "arm"))]
@@ -65,67 +187,87 @@ impl<T: EncoderOps> Encoder<T> {
     pub fn init(&mut self) {
         self.counts = RingBuf::new(0);
         self.turns = 0;
-        self.theta = I16F16::from_bits(0);
-        self.omega = I16F16::from_bits(0);
-        self.alpha = I16F16::from_bits(0);
+        self.theta = I32F32::from_bits(0);
+        self.omega = I32F32::from_bits(0);
+        self.alpha = I32F32::from_bits(0);
         self.ops.init_hardware();
         self.ops.start_hardware();
         self.ops.write_counter(0);
         self.ops.get_counter();
         self.prev_enc_counts = 0;
         self.delta_ticks = 0;
+        self.pos = I32F32::from_bits(0);
+        self.accel = I32F32::from_bits(0);
+        self.vel = I32F32::from_bits(0);
     }
 
     /// Read the current encoder counter and update position
     /// measured 60us  max 96us
-    pub fn update(&mut self, dt_ticks: u32) {
-        // Pull the last three samples
-        let (c0, c1) = match self.counts.get_last_two() {
-            Some((a, b)) => (a, b),
-            None => return,
-        };
+    // pub fn _update_z(&mut self, dt_ticks: u32) {
+    //     // Pull the last three samples
+    //     let (c0, c1) = match self.counts.get_last_two() {
+    //         Some((a, b)) => (a, b),
+    //         None => return,
+    //     };
 
-        let dt = I16F16::from_num(dt_ticks) / I16F16::from_num(24);
-        // Prevent division by zero
-        if dt <= I16F16::from_bits(0) {
+    //     let dt = I32F32::from_num(dt_ticks) / I32F32::from_num(24);
+    //     // Prevent division by zero
+    //     if dt <= I32F32::from_bits(0) {
+    //         return;
+    //     }
+    //     // Compute deltas safely
+    //     // let dc2 = c1.wrapping_sub(c2) as i32;
+    //     // --- Theta (position) ---
+    //     self.theta = I32F32::from_num(c0);
+    //     let dc1 = c0.wrapping_sub(c1) as i32;
+
+    //     // --- Omega (velocity) ---
+    //     let omega_raw = I32F32::from_num(dc1) / dt;
+
+    //     // Filtered omega
+    //     let omega = self.omega * omega_alpha() + (ONE_I32F32 - omega_alpha()) * omega_raw;
+    //     self.omega = self.omega_filter.update(omega);
+    //     // self.omega = omega;
+    //     // --- Alpha (acceleration) ---
+    //     let alpha_raw = (self.omega - self.prev_omega) / dt;
+
+    //     // Light filter
+    //     let alpha = self.alpha * alpha_alpha() + (ONE_I32F32 - alpha_alpha()) * alpha_raw;
+    //     self.alpha = self.alpha_filter.update(alpha);
+    //     // self.alpha = alpha;
+    //     self.prev_omega = self.omega;
+    // }
+
+    // State variables stored in your struct
+    // self.pos: I32F32
+    // self.vel: I32F32
+    // self.accel: I32F32
+
+    pub fn update(&mut self, dt_ticks: u32) {
+        let dt = I32F32::from_num(dt_ticks) / I32F32::from_num(24);
+        if dt <= 0 {
             return;
         }
-        // Compute deltas safely
-        let dc1 = c0.wrapping_sub(c1) as i32;
-        // let dc2 = c1.wrapping_sub(c2) as i32;
-        // --- Theta (position) ---
-        self.theta = I16F16::from_num(c0);
 
-        // --- Omega (velocity) ---
-        let mut omega_raw = I16F16::from_num(dc1) / dt;
+        // 1. Prediction (Physics Update)
+        let p_pred = self.pos + (self.vel * dt) + (self.accel * dt * dt * ZERO_FIVE);
+        let v_pred = self.vel + (self.accel * dt);
 
-        // Deadband small movements
-        if omega_raw.abs() < OMEGA_EPS {
-            omega_raw = I16F16::from_bits(0);
-        }
+        // 2. Innovation (How wrong were we?)
+        let residual = I32F32::from_num(self.counts.curr().unwrap()) - p_pred;
 
-        // Filtered omega
-        let omega = OMEGA_ALPHA * self.omega + (ONE_I16F16 - OMEGA_ALPHA) * omega_raw;
-        // self.omega = self.omega_filter.update(omega);
-        self.omega = omega;
-        // --- Alpha (acceleration) ---
-        let mut alpha_raw = (self.omega - self.prev_omega) / dt;
+        // 3. Correction (Gains)
+        // Adjust these constants to tune smoothness vs lag
 
-        if alpha_raw.abs() < ALPHA_EPS {
-            alpha_raw = I16F16::from_bits(0);
-        }
+        self.pos = p_pred + (gain_a() * residual);
+        self.vel = v_pred + (gain_b() * residual) / dt;
+        self.accel = self.accel + (gain_c() * residual) / (dt * dt * ZERO_FIVE);
 
-        // // Light filter
-        let alpha = ALPHA_ALPHA * self.alpha + (ONE_I16F16 - ALPHA_ALPHA) * alpha_raw;
-        // // self.alpha = self.alpha_filter.update(alpha);
-        self.alpha = alpha;
-        self.prev_omega = self.omega;
-
-        // if SYS.get_mut().print_dbg & 2 != 0 {
-        //     uart_println!("Motor:{},{},{}\n\r", self.theta, self.omega, self.alpha);
-        // }
+        // Update your output fields
+        self.theta = self.pos;
+        self.omega = self.vel;
+        self.alpha = self.accel;
     }
-
     /// Full encoder position as i32
     pub fn _read_position(&mut self) -> i32 {
         match self.counts.curr() {

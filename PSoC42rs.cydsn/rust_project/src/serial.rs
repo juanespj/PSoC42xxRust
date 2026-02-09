@@ -48,7 +48,10 @@ impl Uart {
 pub fn uart_printf(args: fmt::Arguments<'_>) {
     UART.get_mut().write_fmt(args);
 }
-
+#[inline(always)]
+pub fn uart_put_str(str: &str) {
+    UART.get_mut().write_str(str);
+}
 #[macro_export]
 macro_rules! uart_println {
     ($($arg:tt)*) => {

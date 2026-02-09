@@ -11,3 +11,5 @@ opt-level = 2      # Best balance between size and performance# (Optional) Small
 # codegen-units = 1    # Enables more aggressive cross-module optimization
 lto = true#"fat"          # Enable Link-Time Optimization (critical for size)
 debug = true         # (Optional) Keep debug info for debugging release builds
+
+

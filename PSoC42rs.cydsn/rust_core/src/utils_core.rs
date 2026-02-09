@@ -62,25 +62,33 @@ impl<T: Copy, const N: usize> RingBuf<T, N> {
     }
 }
 
-use fixed::types::I16F16; //FixedI32, consts, types::I32F32
+use fixed::traits::Fixed;
 
 #[derive(Copy, Clone)]
-pub struct IirFilter {
-    y: I16F16,
-    alpha: I16F16,
+pub struct IirFilter<T> {
+    y: T,
+    alpha: T,
 }
 
-impl IirFilter {
-    pub const fn new(alpha: I16F16) -> Self {
+impl<T> IirFilter<T>
+where
+    T: Fixed + Copy, // Ensures T supports fixed-point math and is copyable
+{
+    pub const fn new(alpha: T) -> Self {
         Self {
-            y: I16F16::from_bits(0),
+            // We use from_bits(0) or simply T::ZERO if available
+            y: T::ZERO,
             alpha,
         }
     }
 
     #[inline(always)]
-    pub fn update(&mut self, x: I16F16) -> I16F16 {
-        self.y += self.alpha * (x - self.y);
+    pub fn update(&mut self, x: T) -> T {
+        // Standard EMA formula: y = y + alpha * (x - y)
+        // Instead of: self.y += self.alpha * (x - self.y);
+        // Use the built-in lerp which handles intermediate overflow better:
+        // self.y = self.y.lerp(x, self.alpha);
+        self.y += self.alpha.saturating_mul(x - self.y);
         self.y
     }
 }

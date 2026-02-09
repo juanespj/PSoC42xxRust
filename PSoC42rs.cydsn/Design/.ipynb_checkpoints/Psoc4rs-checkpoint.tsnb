@@ -1,0 +1,28 @@
+version = "twinsong 0.0.1"
+
+[editor_root]
+id = "1a0690ef-4d98-42bb-aead-a7f877693f5f"
+name = "constants"
+scope = "Own"
+
+[[editor_root.children]]
+type = "Cell"
+id = "3fe114ab-4568-4d43-b4fd-e07f52e530f4"
+code = '''
+deg_per_rev=1.8
+steps_per_rev=360/deg_per_rev #steps
+microstepping=4
+target_spd=300#rpm
+target_rps=target_spd/60
+print("Target RPS: "target_rps)'''
+
+[[editor_root.children]]
+type = "Group"
+id = "a9eb60e6-bb39-44ca-90e9-5feae3bae897"
+name = "PulseDesign"
+scope = "Inherit"
+
+[[editor_root.children.children]]
+type = "Cell"
+id = "e3848f0c-d2d8-4b20-bd00-7d57a542ab80"
+code = ""

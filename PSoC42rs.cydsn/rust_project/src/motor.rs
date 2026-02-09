@@ -153,10 +153,10 @@ impl<T: EncoderOps> Stepper<T> {
             MotorState::CONST_SPD => {
                 if self.curr_target_speed_hz > self.current_speed_hz {
                     self.state = MotorState::ACCEL;
-                    uart_put_str("Accelerating to new target.\n\r");
+                    // uart_put_str("Accelerating to new target.\n\r");
                 } else if self.curr_target_speed_hz < self.current_speed_hz {
                     self.state = MotorState::DECEL;
-                    uart_put_str("Decelerating to new target.\n\r");
+                    // uart_put_str("Decelerating to new target.\n\r");
                 }
                 if self.curr_target_speed_hz == I16F16::from_num(0) && self.old_dir == self.dir {
                     // not changing direction, and target is 0
