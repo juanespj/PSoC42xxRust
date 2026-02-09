@@ -18,7 +18,7 @@
 <v>Output</v>
 </TreeKeys>
 <TreeStates>
-<CyGuid_2a325b3b-c96a-4e9f-b7a0-2c44ecb5f237 type_name="CyDesigner.Common.Base.Controls.CyTreeViewState" version="1" SelectedNodeId="PSoC42rs-000\PSoC42rs">
+<CyGuid_2a325b3b-c96a-4e9f-b7a0-2c44ecb5f237 type_name="CyDesigner.Common.Base.Controls.CyTreeViewState" version="1" SelectedNodeId="PSoC42rs-000\PSoC42rs\PSoC42rs.cydwr">
 <ExpandedNodeIds>
 <v>PSoC42rs-000</v>
 <v>PSoC42rs-000\PSoC42rs</v>
@@ -336,7 +336,7 @@
   Copyright (c) 2001-2016 Actipro Software LLC.  All rights reserved.
   http://www.actiprosoftware.com
 
---><DocumentLayout Version="1.0"><LayoutData><TabbedMdiRootContainer Orientation="Vertical"><TabbedMdiContainer Size="1336, 714" SelectedTabbedMdiWindow="f2dbcf81-4788-436c-a077-3aaefb220ede"><ToolWindow Key="Start Page:bd4649ab-da6b-4d04-a663-c722b8bf99db:Start Page" Guid="d90436de-6210-4cb1-a9dd-f9ab7b4d7de5" /><DocumentWindow Key="D:\EE\GitHub\PSoC42xxRust\PSoC42rs.cydsn\rust_project\src\motor.rs" Guid="5cbcc3bb-5296-43c5-944e-894322182dfa" /><DocumentWindow Key="D:\EE\GitHub\PSoC42xxRust\PSoC42rs.cydsn\TopDesign\TopDesign.cysch" Guid="e82b7983-4ac8-409f-ac1e-591318b476c7" /><DocumentWindow Key="D:\EE\GitHub\PSoC42xxRust\PSoC42rs.cydsn\PSoC42rs.cydwr" Guid="f2dbcf81-4788-436c-a077-3aaefb220ede" /></TabbedMdiContainer></TabbedMdiRootContainer><FloatingContainers /></LayoutData></DocumentLayout>]]></OpenDocsLayout>
+--><DocumentLayout Version="1.0"><LayoutData><TabbedMdiRootContainer Orientation="Vertical"><TabbedMdiContainer Size="1336, 714" SelectedTabbedMdiWindow="e82b7983-4ac8-409f-ac1e-591318b476c7"><ToolWindow Key="Start Page:bd4649ab-da6b-4d04-a663-c722b8bf99db:Start Page" Guid="d90436de-6210-4cb1-a9dd-f9ab7b4d7de5" /><DocumentWindow Key="D:\EE\GitHub\PSoC42xxRust\PSoC42rs.cydsn\rust_project\src\motor.rs" Guid="5cbcc3bb-5296-43c5-944e-894322182dfa" /><DocumentWindow Key="D:\EE\GitHub\PSoC42xxRust\PSoC42rs.cydsn\TopDesign\TopDesign.cysch" Guid="e82b7983-4ac8-409f-ac1e-591318b476c7" /><DocumentWindow Key="D:\EE\GitHub\PSoC42xxRust\PSoC42rs.cydsn\PSoC42rs.cydwr" Guid="f2dbcf81-4788-436c-a077-3aaefb220ede" /></TabbedMdiContainer></TabbedMdiRootContainer><FloatingContainers /></LayoutData></DocumentLayout>]]></OpenDocsLayout>
 <config v="" />
 <AutoUpdate v="true" />
 </CyGuid_843a90a4-0c4b-4e44-991d-05e7fb117a21>

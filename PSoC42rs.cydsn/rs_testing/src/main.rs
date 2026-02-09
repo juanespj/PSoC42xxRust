@@ -10,23 +10,28 @@ use tokio::io::{AsyncReadExt, AsyncWriteExt};
 use tokio::time::{Duration, timeout};
 use tokio_serial::{SerialPortBuilderExt, SerialStream};
 #[tokio::main]
-async fn main() -> eframe::Result {
+
+async fn main() -> eframe::Result<()> {
     egui_test();
-    // Adjust COM port and baud
-    // let port = tokio_serial::new("COM3", 115_200).open_native_async()?;
-
-    // serial_read_log_bytes(port, Some("serial_log.txt"), Some(10_000)).await?;
-
     Ok(())
 }
+// async fn main() -> anyhow::Result<()> {
+//     // Adjust COM port and baud
+//     let port = tokio_serial::new("COM6", 230_400).open_native_async()?;
+
+//     serial_read_log_bytes(port, Some("serial_log.txt"), Some(1_000), Some(1000)).await?;
+
+//     Ok(())
+// }
 
 async fn serial_read_log_bytes(
     mut port: SerialStream,
     log_file: Option<&str>,
     max_duration_ms: Option<u64>,
+    max_lines: Option<usize>,
 ) -> anyhow::Result<()> {
     // Send 'r' using AsyncWriteExt explicitly
-    AsyncWriteExt::write_all(&mut port, b"r").await?;
+    AsyncWriteExt::write_all(&mut port, b"s").await?;
     AsyncWriteExt::flush(&mut port).await?;
 
     let mut buf = [0u8; 64];
@@ -67,33 +72,48 @@ async fn serial_read_log_bytes(
 
         line_buf.extend_from_slice(&buf[..n]);
 
-        while let Some(pos) = line_buf.iter().position(|&b| b == b'\n') {
+        // Split on both newline and comma
+        while let Some(pos) = line_buf.iter().position(|&b| b == b'\n' || b == b',') {
             let mut line_bytes: Vec<u8> = line_buf.drain(..=pos).collect();
-            if line_bytes.ends_with(&[b'\n']) {
-                line_bytes.pop();
-            }
+            // Remove the delimiter (newline or comma)
+            line_bytes.pop();
+            // Also remove carriage return if present
             if line_bytes.ends_with(&[b'\r']) {
                 line_bytes.pop();
             }
 
             if let Ok(line_str) = String::from_utf8(line_bytes) {
-                let ts = Local::now();
-                let log_line = format!(
-                    "{}.{:03}: {}",
-                    ts.format("%Y-%m-%d %H:%M:%S"),
-                    ts.timestamp_subsec_millis(),
-                    line_str.trim()
-                );
+                let trimmed = line_str.trim();
+                // Skip empty entries
+                if !trimmed.is_empty() {
+                    let ts = Local::now();
+                    let log_line = format!(
+                        "{}.{:03}: {}",
+                        ts.format("%Y-%m-%d %H:%M:%S"),
+                        ts.timestamp_subsec_millis(),
+                        trimmed
+                    );
 
-                if let Some(f) = file.as_mut() {
-                    writeln!(f, "{}", log_line)?;
+                    if let Some(f) = file.as_mut() {
+                        writeln!(f, "{}", log_line)?;
+                    }
+
+                    if lines_read % 10 == 0 {
+                        println!("{}", log_line);
+                    }
+
+                    lines_read += 1;
+
+                    // Check if we've reached max lines
+                    if let Some(max) = max_lines {
+                        if lines_read >= max {
+                            println!("Max lines ({}) reached, sending 'k'", max);
+                            AsyncWriteExt::write_all(&mut port, b"k").await?;
+                            AsyncWriteExt::flush(&mut port).await?;
+                            return Ok(());
+                        }
+                    }
                 }
-
-                if lines_read % 10 == 0 {
-                    println!("{}", log_line);
-                }
-
-                lines_read += 1;
             }
         }
     }

@@ -84,9 +84,8 @@ pub extern "C" fn main() -> () {
     // }
     uart_put_str("Initialized PSoCcmake.");
     let mut print_cnt: u32 = 0;
-    let mut last_upd: u32 = 0;
+    let mut upd_task: u32 = 0;
     let mut enc_last_upd: u32 = 0;
-    let mut enc_last_dt: u32 = 0;
 
     let mut old_count: i16 = -1;
     let mut spd_ref: u16;
@@ -102,30 +101,34 @@ pub extern "C" fn main() -> () {
             // distance is (10 - 0) + (reload - 23,990)
             enc_last_upd + (RELOAD - now)
         };
-        if dt > 500 {
+        if dt > 400 {
             //highest priority
             enc_last_upd = now;
-            // uart_send_u32_hex(dt);
-            unsafe { LED_Write(1) }
+            // unsafe { LED_Write(1) }
             Xaxis.get_mut().encoder.read_counter();
             Xaxis.get_mut().encoder.update(dt);
-            unsafe { LED_Write(0) }
+            // unsafe { LED_Write(0) }
+            if print_cnt > 3 {
+                print_cnt = 0;
+                if Xaxis.get().state != MotorState::IDLE {
+                    // uart_printf(format_args!("{},", Xaxis.get().encoder.omega));
+                    // uart_send_i32f32_scaled(Xaxis.get().encoder.omega);
+                    uart_send_u32_decimal(dt);
+                    uart_put_tx(b',' as u32)
+                }
+            }
+            print_cnt += 1;
         }
-        if dt > 100 && last_upd == 0 {
-            unsafe { LED_Write(1) }
+        if dt > 100 && upd_task == 0 {
             led.led_task();
             btn.update();
-            last_upd += 1;
-            unsafe { LED_Write(0) }
+            upd_task += 1;
         }
-        if dt > 300 && last_upd == 1 {
-            unsafe { LED_Write(1) }
+        if dt > 110 && upd_task == 1 {
             SYS.get_mut().sys_task();
-            last_upd += 1;
-            unsafe { LED_Write(0) }
+            upd_task += 1;
         }
-        if dt > 400 && last_upd == 2 {
-            unsafe { LED_Write(1) }
+        if dt > 120 && upd_task == 2 {
             unsafe {
                 let mut count = ADC_SAR_Seq_GetResult16(0);
                 if count <= 0 {
@@ -140,60 +143,7 @@ pub extern "C" fn main() -> () {
                     old_count = count;
                 }
             }
-            last_upd = 0;
-            unsafe { LED_Write(0) }
+            upd_task = 0;
         }
     }
 }
-
-//**  --- EMBASSY ---
-//
-//
-// use core::future::poll_fn;
-// use core::panic::PanicInfo;
-// use cortex_m::peripheral::SCB;
-// use core::fmt::Write; // Required for the write! macro
-// Define a static signal for the event.
-// The type '()' means the signal is just a notification, no data is passed.
-// static RX_WAKER: Signal<RefCell, ()> = Signal::new();
-// Define a capacity constant for your string buffer (e.g., 128 bytes)
-
-// use core::sync::atomic::{AtomicBool, AtomicUsize, Ordering}; //AtomicU32,
-
-// use cortex_m::Peripherals;
-// use embassy_executor::Executor;
-// use embassy_executor::Spawner;
-// use embassy_sync::signal::Signal;
-// use embassy_time::Timer;
-// use static_cell::StaticCell;
-// use systick_timer::SystickDriver;
-// static EXECUTOR: StaticCell<Executor> = StaticCell::new();
-// In your interrupt handler file (e.g., in src/interrupts.rs)
-// embassy_time_driver::time_driver_impl!(
-// static DRIVER: SystickDriver<4> = SystickDriver::new(24_000_000, 1000)
-// );
-//
-// let mut cp = Peripherals::steal();
-// This call will configure the reload value (24000 based on your DRIVER definition),
-// enable the timer, and set the priority correctly for the Embassy runtime.
-// DRIVER.start(&mut cp.SYST);
-// let executor = EXECUTOR.init(Executor::new());
-// executor.run(|spawner: Spawner| {
-//     spawn tasks inside the closure
-//     spawner.spawn(blink()).unwrap();
-// spawner.spawn(uart_rx_task()).unwrap();
-// });
-// #[embassy_executor::task]
-// async fn blink() {
-//     loop {
-//         unsafe {
-//             LED_Write(0);
-//         }
-//         Timer::after_millis(150).await;
-//         unsafe {
-//             LED_Write(1);
-//         }
-//         Timer::after_millis(300).await;
-//     }
-// }
-// static mut COUNT: u8 = 0; */

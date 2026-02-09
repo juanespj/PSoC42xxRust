@@ -12,7 +12,7 @@ use bitfield_struct::bitfield;
 
 // static mut LAST_TOGGLE: u32 = 0;
 
-const BLINK_PERIOD: u32 = 48_000; //2_400_000 //max
+const BLINK_PERIOD: u32 = 1_000; //2_400_000 //max
 pub struct LED_CTRL {
     counter: u32, // button compact state
 }

@@ -4,6 +4,8 @@ use crate::*;
 use core::ffi::c_char;
 use core::fmt::{self, Write};
 use core::str;
+use fixed::types::I32F32; //FixedI32, consts,types::I32F32
+
 use ffi::*;
 // use heapless::String;
 // use local_static::LocalStatic; //neded for write!
@@ -106,6 +108,10 @@ pub fn uart_put_bytes(bytes: &[u8]) {
 pub fn uart_put_tx(d: u32) {
     unsafe { UART_SpiUartWriteTxData(d) }
 }
+
+pub fn uart_put_tx_crlf(d: u32) {
+    unsafe { UART_UartPutCRLF(d) }
+}
 pub fn uart_put_str(s: &str) {
     uart_put_bytes(s.as_bytes())
 }
@@ -117,6 +123,79 @@ pub fn uart_put_bytes_fast(bytes: &[u8]) {
 pub fn uart_put_bytes_unbuffered(bytes: &[u8]) {
     for &byte in bytes {
         unsafe { UART_SpiUartWriteTxData(byte as u32) }
+    }
+}
+// Send raw bits (4 bytes, no conversion)
+pub fn uart_send_i32f32_binary(value: I32F32) {
+    let bits = value.to_bits();
+    uart_put_tx((bits & 0xFF) as u32);
+    uart_put_tx(((bits >> 8) & 0xFF) as u32);
+    uart_put_tx(((bits >> 16) & 0xFF) as u32);
+    uart_put_tx(((bits >> 24) & 0xFF) as u32);
+}
+pub fn uart_send_i32f32_hex(value: I32F32) {
+    const HEX: &[u8; 16] = b"0123456789ABCDEF";
+    let bits = value.to_bits() as u32;
+
+    for i in (0..8).rev() {
+        let nibble = ((bits >> (i * 4)) & 0xF) as usize;
+        uart_put_tx(HEX[nibble] as u32);
+    }
+}
+// Helper: send u32 as decimal ASCII
+pub fn uart_send_u32_decimal(mut value: u32) {
+    if value == 0 {
+        uart_put_tx(b'0' as u32);
+        return;
+    }
+
+    let mut buf = [0u8; 10];
+    let mut i = 0;
+
+    while value > 0 {
+        buf[i] = b'0' + (value % 10) as u8;
+        value /= 10;
+        i += 1;
+    }
+
+    // Send in reverse
+    while i > 0 {
+        i -= 1;
+        uart_put_tx(buf[i] as u32);
+    }
+}
+fn uart_send_i32_decimal(mut value: i32) {
+    if value < 0 {
+        uart_put_tx(b'-' as u32);
+        value = -value;
+    }
+    uart_send_u32_decimal(value as u32);
+}
+// Helper: send with leading zeros
+fn uart_send_u32_decimal_padded(value: u32, width: u8) {
+    let mut buf = [b'0'; 10];
+    let mut temp = value;
+    let mut i = width as usize;
+
+    while i > 0 && temp > 0 {
+        i -= 1;
+        buf[i] = b'0' + (temp % 10) as u8;
+        temp /= 10;
+    }
+
+    for j in 0..width as usize {
+        uart_put_tx(buf[j] as u32);
+    }
+}
+// Send scaled integer (multiply by 100, send as integer)
+pub fn uart_send_i32f32_scaled(value: I32F32) {
+    let scaled = (value * I32F32::from_num(100)).to_num::<i32>();
+    uart_send_i32_decimal(scaled);
+}
+// Send multiple values in one packet
+pub fn uart_send_i32f32_array(values: &[I32F32]) {
+    for &value in values {
+        uart_send_i32f32_binary(value);
     }
 }
 
@@ -131,12 +210,12 @@ pub fn uart_send_u32(value: u32) {
 // Send u16 as 2 bytes
 pub fn uart_send_u16(value: u16) {
     uart_put_tx((value & 0xFF) as u32);
-    uart_put_tx(((value >> 8) & 0xFF) as u32);
+    uart_put_tx_crlf(((value >> 8) & 0xFF) as u32);
 }
 
 // Send i32 (same as u32, just transmute)
 pub fn uart_send_i32(value: i32) {
-    uart_send_u32(value as u32);
+    uart_put_tx_crlf(value as u32);
 }
 
 // Send f32 as bytes
