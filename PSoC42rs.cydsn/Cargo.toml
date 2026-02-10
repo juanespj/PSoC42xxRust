@@ -7,7 +7,7 @@ rust_core = { path = "./rust_core", default-features = false }
 
 [profile.release]
 # Optimize for size aggressively
-opt-level = 2      # Best balance between size and performance# (Optional) Smallest possible code, may be slower
+opt-level = 'z'      # Best balance between size and performance# (Optional) Smallest possible code, may be slower
 # codegen-units = 1    # Enables more aggressive cross-module optimization
 lto = true#"fat"          # Enable Link-Time Optimization (critical for size)
 debug = true         # (Optional) Keep debug info for debugging release builds

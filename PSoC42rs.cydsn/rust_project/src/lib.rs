@@ -33,23 +33,27 @@ static Xaxis: LocalStatic<Stepper<XEncoder>> = LocalStatic::new();
 #[unsafe(no_mangle)]
 pub extern "C" fn tick_callback() {}
 
-#[cfg(not(target_os = "windows"))]
+#[cfg(target_arch = "arm")]
 #[panic_handler]
 fn panic(info: &core::panic::PanicInfo) -> ! {
     // Optionally log the panic location to a simple UART print if you have one,
     // otherwise, just halt.
     // Halt the CPU forever
     uart_printf(format_args!("Panic!->"));
-    uart_printf(format_args!(
-        "line {} file{}\n\r",
-        info.location().unwrap().line(),
-        info.location().unwrap().file()
-    ));
+    if let Some(location) = info.location() {
+        uart_printf(format_args!(
+            "at {}:{}\r\n",
+            location.file(),
+            location.line()
+        ));
+    }
+
+    uart_printf(format_args!("msg: {}\r\n", info.message()));
     loop {
         cortex_m::asm::bkpt(); // Use a breakpoint instruction to halt
     }
 }
-const RELOAD: u32 = 2_400_000;
+const RELOAD: u32 = 24_000;
 #[unsafe(no_mangle)]
 pub extern "C" fn main() -> () {
     *SYS.get_mut() = System_T::new();
@@ -72,7 +76,7 @@ pub extern "C" fn main() -> () {
         ADC_SAR_Seq_Start();
         ADC_SAR_Seq_StartConvert();
     }
-    pulser_init();
+    // pulser_init();
 
     let gpio_pin = || unsafe { BTN_Read() == 0 }; //change polarity if needed
     let mut btn = DebouncedButton::new(gpio_pin);
@@ -86,7 +90,7 @@ pub extern "C" fn main() -> () {
     let mut print_cnt: u32 = 0;
     let mut upd_task: u32 = 0;
     let mut enc_last_upd: u32 = 0;
-
+    let mut update: u8 = 0;
     let mut old_count: i16 = -1;
     let mut spd_ref: u16;
 
@@ -101,34 +105,48 @@ pub extern "C" fn main() -> () {
             // distance is (10 - 0) + (reload - 23,990)
             enc_last_upd + (RELOAD - now)
         };
-        if dt > 400 {
-            //highest priority
-            enc_last_upd = now;
-            // unsafe { LED_Write(1) }
-            Xaxis.get_mut().encoder.read_counter();
-            Xaxis.get_mut().encoder.update(dt);
-            // unsafe { LED_Write(0) }
-            if print_cnt > 3 {
-                print_cnt = 0;
-                if Xaxis.get().state != MotorState::IDLE {
-                    // uart_printf(format_args!("{},", Xaxis.get().encoder.omega));
-                    // uart_send_i32f32_scaled(Xaxis.get().encoder.omega);
-                    uart_send_u32_decimal(dt);
-                    uart_put_tx(b',' as u32)
-                }
+        if dt > 40 {
+            if update == 0 {
+                update = 1;
+                //highest priority
+                Xaxis.get_mut().encoder.read_counter(); //profiled 3.87 us
+                unsafe { LED_Write(1) }
+                Xaxis.get_mut().encoder.update(dt); //188.2us
+                unsafe { LED_Write(0) }
+
+                // if print_cnt > 3 {
+                //     print_cnt = 0;
+                //     // if Xaxis.get().state != MotorState::IDLE {
+                //     //     // uart_printf(format_args!("{},", Xaxis.get().encoder.omega));
+                //     //     // uart_send_i32f32_scaled(Xaxis.get().encoder.omega);
+                //     // }
+                // }
+                // print_cnt += 1;
+            } else {
+                enc_last_upd = now;
+                update = 0;
             }
-            print_cnt += 1;
         }
-        if dt > 100 && upd_task == 0 {
-            led.led_task();
+        if dt > 10 && upd_task == 0 {
+            // profiled @2.34us
+            unsafe { LED_Write(1) }
+
             btn.update();
             upd_task += 1;
+            unsafe { LED_Write(0) }
         }
-        if dt > 110 && upd_task == 1 {
+        if dt > 25 && upd_task == 1 {
+            // profiled @2us IDLE
+            unsafe { LED_Write(1) }
+
             SYS.get_mut().sys_task();
             upd_task += 1;
+            unsafe { LED_Write(0) }
         }
-        if dt > 120 && upd_task == 2 {
+        if dt > 30 && upd_task == 2 {
+            unsafe { LED_Write(1) }
+
+            //profiled @3.38us
             unsafe {
                 let mut count = ADC_SAR_Seq_GetResult16(0);
                 if count <= 0 {
@@ -144,6 +162,7 @@ pub extern "C" fn main() -> () {
                 }
             }
             upd_task = 0;
+            unsafe { LED_Write(0) }
         }
     }
 }

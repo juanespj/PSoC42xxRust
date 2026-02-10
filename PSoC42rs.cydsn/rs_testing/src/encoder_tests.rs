@@ -8,7 +8,7 @@ mod encoder_tests {
     use core::f32;
     use fixed::{
         FixedI32, consts,
-        types::{I16F16, I32F32, U32F32},
+        types::{I16F16, I32F32, I96F32, U32F32},
     };
 
     use crate::test_tools::*;
@@ -31,8 +31,9 @@ mod encoder_tests {
         let mut prev: Vec<f32> = vec![];
 
         let mut count: RingBuf<u32, 4> = RingBuf::new(0);
+
         for t in 0..4000 {
-            let t_ms=t as f32;
+            let t_ms = t as f32;
 
             let ramp_value = ramp_hold_ramp(t_ms, 200.0, 400.0, 200.0, 2000.0, true); // ramp up 200ms, hold 400ms, ramp down 200ms
 
@@ -70,13 +71,19 @@ mod encoder_tests {
         pub const OMEGA_ALPHA: I16F16 = I16F16::from_bits(10000); // 0.2 → moderate smoothing
         pub const ALPHA_ALPHA: I16F16 = I16F16::from_bits(20000); //3277 0.05 → heavier smoothing for alpha
 
-        eprint!("OMEGA_ALPHA:   {}\n\r", OMEGA_ALPHA);
-        eprint!("ALPHA_ALPHA:   {}\n\r", ALPHA_ALPHA);
+        let dt_ticks = 5280; // 1ms at 24MHz
+        let dt_sq_half_ticks = (dt_ticks * dt_ticks) >> 1;
+        const SCALE_24: I32F32 = I32F32::from_bits(178956971);
 
-        pub const OMEGA_EPS: I16F16 = I16F16::from_bits(100); // 0.05 rad/s
-        pub const ALPHA_EPS: I16F16 = I16F16::from_bits(0x19DB22C0); //48768 0.5 rad/s²
-        eprint!("OMEGA_EPS:   {}\n\r", OMEGA_EPS);
-        eprint!("ALPHA_EPS:   {}\n\r", ALPHA_EPS);
+        eprint!("SCALE_24:   {}\n\r", I32F32::from_num(1.0 / 24.0).to_bits());
+        eprint!("SCALE_24:   {}\n\r", SCALE_24);
+
+        eprint!("DT2:   {}\n\r", I32F32::from_num(dt_sq_half_ticks));
+        eprint!("SCALE_24^2:   {}\n\r", SCALE_24 * SCALE_24);
+        let dt_24_2 = I32F32::from_num(dt_ticks >> 1) / SCALE_24;
+        eprint!("dt/SCALE_24:   {}\n\r", dt_24_2);
+
+        eprint!("dt/SCALE_24^2 :   {}\n\r", dt_24_2.saturating_mul(dt_24_2));
     }
 
     #[test]

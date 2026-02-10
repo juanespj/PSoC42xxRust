@@ -9,12 +9,13 @@ use test_tools::*;
 use tokio::io::{AsyncReadExt, AsyncWriteExt};
 use tokio::time::{Duration, timeout};
 use tokio_serial::{SerialPortBuilderExt, SerialStream};
-#[tokio::main]
 
-async fn main() -> eframe::Result<()> {
+fn main() -> eframe::Result<()> {
     egui_test();
     Ok(())
 }
+#[tokio::main]
+
 // async fn main() -> anyhow::Result<()> {
 //     // Adjust COM port and baud
 //     let port = tokio_serial::new("COM6", 230_400).open_native_async()?;

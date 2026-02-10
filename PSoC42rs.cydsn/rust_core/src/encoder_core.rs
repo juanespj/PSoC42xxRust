@@ -10,7 +10,8 @@ pub const ONE_K_I32F32: I32F32 = I32F32::from_bits(65536000);
 pub const FIVEH_K_I32F32: I32F32 = I32F32::from_bits(2147483648000000);
 const DT_SCALE: I32F32 = I32F32::from_bits(0x0000_AAAB); // ~1/24 in fixed point
 // Use ticks directly in prediction (scale back at the end)
-const SCALE_24: I32F32 = I32F32::from_bits(24 << 16);
+const SCALE_24: I32F32 = I32F32::from_bits(178956971); //1/24 -> 0.0416666667
+
 #[cfg(feature = "embedded")]
 pub mod config {
 
@@ -257,22 +258,30 @@ impl<T: EncoderOps> Encoder<T> {
         }
 
         // 1. Prediction
-        let dt_sq_half_ticks = (dt_ticks * dt_ticks) >> 1;
-        let p_pred = self.pos
-            + (self.vel * dt_ticks_i32 / SCALE_24)
-            + (self.accel * I32F32::from_num(dt_sq_half_ticks) / (SCALE_24 * SCALE_24));
-        let v_pred = self.vel + (self.accel * dt_ticks_i32 / SCALE_24);
+        let dt_24_2 = I32F32::from_num(dt_ticks >> 1).saturating_div(SCALE_24);
+        let p_pred = self
+            .pos
+            .saturating_add(
+                self.vel
+                    .saturating_mul(dt_ticks_i32.saturating_div(SCALE_24)),
+            )
+            .saturating_add(self.accel.saturating_mul(dt_24_2).saturating_mul(dt_24_2));
+        let v_pred = self.vel.saturating_add(
+            self.accel
+                .saturating_mul(dt_ticks_i32.saturating_div(SCALE_24)),
+        );
 
         // 2. Innovation
-        let residual = I32F32::from_num(self.counts.curr().unwrap()) - p_pred;
+        let residual = I32F32::from_num(self.counts.curr().unwrap()).saturating_sub(p_pred);
 
         // 3. Correction - precompute reciprocals
         // Use pre-scaled gains
-        self.pos = p_pred.saturating_add(gain_a() * residual);
-        self.vel = v_pred.saturating_add(gain_b() * residual / dt_ticks_i32);
-        self.accel = self
-            .accel
-            .saturating_add(gain_c() * residual / I32F32::from_num(dt_sq_half_ticks));
+        self.pos = p_pred.saturating_add(gain_a().saturating_mul(residual));
+        self.vel =
+            v_pred.saturating_add(gain_b().saturating_mul(residual.saturating_div(dt_ticks_i32)));
+        self.accel = self.accel.saturating_add(
+            gain_c().saturating_mul(residual.saturating_div(dt_24_2.saturating_mul(dt_24_2))),
+        );
 
         self.theta = self.pos;
         self.omega = self.vel;
