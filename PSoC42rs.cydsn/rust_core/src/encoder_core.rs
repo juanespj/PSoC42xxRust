@@ -3,29 +3,33 @@ use core::ops::Mul;
 use crate::utils_core::{IirFilter, RingBuf};
 pub const COUNT_PER_REVI32: i32 = 1250;
 
-pub const DT_US: u32 = 600; // 1ms = 1000μs
-pub const DT_US2: u64 = DT_US as u64 * DT_US as u64;
-pub const SCALE_BITS: u32 = 20; // More precision
-pub const SCALE: u32 = 1 << SCALE_BITS;
+pub const SCALE: i64 = 65536;
+pub const DT_US: i64 = 600; // 0.6ms in micros
+pub const DT_US2 :i64= DT_US*DT_US; // 0.6ms in micros
 
+// Gains (Alpha, Beta, Gamma) scaled by 2^16
+// These are tuned for a Tracking Index of ~0.5
+pub const GA: u64 = 32768; // 0.5 * SCALE
+pub const GB: u64 = 13107; // 0.2 * SCALE
+pub const GC: u64 = 3276; // 0.05 * SCALE
 // Pre-calculate: dt/SCALE for multiplication
-const DT_SCALED: u64 = (DT_US as u64 * SCALE as u64) / 1_000_000; // dt in seconds * SCALE
+pub const DT_SCALED: i64 = (DT_US * SCALE) / 1_000_000; // dt in seconds * SCALE
 // For 1/dt and 1/dt^2 - keep as constants to avoid division
-const DT_INV_SCALED: u64 = (1_000_000 * SCALE as u64) / (DT_US as u64); // 1/dt * SCALE
-const DT2_INV_SCALED: u64 = (1_000_000_000_000 * SCALE as u64) / (DT_US2); // 1/dt^2 * SCALE
+pub const DT_INV_SCALED: i64 = (1_000_000 * SCALE) / (DT_US); // 1/dt * SCALE
+pub const DT2_INV_SCALED: i64 = (1_000_000_000_000 * SCALE ) / (DT_US2); // 1/dt^2 * SCALE
 #[cfg(feature = "embedded")]
 pub mod config {
 
     use crate::encoder_core::SCALE;
 
     pub fn gain_a() -> u64 {
-        524288 //0.5 *scale
+        32768 //0.5 *scale
     }
     pub fn gain_b() -> u64 {
-        314572 //0.4 in fixed point
+        13107 //0.2 in fixed point
     }
     pub fn gain_c() -> u64 {
-        104857 //0.4 in fixed point
+        3276 //0.05 in fixed point
     }
 }
 
@@ -61,9 +65,9 @@ pub mod config {
         }
     }
     // Now define your statics with their defaults directly
-    pub static GAIN_A: Tunable = Tunable::new(0x947AE200);
-    pub static GAIN_B: Tunable = Tunable::new(0x3AE147C0);
-    pub static GAIN_C: Tunable = Tunable::new(0x0CCCCCD0);
+    pub static GAIN_A: Tunable = Tunable::new(0);
+    pub static GAIN_B: Tunable = Tunable::new(0);
+    pub static GAIN_C: Tunable = Tunable::new(0);
     // pub static ALPHA_EPS: Tunable = Tunable::new(32768);
 
     // Your existing helper functions will now work perfectly:
@@ -106,10 +110,10 @@ pub struct Encoder<T: EncoderOps> {
     pub prev_enc_counts: i32,
     pub turns: i32, // number of overflows/underflows counted
 
-    pub theta: u64,
-    pub omega: u64,
-    pub prev_omega: u64,
-    pub alpha: u64,
+    pub theta: i64,
+    pub omega: i64,
+    pub prev_omega: i64,
+    pub alpha: i64,
     pub omega_filter: IirFilter,
     pub alpha_filter: IirFilter,
     ops: T,
@@ -151,39 +155,25 @@ impl<T: EncoderOps> Encoder<T> {
     }
 
     pub fn update(&mut self) {
-        // All state variables (theta, omega, alpha) are now u32 scaled by SCALE_BITS
+        // --- CONSTANTS (Tuned for 600us) ---
 
-        // accel_dt = alpha * dt
-        let accel_dt = self.alpha * DT_SCALED as u64;
+        // 1. Prediction (Physics)
+        // pos = pos + vel*dt + 0.5*accel*dt^2
+        // Using integer math, we keep units in "Counts" and "Counts/ms"
+        let p_pred = self.theta + (self.omega * DT_US / 1000);
+        let v_pred = self.omega + (self.alpha * DT_US / 1000);
 
-        // vel_dt = omega * dt
-        let vel_dt = self.omega * DT_SCALED as u64;
+        // 2. Innovation (Residual)
+        // Shift raw count up to match our scaled internal state
+        let z_scaled = (self.counts.curr().unwrap() as i64) * SCALE;
+        let residual = z_scaled - p_pred;
 
-        // p_pred = theta + vel_dt + 0.5 * accel_dt * dt
-        let accel_term = (accel_dt * DT_US as u64) >> 1; // +1 for the /2
-        let p_pred = self.theta.saturating_add(vel_dt).saturating_add(accel_term);
-
-        // v_pred = omega + accel_dt
-        let v_pred = self.omega.saturating_add(accel_dt);
-
-        // measurement = counts (convert to scaled integer)
-        let measurement = (unsafe { self.counts.curr().unwrap_unchecked() } as u64) << SCALE_BITS;
-
-        // residual = measurement - p_pred
-        let residual = measurement.saturating_sub(p_pred);
-
-        // theta = p_pred + gain_a * residual
-        self.theta = p_pred.saturating_add((gain_a() * residual) >> SCALE_BITS);
-
-        // omega = v_pred + gain_b * residual / dt
-        let residual_rate = (residual) * DT_INV_SCALED; // residual * (1/dt)
-        // self.omega = v_pred.saturating_add((gain_b() * residual_rate) >> SCALE_BITS);
-
-        // // alpha = alpha + gain_c * residual / dt^2
-        // let residual_accel = (residual) * DT2_INV_SCALED; // residual * (1/dt^2)
-        // self.alpha = self
-        //     .alpha
-        //     .saturating_add((gain_c() * residual_accel) >> SCALE_BITS);
+        // 3. Correction
+        // We use saturating_add to ensure no hardware interrupts/panics
+        // if the encoder skips or glitches.
+        self.theta = p_pred.saturating_add((gain_a() as i64* residual) / SCALE);
+        self.omega = v_pred.saturating_add((gain_b()as i64 * residual) / SCALE);
+        self.alpha = self.alpha.saturating_add((gain_c() as i64* residual) / SCALE);
     }
 
     /// Full encoder position as i32

@@ -53,10 +53,10 @@ impl Default for EncoderApp {
             sim_data: SimResults::default(),
             vars: vec![
                 //220 us sample time
-                TestVariable::new("Sample Rate us", 1200.0, (150.0, 800.0, 1.0)),
-                TestVariable::new("gain A", 0.058, (0.0001, 1.0, 0.0001)),
-                TestVariable::new("gain B", 0.01, (0.0001, 0.5, 0.0001)),
-                TestVariable::new("gain C", 0.05, (0.0001, 0.1, 0.0001)),
+                // TestVariable::new("Sample Rate us", 1200.0, (150.0, 800.0, 1.0)),
+                TestVariable::new("gain A", 0.50, (0.0001, 1.0, 0.00001)),
+                TestVariable::new("gain B", 0.20, (0.0001, 1.0, 0.0001)),
+                TestVariable::new("gain C", 0.05, (0.0001, 1.0, 0.0001)),
                 // TestVariable::new("Sample Rate", 1.0, (0.5, 3.0, 0.10)),
                 // TestVariable::new("omega_alpha", 0.5, (0.5, 1.0, 0.01)),
                 // TestVariable::new("omega_eps", 0.8, (0.001, 10.0, 0.1)),
@@ -182,11 +182,11 @@ impl EncoderApp {
 
         // --- Configuration ---
 
-        let sample_time_us = self.vars[0].value;
+        let sample_time_us = DT_US as f32;
 
-        config::set_gain_a((self.vars[1].value * SCALE as f32) as u64);
-        config::set_gain_b((self.vars[2].value * SCALE as f32) as u64);
-        config::set_gain_c((self.vars[3].value * SCALE as f32) as u64);
+        config::set_gain_a((self.vars[0].value as f64 * SCALE as f64) as u64);
+        config::set_gain_b((self.vars[1].value as f64 * SCALE as f64) as u64);
+        config::set_gain_c((self.vars[2].value as f64 * SCALE as f64) as u64);
 
         // --- Simulation state ---
         let mut sim_time_us = 0.0;
@@ -216,7 +216,9 @@ impl EncoderApp {
 
                 self.sim_data.t.push(t_ms as f64);
                 self.sim_data.raw_counts.push(current_sampled_value as f64);
-                self.sim_data.theta.push(test_encoder.theta as f64);
+                self.sim_data
+                    .theta
+                    .push(test_encoder.theta as f64 / SCALE as f64);
                 self.sim_data.omega.push(test_encoder.omega as f64);
                 self.sim_data.alpha.push(test_encoder.alpha as f64);
             }
