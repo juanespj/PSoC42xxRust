@@ -2,6 +2,8 @@ use crate::serial::*;
 use crate::Xaxis;
 use crate::*;
 use bitfield_struct::bitfield;
+use fixed::types::I16F16;
+use rust_core::encoder_core::ZERO;
 #[derive(PartialEq, Clone)]
 #[repr(u8)]
 #[cfg_attr(not(target_arch = "arm"), derive(Debug))]
@@ -112,14 +114,12 @@ impl System_T {
                         // }
                     }
                     MotorState::CONST_SPD => {
-                        // self.tmr += 1;
-                        // if self.tmr >= 50000000 {
-                        //     Xaxis.get_mut().state = MotorState::DECEL;
-                        //     self.tmr = 0;
-                        //     Xaxis.get_mut().set_speed(0);
-
-                        //     uart_put_str("\n\r-End Const Speed\n\r");
-                        // }
+                        self.tmr += 1;
+                        if self.tmr >= 800 {
+                            self.tmr = 0;
+                            Xaxis.get_mut().curr_target_speed_hz = 0;
+                            uart_put_str("\n\r-End Const Speed\n\r");
+                        }
                     }
                     MotorState::DECEL => {
                         // if self.tmr >= 2000 {

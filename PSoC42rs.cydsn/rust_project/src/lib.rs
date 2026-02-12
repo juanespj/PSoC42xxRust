@@ -76,7 +76,7 @@ pub extern "C" fn main() -> () {
         ADC_SAR_Seq_Start();
         ADC_SAR_Seq_StartConvert();
     }
-    // pulser_init();
+    pulser_init();
 
     let gpio_pin = || unsafe { BTN_Read() == 0 }; //change polarity if needed
     let mut btn = DebouncedButton::new(gpio_pin);
@@ -105,64 +105,65 @@ pub extern "C" fn main() -> () {
             // distance is (10 - 0) + (reload - 23,990)
             enc_last_upd + (RELOAD - now)
         };
-        if dt > 40 {
+        if dt > 200 {
+            //260us idle 800us moving
             if update == 0 {
                 update = 1;
                 //highest priority
-                Xaxis.get_mut().encoder.read_counter(); //profiled 3.87 us
                 unsafe { LED_Write(1) }
-                Xaxis.get_mut().encoder.update(dt); //188.2us
+                Xaxis.get_mut().encoder.read_counter(); //profiled 3.87 us
                 unsafe { LED_Write(0) }
+                Xaxis.get_mut().encoder.update(); //226us
 
-                // if print_cnt > 3 {
-                //     print_cnt = 0;
-                //     // if Xaxis.get().state != MotorState::IDLE {
-                //     //     // uart_printf(format_args!("{},", Xaxis.get().encoder.omega));
-                //     //     // uart_send_i32f32_scaled(Xaxis.get().encoder.omega);
-                //     // }
-                // }
-                // print_cnt += 1;
+                if print_cnt > 3 {
+                    print_cnt = 0;
+                    if Xaxis.get().state != MotorState::IDLE {
+                        // uart_printf(format_args!("{},", Xaxis.get().encoder.omega));
+                        // uart_send_i32f32_scaled(Xaxis.get().encoder.omega);
+                        uart_send_i32_decimal(Xaxis.get().encoder.omega as i32);
+
+                        // uart_put_tx(b',' as u32);
+                        uart_put_tx(b'\n' as u32);
+                    }
+                }
+                print_cnt += 1;
             } else {
                 enc_last_upd = now;
                 update = 0;
             }
-        }
-        if dt > 10 && upd_task == 0 {
-            // profiled @2.34us
-            unsafe { LED_Write(1) }
-
-            btn.update();
-            upd_task += 1;
-            unsafe { LED_Write(0) }
-        }
-        if dt > 25 && upd_task == 1 {
-            // profiled @2us IDLE
-            unsafe { LED_Write(1) }
-
-            SYS.get_mut().sys_task();
-            upd_task += 1;
-            unsafe { LED_Write(0) }
-        }
-        if dt > 30 && upd_task == 2 {
-            unsafe { LED_Write(1) }
-
-            //profiled @3.38us
-            unsafe {
-                let mut count = ADC_SAR_Seq_GetResult16(0);
-                if count <= 0 {
-                    count = 1;
+        } else {
+            match upd_task {
+                0 => {
+                    // profiled @2.34us
+                    // led.led_task();
+                    btn.update();
                 }
-                if (count - old_count).saturating_abs() > 10 {
-                    spd_ref = ADC_SAR_Seq_CountsTo_mVolts(0, count).saturating_abs() as u16;
-                    // spd_ref = count as u32;
-                    Xaxis.get_mut().set_speed(spd_ref as u32 * 4);
-                    // uart_printf(format_args!("SPD:{}\n\r", spd_ref));
-
-                    old_count = count;
+                1 => {
+                    // profiled @2us IDLE
+                    SYS.get_mut().sys_task();
                 }
+                2 => {
+                    //profiled @3.38us
+                    unsafe {
+                        // if ADC_SAR_Seq_IsEndConversion(0) != 0 {
+                        let mut count = ADC_SAR_Seq_GetResult16(0);
+                        if count <= 0 {
+                            count = 1;
+                        }
+                        if (count - old_count).saturating_abs() > 10 {
+                            spd_ref = ADC_SAR_Seq_CountsTo_mVolts(0, count).saturating_abs() as u16;
+                            // spd_ref = count as u32;
+                            Xaxis.get_mut().set_speed(spd_ref as u32 * 4);
+                            // uart_printf(format_args!("SPD:{}\n\r", spd_ref));
+
+                            old_count = count;
+                        }
+                        // }
+                    }
+                }
+                _ => {}
             }
-            upd_task = 0;
-            unsafe { LED_Write(0) }
+            upd_task = (upd_task + 1) % 3;
         }
     }
 }

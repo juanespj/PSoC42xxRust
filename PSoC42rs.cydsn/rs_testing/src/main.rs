@@ -1,26 +1,40 @@
 mod egui_testing;
 mod encoder_tests;
+mod serial_plotter;
 mod test_tools;
 use chrono::Local;
 use egui_testing::*;
+// use serial_plotter::SerialPlotterApp;
 use std::fs::OpenOptions;
 use std::io::Write;
 use test_tools::*;
 use tokio::io::{AsyncReadExt, AsyncWriteExt};
 use tokio::time::{Duration, timeout};
 use tokio_serial::{SerialPortBuilderExt, SerialStream};
-
 fn main() -> eframe::Result<()> {
     egui_test();
     Ok(())
 }
-#[tokio::main]
 
+// fn main() -> Result<(), eframe::Error> {
+//     let options = eframe::NativeOptions {
+//         viewport: egui::ViewportBuilder::default().with_inner_size([1200.0, 800.0]),
+//         ..Default::default()
+//     };
+
+//     eframe::run_native(
+//         "Serial Port Data Plotter",
+//         options,
+//         Box::new(|_cc| Ok(Box::<SerialPlotterApp>::default())),
+//     )
+// }
+
+// #[tokio::main]
 // async fn main() -> anyhow::Result<()> {
 //     // Adjust COM port and baud
 //     let port = tokio_serial::new("COM6", 230_400).open_native_async()?;
 
-//     serial_read_log_bytes(port, Some("serial_log.txt"), Some(1_000), Some(1000)).await?;
+//     serial_read_log_bytes(port, Some("serial_log.txt"), Some(1_000), Some(10_000)).await?;
 
 //     Ok(())
 // }
@@ -74,14 +88,14 @@ async fn serial_read_log_bytes(
         line_buf.extend_from_slice(&buf[..n]);
 
         // Split on both newline and comma
-        while let Some(pos) = line_buf.iter().position(|&b| b == b'\n' || b == b',') {
+        while let Some(pos) = line_buf
+            .iter()
+            .position(|&b| b == b'\n' || b == b',' || b == b'\r')
+        {
             let mut line_bytes: Vec<u8> = line_buf.drain(..=pos).collect();
             // Remove the delimiter (newline or comma)
             line_bytes.pop();
             // Also remove carriage return if present
-            if line_bytes.ends_with(&[b'\r']) {
-                line_bytes.pop();
-            }
 
             if let Ok(line_str) = String::from_utf8(line_bytes) {
                 let trimmed = line_str.trim();

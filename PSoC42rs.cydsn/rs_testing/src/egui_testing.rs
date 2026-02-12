@@ -53,14 +53,10 @@ impl Default for EncoderApp {
             sim_data: SimResults::default(),
             vars: vec![
                 //220 us sample time
-                TestVariable::new(
-                    "Sample Rate us",
-                    200.0 / TICK_PER_US,
-                    (150.0 / TICK_PER_US, 800.0 / TICK_PER_US, 1.0 / TICK_PER_US),
-                ),
-                TestVariable::new("gain A", 0.045, (0.0001, 0.1, 0.0001)),
-                TestVariable::new("gain B", 0.0045, (0.00001, 0.01, 0.00001)),
-                TestVariable::new("gain C", 0.0036, (0.00001, 0.01, 0.00001)),
+                TestVariable::new("Sample Rate us", 1200.0, (150.0, 800.0, 1.0)),
+                TestVariable::new("gain A", 0.058, (0.0001, 1.0, 0.0001)),
+                TestVariable::new("gain B", 0.01, (0.0001, 0.5, 0.0001)),
+                TestVariable::new("gain C", 0.05, (0.0001, 0.1, 0.0001)),
                 // TestVariable::new("Sample Rate", 1.0, (0.5, 3.0, 0.10)),
                 // TestVariable::new("omega_alpha", 0.5, (0.5, 1.0, 0.01)),
                 // TestVariable::new("omega_eps", 0.8, (0.001, 10.0, 0.1)),
@@ -174,7 +170,7 @@ impl Default for SimResults {
         }
     }
 }
-
+use rust_core::encoder_core::SCALE;
 impl EncoderApp {
     fn run_simulation(&mut self) {
         let mut test_encoder = Encoder::new(MockEncoder { counter: 0x8000 });
@@ -185,13 +181,12 @@ impl EncoderApp {
         self.sim_data.alpha.clear();
 
         // --- Configuration ---
-        let dt_ticks = self.vars[0].value as u32; // µs
 
-        let sample_time_us = self.vars[0].value * TICK_PER_US;
+        let sample_time_us = self.vars[0].value;
 
-        config::set_gain_a(I32F32::from_num(self.vars[1].value));
-        config::set_gain_b(I32F32::from_num(self.vars[2].value));
-        config::set_gain_c(I32F32::from_num(self.vars[3].value));
+        config::set_gain_a((self.vars[1].value * SCALE as f32) as u64);
+        config::set_gain_b((self.vars[2].value * SCALE as f32) as u64);
+        config::set_gain_c((self.vars[3].value * SCALE as f32) as u64);
 
         // --- Simulation state ---
         let mut sim_time_us = 0.0;
@@ -213,7 +208,7 @@ impl EncoderApp {
             test_encoder.read_counter();
 
             // 3. Update filter (tick-accurate)
-            test_encoder.update(dt_ticks);
+            test_encoder.update();
 
             // 4. Record
             if printres > 30 {
@@ -221,9 +216,9 @@ impl EncoderApp {
 
                 self.sim_data.t.push(t_ms as f64);
                 self.sim_data.raw_counts.push(current_sampled_value as f64);
-                self.sim_data.theta.push(test_encoder.theta.to_num::<f64>());
-                self.sim_data.omega.push(test_encoder.omega.to_num::<f64>());
-                self.sim_data.alpha.push(test_encoder.alpha.to_num::<f64>());
+                self.sim_data.theta.push(test_encoder.theta as f64);
+                self.sim_data.omega.push(test_encoder.omega as f64);
+                self.sim_data.alpha.push(test_encoder.alpha as f64);
             }
             printres += 1;
         }

@@ -1,41 +1,42 @@
-use core::ops::Mul;
-
 use crate::utils_core::{IirFilter, RingBuf};
+use fixed::types::I32F32; //FixedI32, consts,types::I32F32
+use local_static::LocalStatic;
 pub const COUNT_PER_REVI32: i32 = 1250;
-
-pub const DT_US: u32 = 600; // 1ms = 1000μs
-pub const DT_US2: u64 = DT_US as u64 * DT_US as u64;
-pub const SCALE_BITS: u32 = 20; // More precision
-pub const SCALE: u32 = 1 << SCALE_BITS;
-
-// Pre-calculate: dt/SCALE for multiplication
-const DT_SCALED: u64 = (DT_US as u64 * SCALE as u64) / 1_000_000; // dt in seconds * SCALE
-// For 1/dt and 1/dt^2 - keep as constants to avoid division
-const DT_INV_SCALED: u64 = (1_000_000 * SCALE as u64) / (DT_US as u64); // 1/dt * SCALE
-const DT2_INV_SCALED: u64 = (1_000_000_000_000 * SCALE as u64) / (DT_US2); // 1/dt^2 * SCALE
+pub const RAD_TO_COUNTS: I32F32 = I32F32::from_bits(330); // TWO_PI / COUNT_PER_REV
+pub const ONE_I32F32: I32F32 = I32F32::from_bits(200);
+pub const TS: I32F32 = I32F32::from_bits(1);
+pub const ZERO: I32F32 = I32F32::from_bits(0);
+pub const ONE_K_I32F32: I32F32 = I32F32::from_bits(65536000);
+pub const FIVEH_K_I32F32: I32F32 = I32F32::from_bits(2147483648000000);
+// Use ticks directly in prediction (scale back at the end)
+const DT_MS: I32F32 = I32F32::from_bits(3435973836800); // 600us in 16.16 fixed point
+const DT_INV: I32F32 = I32F32::from_bits(5368709); // 1/DT_MS in 16.16 fixed point
+const DT2_INV: I32F32 = I32F32::from_bits(6710); // 1/DT_MS^2 in 16.16 fixed point
 #[cfg(feature = "embedded")]
 pub mod config {
 
-    use crate::encoder_core::SCALE;
+    use fixed::types::I32F32;
+    pub fn gain_a() -> I32F32 {
+        I32F32::from_bits(0xCCCCCC05) //0.4
+    }
 
-    pub fn gain_a() -> u64 {
-        524288 //0.5 *scale
+    pub fn gain_b() -> I32F32 {
+        I32F32::from_bits(0x570A3D) //0.08
     }
-    pub fn gain_b() -> u64 {
-        314572 //0.4 in fixed point
-    }
-    pub fn gain_c() -> u64 {
-        104857 //0.4 in fixed point
+
+    pub fn gain_c() -> I32F32 {
+        I32F32::from_bits(0x0CCCCC) //0.003
     }
 }
 
 #[cfg(not(feature = "embedded"))] // PC target
 pub mod config {
     use core::cell::Cell;
+    use fixed::types::I32F32;
 
     // We need a wrapper that is Sync so it can live in a static
     pub struct Tunable {
-        value: Cell<u64>,
+        value: Cell<I32F32>,
     }
 
     // This is "unsafe" in theory, but on a single-core MCU like PSoC4,
@@ -44,19 +45,19 @@ pub mod config {
     unsafe impl Sync for Tunable {}
 
     impl Tunable {
-        pub const fn new(default_bits: u64) -> Self {
+        pub const fn new(default_bits: i64) -> Self {
             Self {
-                value: Cell::new(default_bits as u64),
+                value: Cell::new(I32F32::from_bits(default_bits)),
             }
         }
 
         #[inline(always)]
-        pub fn get(&self) -> u64 {
+        pub fn get(&self) -> I32F32 {
             self.value.get() // Returns a copy (I32F32 is Copy)
         }
 
         #[inline(always)]
-        pub fn set(&self, v: u64) {
+        pub fn set(&self, v: I32F32) {
             self.value.set(v);
         }
     }
@@ -67,28 +68,54 @@ pub mod config {
     // pub static ALPHA_EPS: Tunable = Tunable::new(32768);
 
     // Your existing helper functions will now work perfectly:
-    pub fn gain_a() -> u64 {
+    pub fn gain_a() -> I32F32 {
         GAIN_A.get()
     }
 
-    pub fn set_gain_a(v: u64) {
+    pub fn set_gain_a(v: I32F32) {
         GAIN_A.set(v);
     }
 
-    pub fn gain_b() -> u64 {
+    pub fn gain_b() -> I32F32 {
         GAIN_B.get()
     }
 
-    pub fn set_gain_b(v: u64) {
+    pub fn set_gain_b(v: I32F32) {
         GAIN_B.set(v);
     }
-    pub fn gain_c() -> u64 {
+    pub fn gain_c() -> I32F32 {
         GAIN_C.get()
     }
 
-    pub fn set_gain_c(v: u64) {
+    pub fn set_gain_c(v: I32F32) {
         GAIN_C.set(v);
     }
+    // #[inline(always)]
+    // pub fn omega_eps() -> I32F32 {
+    //     OMEGA_EPS.get()
+    // }
+
+    // pub fn set_omega_eps(v: I32F32) {
+    //     OMEGA_EPS.set(v);
+    // }
+
+    // #[inline(always)]
+    // pub fn alpha_alpha() -> I32F32 {
+    //     ALPHA_ALPHA.get()
+    // }
+
+    // pub fn set_alpha_alpha(v: I32F32) {
+    //     ALPHA_ALPHA.set(v);
+    // }
+
+    // #[inline(always)]
+    // pub fn alpha_eps() -> I32F32 {
+    //     ALPHA_EPS.get()
+    // }
+
+    // pub fn set_alpha_eps(v: I32F32) {
+    //     ALPHA_EPS.set(v);
+    // }
 }
 use config::*;
 pub trait EncoderOps {
@@ -105,13 +132,17 @@ pub struct Encoder<T: EncoderOps> {
     pub counts: RingBuf<i32, 4>, // current raw counter value from hardware
     pub prev_enc_counts: i32,
     pub turns: i32, // number of overflows/underflows counted
+    pub pos: I32F32,
+    pub vel: I32F32,
+    pub accel: I32F32,
 
-    pub theta: u64,
-    pub omega: u64,
-    pub prev_omega: u64,
-    pub alpha: u64,
-    pub omega_filter: IirFilter,
-    pub alpha_filter: IirFilter,
+    pub theta: I32F32,
+    pub omega: I32F32,
+    pub prev_omega: I32F32,
+    pub alpha: I32F32,
+    pub omega_filter: IirFilter<I32F32>,
+    pub alpha_filter: IirFilter<I32F32>,
+    pub delta_ticks: u32,
     ops: T,
 }
 
@@ -122,14 +153,18 @@ impl<T: EncoderOps> Encoder<T> {
         Self {
             counts: RingBuf::new(0),
             turns: 0,
-            theta: 0,
-            omega: 0,
-            alpha: 0,
-            omega_filter: IirFilter::new(0x99999A00), //0.6
-            alpha_filter: IirFilter::new(0x100000000),
+            theta: I32F32::from_bits(0),
+            omega: I32F32::from_bits(0),
+            alpha: I32F32::from_bits(0),
+            omega_filter: IirFilter::new(I32F32::from_bits(0x99999A00)), //0.6
+            alpha_filter: IirFilter::new(I32F32::from_bits(0x100000000)),
             ops,
-            prev_omega: 0,
+            prev_omega: I32F32::from_bits(0),
             prev_enc_counts: 0,
+            delta_ticks: 0,
+            pos: I32F32::from_bits(0),
+            vel: I32F32::from_bits(0),
+            accel: I32F32::from_bits(0),
         }
     }
     #[cfg(not(target_arch = "arm"))]
@@ -140,50 +175,66 @@ impl<T: EncoderOps> Encoder<T> {
     pub fn init(&mut self) {
         self.counts = RingBuf::new(0);
         self.turns = 0;
-        self.theta = 0;
-        self.omega = 0;
-        self.alpha = 0;
+        self.theta = I32F32::from_bits(0);
+        self.omega = I32F32::from_bits(0);
+        self.alpha = I32F32::from_bits(0);
         self.ops.init_hardware();
         self.ops.start_hardware();
         self.ops.write_counter(0);
         self.ops.get_counter();
         self.prev_enc_counts = 0;
+        self.delta_ticks = 0;
+        self.pos = I32F32::from_bits(0);
+        self.accel = I32F32::from_bits(0);
+        self.vel = I32F32::from_bits(0);
     }
 
+    // pub fn update(&mut self, dt_ticks: u32) {
+    //     let dt_ms = I32F32::from_num(dt_ticks).saturating_mul(SCALE_24MS);
+
+    //     // Use wrapping ops if you know overflow won't occur
+    //     let accel_dt = self.alpha.saturating_mul(dt_ms);
+    //     let vel_dt = self.omega.saturating_mul(dt_ms);
+
+    //     let p_pred = self
+    //         .theta
+    //         .saturating_add(vel_dt.saturating_add((accel_dt.saturating_mul(dt_ms)) >> 1));
+    //     let v_pred = self.omega.saturating_add(accel_dt);
+
+    //     let residual = I32F32::from_num(unsafe { self.counts.curr().unwrap_unchecked() })
+    //         .saturating_sub(p_pred);
+
+    //     // Use multiplication by reciprocal instead of division
+    //     let dt_inv = dt_ms.recip();
+    //     let dt2_inv = dt_inv.saturating_mul(dt_inv);
+
+    //     self.theta = p_pred.saturating_add(gain_a().saturating_mul(residual));
+    //     self.omega =
+    //         v_pred.saturating_add(gain_b().saturating_mul(residual.saturating_mul(dt_inv)));
+    //     self.alpha = self
+    //         .accel
+    //         .saturating_add(gain_c().saturating_mul(residual.saturating_mul(dt2_inv)));
+    // }
     pub fn update(&mut self) {
-        // All state variables (theta, omega, alpha) are now u32 scaled by SCALE_BITS
+        // Remove dt_ticks parameter
+        let accel_dt = self.alpha.saturating_mul(DT_MS);
+        let vel_dt = self.omega.saturating_mul(DT_MS);
 
-        // accel_dt = alpha * dt
-        let accel_dt = self.alpha * DT_SCALED as u64;
-
-        // vel_dt = omega * dt
-        let vel_dt = self.omega * DT_SCALED as u64;
-
-        // p_pred = theta + vel_dt + 0.5 * accel_dt * dt
-        let accel_term = (accel_dt * DT_US as u64) >> 1; // +1 for the /2
-        let p_pred = self.theta.saturating_add(vel_dt).saturating_add(accel_term);
-
-        // v_pred = omega + accel_dt
+        let p_pred = self
+            .theta
+            .saturating_add(vel_dt)
+            .saturating_add((accel_dt.saturating_mul(DT_MS)) >> 1);
         let v_pred = self.omega.saturating_add(accel_dt);
 
-        // measurement = counts (convert to scaled integer)
-        let measurement = (unsafe { self.counts.curr().unwrap_unchecked() } as u64) << SCALE_BITS;
-
-        // residual = measurement - p_pred
+        let measurement = I32F32::from_num(unsafe { self.counts.curr().unwrap_unchecked() });
         let residual = measurement.saturating_sub(p_pred);
 
-        // theta = p_pred + gain_a * residual
-        self.theta = p_pred.saturating_add((gain_a() * residual) >> SCALE_BITS);
-
-        // omega = v_pred + gain_b * residual / dt
-        let residual_rate = (residual) * DT_INV_SCALED; // residual * (1/dt)
-        // self.omega = v_pred.saturating_add((gain_b() * residual_rate) >> SCALE_BITS);
-
-        // // alpha = alpha + gain_c * residual / dt^2
-        // let residual_accel = (residual) * DT2_INV_SCALED; // residual * (1/dt^2)
-        // self.alpha = self
-        //     .alpha
-        //     .saturating_add((gain_c() * residual_accel) >> SCALE_BITS);
+        self.theta = p_pred.saturating_add(gain_a().saturating_mul(residual));
+        self.omega =
+            v_pred.saturating_add(gain_b().saturating_mul(residual.saturating_mul(DT_INV)));
+        self.alpha = self
+            .alpha
+            .saturating_add(gain_c().saturating_mul(residual.saturating_mul(DT2_INV)));
     }
 
     /// Full encoder position as i32
@@ -225,7 +276,7 @@ impl<T: EncoderOps> Encoder<T> {
 
 //     let dt = I32F32::from_num(dt_ticks) / I32F32::from_num(24);
 //     // Prevent division by zero
-//     if dt <= 0 {
+//     if dt <= I32F32::from_bits(0) {
 //         return;
 //     }
 //     // Compute deltas safely

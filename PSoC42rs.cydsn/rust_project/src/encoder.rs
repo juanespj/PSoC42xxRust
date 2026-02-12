@@ -5,7 +5,7 @@ use crate::Config::*;
 use crate::Xaxis;
 use crate::SYS;
 use bitfield_struct::bitfield;
-use fixed::{consts, types::I16F16, types::I32F32, FixedI32};
+// use fixed::{consts, types::I16F16, types::I32F32, FixedI32};
 use rust_core::encoder_core::{Encoder, EncoderOps};
 
 impl EncoderOps for XEncoder {
@@ -41,6 +41,6 @@ extern "C" fn XaxisEncoder_InterruptHandler() {
     }
 }
 
-fn counts_to_theta(counts: i32) -> I16F16 {
-    I16F16::from_num(counts) * RAD_TO_COUNTS
-}
+// fn counts_to_theta(counts: i32) -> I16F16 {
+//     I16F16::from_num(counts) * RAD_TO_COUNTS
+// }

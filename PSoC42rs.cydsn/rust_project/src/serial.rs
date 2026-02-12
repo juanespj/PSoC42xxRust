@@ -22,7 +22,7 @@ impl Write for UartWriter {
         Ok(())
     }
 }
-
+#[inline(always)]
 pub fn uart_printf(args: core::fmt::Arguments<'_>) {
     let mut writer = UartWriter;
     writer.write_fmt(args).unwrap();
@@ -105,13 +105,16 @@ pub fn uart_put_bytes(bytes: &[u8]) {
     buf[len] = 0;
     unsafe { UART_UartPutString(buf.as_ptr() as *const c_char) }
 }
+#[inline(always)]
 pub fn uart_put_tx(d: u32) {
     unsafe { UART_SpiUartWriteTxData(d) }
 }
 
+#[inline(always)]
 pub fn uart_put_tx_crlf(d: u32) {
     unsafe { UART_UartPutCRLF(d) }
 }
+#[inline(always)]
 pub fn uart_put_str(s: &str) {
     uart_put_bytes(s.as_bytes())
 }
@@ -164,7 +167,7 @@ pub fn uart_send_u32_decimal(mut value: u32) {
         uart_put_tx(buf[i] as u32);
     }
 }
-fn uart_send_i32_decimal(mut value: i32) {
+pub fn uart_send_i32_decimal(mut value: i32) {
     if value < 0 {
         uart_put_tx(b'-' as u32);
         value = -value;
@@ -197,14 +200,6 @@ pub fn uart_send_i32f32_array(values: &[I32F32]) {
     for &value in values {
         uart_send_i32f32_binary(value);
     }
-}
-
-// Send u32 as 4 bytes (little-endian)
-pub fn uart_send_u32(value: u32) {
-    uart_put_tx((value & 0xFF) as u32);
-    uart_put_tx(((value >> 8) & 0xFF) as u32);
-    uart_put_tx(((value >> 16) & 0xFF) as u32);
-    uart_put_tx(((value >> 24) & 0xFF) as u32);
 }
 
 // Send u16 as 2 bytes

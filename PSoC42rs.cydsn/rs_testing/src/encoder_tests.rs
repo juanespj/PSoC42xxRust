@@ -68,22 +68,12 @@ mod encoder_tests {
 
         // let num = I16F16::from_num(COUNT_PER_REVI32 / TWO_PI);
         // eprint!("RAD_TO_COUNTS bits: {}\n\r", num.to_bits());
-        pub const OMEGA_ALPHA: I16F16 = I16F16::from_bits(10000); // 0.2 → moderate smoothing
-        pub const ALPHA_ALPHA: I16F16 = I16F16::from_bits(20000); //3277 0.05 → heavier smoothing for alpha
-
-        let dt_ticks = 5280; // 1ms at 24MHz
-        let dt_sq_half_ticks = (dt_ticks * dt_ticks) >> 1;
-        const SCALE_24: I32F32 = I32F32::from_bits(178956971);
-
-        eprint!("SCALE_24:   {}\n\r", I32F32::from_num(1.0 / 24.0).to_bits());
-        eprint!("SCALE_24:   {}\n\r", SCALE_24);
-
-        eprint!("DT2:   {}\n\r", I32F32::from_num(dt_sq_half_ticks));
-        eprint!("SCALE_24^2:   {}\n\r", SCALE_24 * SCALE_24);
-        let dt_24_2 = I32F32::from_num(dt_ticks >> 1) / SCALE_24;
-        eprint!("dt/SCALE_24:   {}\n\r", dt_24_2);
-
-        eprint!("dt/SCALE_24^2 :   {}\n\r", dt_24_2.saturating_mul(dt_24_2));
+        let dt_ms = I32F32::from_num(800.0);
+        let dt_inv = I32F32::from_num(1.0 / 800.0);
+        let dt_inv2 = dt_inv * dt_inv;
+        eprint!("dt_ms 800:   {}\n\r", dt_ms.to_bits());
+        eprint!("dt_inv:   {}\n\r", dt_inv.to_bits());
+        eprintln!("dt_inv2:   {}\n\r", dt_inv2.to_bits());
     }
 
     #[test]
