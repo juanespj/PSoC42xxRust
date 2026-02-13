@@ -62,8 +62,6 @@ impl<T: Copy, const N: usize> RingBuf<T, N> {
     }
 }
 
-use fixed::traits::Fixed;
-
 #[derive(Copy, Clone)]
 pub struct IirFilter {
     y: u64,

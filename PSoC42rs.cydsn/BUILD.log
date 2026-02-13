@@ -1,4 +1,4 @@
---------------- Build Started: 02/11/2026 10:52:48 Project: PSoC42rs, Configuration: ARM GCC 5.4-2016-q2-update Debug ---------------
+--------------- Build Started: 02/13/2026 19:10:04 Project: PSoC42rs, Configuration: ARM GCC 5.4-2016-q2-update Debug ---------------
 cydsfit.exe -.appdatapath "C:\Users\jzapn\AppData\Local\Cypress Semiconductor\PSoC Creator\4.4" -.fdsnotice -.fdswarpdepfile=warp_dependencies.txt -.fdselabdepfile=elab_dependencies.txt -.fdsbldfile=generated_files.txt -.fdsreffile=referenced_files.txt -p D:\EE\GitHub\PSoC42xxRust\PSoC42rs.cydsn\PSoC42rs.cyprj -d CY8C4245AXI-483 -s D:\EE\GitHub\PSoC42xxRust\PSoC42rs.cydsn\Generated_Source\PSoC4 -- -yv2 -q10 -ygs -o2 -v3 -.fftcfgtype=LE
 Elaborating Design...
 ADD: sdb.M0061: information: Info from component: ADC_SAR_Seq. The actual sample rate (1736 SPS) differs from the desired sample rate (1500 SPS) due to the clock configuration in the DWR.
@@ -22,18 +22,18 @@ Building rust_project from workspace...
        Fresh unicode-ident v1.0.22
        Fresh glob v0.3.3
        Fresh semver-parser v0.7.0
+       Fresh windows-link v0.2.1
        Fresh memchr v2.8.0
        Fresh minimal-lexical v0.2.1
        Fresh regex-syntax v0.8.9
-       Fresh windows-link v0.2.1
        Fresh either v1.15.0
-       Fresh cfg-if v1.0.4
-       Fresh shlex v1.3.0
-       Fresh log v0.4.29
-       Fresh rustc-hash v2.1.1
-       Fresh nb v1.1.0
        Fresh bitflags v2.10.0
+       Fresh log v0.4.29
+       Fresh shlex v1.3.0
+       Fresh cfg-if v1.0.4
+       Fresh nb v1.1.0
        Fresh critical-section v1.2.0
+       Fresh rustc-hash v2.1.1
        Fresh proc-macro2 v1.0.106
        Fresh semver v0.9.0
        Fresh nom v7.1.3
@@ -41,23 +41,23 @@ Building rust_project from workspace...
        Fresh libloading v0.8.9
        Fresh itertools v0.13.0
        Fresh nb v0.1.3
-       Fresh void v1.0.2
        Fresh az v1.3.0
-       Fresh bytemuck v1.25.0
        Fresh byteorder v1.5.0
+       Fresh bytemuck v1.25.0
+       Fresh void v1.0.2
        Fresh vcell v0.1.3
-       Fresh bitfield v0.13.2
-       Fresh local_static v0.1.1
        Fresh stable_deref_trait v1.2.1
+       Fresh local_static v0.1.1
+       Fresh bitfield v0.13.2
        Fresh quote v1.0.40
        Fresh libc v0.2.180
        Fresh rustc_version v0.2.3
-       Fresh regex v1.12.3
        Fresh cexpr v0.6.0
+       Fresh regex v1.12.3
        Fresh typenum v1.19.0
        Fresh hash32 v0.3.1
-       Fresh portable-atomic v1.13.1
        Fresh volatile-register v0.2.2
+       Fresh portable-atomic v1.13.1
        Fresh embedded-hal v0.2.7
        Fresh cty v0.2.2
        Fresh syn v2.0.114
@@ -76,20 +76,40 @@ Building rust_project from workspace...
        Dirty rust_project v1.0.0 (D:\EE\GitHub\PSoC42xxRust\PSoC42rs.cydsn\rust_project): the file `rust_project\linker_script.ld` is missing
    Compiling rust_project v1.0.0 (D:\EE\GitHub\PSoC42xxRust\PSoC42rs.cydsn\rust_project)
        Fresh rust_core v0.1.0 (D:\EE\GitHub\PSoC42xxRust\PSoC42rs.cydsn\rust_core)
-warning: unused import: `local_static::LocalStatic`
- --> rust_core\src\encoder_core.rs:3:5
+warning: unused imports: `iter::Scan` and `ops::Mul`
+ --> rust_core\src\encoder_core.rs:1:12
   |
-3 | use local_static::LocalStatic;
-  |     ^^^^^^^^^^^^^^^^^^^^^^^^^
+1 | use core::{iter::Scan, ops::Mul};
+  |            ^^^^^^^^^^  ^^^^^^^^
   |
   = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
-warning: constant `SCALE_24MS` is never used
-  --> rust_core\src\encoder_core.rs:12:7
+warning: unused imports: `IirFilter` and `RingBuf`
+ --> rust_core\src\encoder_core.rs:3:25
+  |
+3 | use crate::utils_core::{IirFilter, RingBuf};
+  |                         ^^^^^^^^^  ^^^^^^^
+warning: unused import: `core::fmt`
+ --> rust_core\src\serial_core.rs:2:5
+  |
+2 | use core::fmt;
+  |     ^^^^^^^^^
+warning: unused import: `core::result::Result::Ok`
+ --> rust_core\src\serial_core.rs:4:5
+  |
+4 | use core::result::Result::Ok;
+  |     ^^^^^^^^^^^^^^^^^^^^^^^^
+warning: type `ParseState` is more private than the item `SerialParser::state`
+  --> rust_core\src\serial_core.rs:58:5
    |
-12 | const SCALE_24MS: I32F32 = I32F32::from_bits(178957); //1/24000 -> 0.0416666667
-   |       ^^^^^^^^^^
+58 |     pub state: ParseState,
+   |     ^^^^^^^^^^^^^^^^^^^^^ field `SerialParser::state` is reachable at visibility `pub`
    |
-   = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+note: but type `ParseState` is only usable at visibility `pub(self)`
+  --> rust_core\src\serial_core.rs:51:1
+   |
+51 | enum ParseState {
+   | ^^^^^^^^^^^^^^^
+   = note: `#[warn(private_interfaces)]` on by default
 warning: associated function `check` is never used
   --> rust_core\src\utils_core.rs:13:14
    |
@@ -97,8 +117,10 @@ warning: associated function `check` is never used
    | ------------------------------------------- associated function in this implementation
 13 |     const fn check() {
    |              ^^^^^
+   |
+   = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
      Running `D:\EE\GitHub\PSoC42xxRust\PSoC42rs.cydsn\target\release\build\rust_project-fcd8c2f7ff15b8a7\build-script-build`
-warning: `rust_core` (lib) generated 3 warnings (run `cargo fix --lib -p rust_core` to apply 1 suggestion)
+warning: `rust_core` (lib) generated 6 warnings (run `cargo fix --lib -p rust_core` to apply 4 suggestions)
 warning: rust_project@1.0.0: Using PSoC GNU path: C:\Program Files (x86)\Cypress\PSoC Creator\4.4\PSoC Creator\import\gnu\arm\5.4.1
 warning: rust_project@1.0.0: Using LIBCLANG path: C:\Program Files\LLVM\bin
 warning: rust_project@1.0.0: Bindings generated successfully
@@ -111,34 +133,24 @@ warning: unused imports: `FixedI32`, `consts`, and `types::I32F32`
   |
   = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
 warning: unused imports: `IirFilter` and `RingBuf`
- --> rust_project\src\encoder.rs:3:20
+ --> rust_project\src\encoder.rs:2:20
   |
-3 | use crate::utils::{IirFilter, RingBuf};
+2 | use crate::utils::{IirFilter, RingBuf};
   |                    ^^^^^^^^^  ^^^^^^^
-warning: unused import: `crate::Xaxis`
- --> rust_project\src\encoder.rs:5:5
+warning: unused import: `crate::Config::*`
+ --> rust_project\src\encoder.rs:3:5
   |
-5 | use crate::Xaxis;
-  |     ^^^^^^^^^^^^
-warning: unused import: `crate::SYS`
- --> rust_project\src\encoder.rs:6:5
+3 | use crate::Config::*;
+  |     ^^^^^^^^^^^^^^^^
+warning: unused import: `Xaxis`
+ --> rust_project\src\encoder.rs:4:21
   |
-6 | use crate::SYS;
-  |     ^^^^^^^^^^
-warning: unused import: `bitfield_struct::bitfield`
- --> rust_project\src\encoder.rs:7:5
-  |
-7 | use bitfield_struct::bitfield;
-  |     ^^^^^^^^^^^^^^^^^^^^^^^^^
-warning: unused imports: `FixedI32`, `consts`, and `types::I32F32`
- --> rust_project\src\encoder.rs:8:13
-  |
-8 | use fixed::{consts, types::I16F16, types::I32F32, FixedI32};
-  |             ^^^^^^                 ^^^^^^^^^^^^^  ^^^^^^^^
+4 | use crate::{ffi::*, Xaxis};
+  |                     ^^^^^
 warning: unused import: `Encoder`
- --> rust_project\src\encoder.rs:9:31
+ --> rust_project\src\encoder.rs:5:31
   |
-9 | use rust_core::encoder_core::{Encoder, EncoderOps};
+5 | use rust_core::encoder_core::{Encoder, EncoderOps};
   |                               ^^^^^^^
 warning: unused import: `ffi::*`
  --> rust_project\src\motor.rs:4:5
@@ -155,11 +167,21 @@ warning: unused import: `ffi::*`
   |
 9 | use ffi::*;
   |     ^^^^^^
+warning: unused import: `rust_core::encoder_core::SCALE`
+  --> rust_project\src\serial.rs:11:5
+   |
+11 | use rust_core::encoder_core::SCALE;
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 warning: unused import: `bitfield_struct::bitfield`
  --> rust_project\src\sys.rs:4:5
   |
 4 | use bitfield_struct::bitfield;
   |     ^^^^^^^^^^^^^^^^^^^^^^^^^
+warning: unused import: `fixed::types::I16F16`
+ --> rust_project\src\sys.rs:5:5
+  |
+5 | use fixed::types::I16F16;
+  |     ^^^^^^^^^^^^^^^^^^^^
 warning: unused import: `core::num::Wrapping`
  --> rust_project\src\utils.rs:1:5
   |
@@ -184,13 +206,6 @@ warning: variable does not need to be mutable
    |         help: remove this `mut`
    |
    = note: `#[warn(unused_mut)]` (part of `#[warn(unused)]`) on by default
-warning: variable does not need to be mutable
-  --> rust_project\src\lib.rs:90:9
-   |
-90 |     let mut print_cnt: u32 = 0;
-   |         ----^^^^^^^^^
-   |         |
-   |         help: remove this `mut`
 warning: unused variable: `led`
   --> rust_project\src\lib.rs:60:9
    |
@@ -198,27 +213,17 @@ warning: unused variable: `led`
    |         ^^^^^^^ help: if this is intentional, prefix it with an underscore: `_led`
    |
    = note: `#[warn(unused_variables)]` (part of `#[warn(unused)]`) on by default
-warning: unused variable: `print_cnt`
-  --> rust_project\src\lib.rs:90:9
+warning: enum `DebugPrint` is never used
+  --> rust_project\src\serial.rs:99:6
    |
-90 |     let mut print_cnt: u32 = 0;
-   |         ^^^^^^^^^^^^^ help: if this is intentional, prefix it with an underscore: `_print_cnt`
-warning: function `counts_to_theta` is never used
-  --> rust_project\src\encoder.rs:44:4
-   |
-44 | fn counts_to_theta(counts: i32) -> I16F16 {
-   |    ^^^^^^^^^^^^^^^
+99 | enum DebugPrint {
+   |      ^^^^^^^^^^
    |
    = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
-warning: enum `DebugPrint` is never used
-  --> rust_project\src\serial.rs:30:6
-   |
-30 | enum DebugPrint {
-   |      ^^^^^^^^^^
 warning: function `uart_send_u32_decimal_padded` is never used
-   --> rust_project\src\serial.rs:178:4
+   --> rust_project\src\serial.rs:209:4
     |
-178 | fn uart_send_u32_decimal_padded(value: u32, width: u8) {
+209 | fn uart_send_u32_decimal_padded(value: u32, width: u8) {
     |    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 warning: associated constant `check` is never used
   --> rust_project\src\utils.rs:34:11
@@ -227,8 +232,8 @@ warning: associated constant `check` is never used
    | ------------------------------------------- associated constant in this implementation
 34 |     const check: () = assert!(N.is_power_of_two());
    |           ^^^^^
-warning: `rust_project` (lib) generated 22 warnings (run `cargo fix --lib -p rust_project` to apply 18 suggestions)
-    Finished `release` profile [optimized + debuginfo] target(s) in 3.24s
+warning: `rust_project` (lib) generated 19 warnings (run `cargo fix --lib -p rust_project` to apply 16 suggestions)
+    Finished `release` profile [optimized + debuginfo] target(s) in 3.22s
 ============================================
 Build completed successfully
 ============================================
@@ -245,6 +250,6 @@ No ELF section .cychecksum found, creating one
 Application checksum calculated and stored in ELF section .cychecksum
 Checksum calculated and stored in ELF section .cymeta
 cyelftool.exe -S D:\EE\GitHub\PSoC42xxRust\PSoC42rs.cydsn\CortexM0\ARM_GCC_541\Debug\PSoC42rs.elf
-Flash used: 18712 of 32768 bytes (57.1%).
-SRAM used: 2668 of 4096 bytes (65.1%). Stack: 1024 bytes. Heap: 1024 bytes.
---------------- Build Succeeded: 02/11/2026 10:53:02 ---------------
+Flash used: 18496 of 32768 bytes (56.4%).
+SRAM used: 2676 of 4096 bytes (65.3%). Stack: 1024 bytes. Heap: 1024 bytes.
+--------------- Build Succeeded: 02/13/2026 19:10:26 ---------------

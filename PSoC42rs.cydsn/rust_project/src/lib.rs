@@ -24,7 +24,7 @@ use serial::*;
 use sys::*;
 use ui::*;
 static SYS: LocalStatic<System_T> = LocalStatic::new();
-// static UART: LocalStatic<Uart> = LocalStatic::new();
+static UART: LocalStatic<UartIf> = LocalStatic::new();
 
 static Xaxis: LocalStatic<Stepper<XEncoder>> = LocalStatic::new();
 
@@ -59,9 +59,8 @@ pub extern "C" fn main() -> () {
     *SYS.get_mut() = System_T::new();
     let mut led = LED_CTRL::new();
     *Xaxis.get_mut() = Stepper::new(XEncoder, 0);
-    // *UART.get_mut() = Uart::new();
-    // UART.get_mut().
-    UI_init();
+    *UART.get_mut() = UartIf::new();
+    UART.get_mut().UI_init();
     unsafe {
         CySysTickInit();
         CySysTickStart();
@@ -112,17 +111,25 @@ pub extern "C" fn main() -> () {
                 //highest priority
                 unsafe { LED_Write(1) }
                 Xaxis.get_mut().encoder.read_counter(); //profiled 3.87 us
-                unsafe { LED_Write(0) }
                 Xaxis.get_mut().encoder.update(); //226us
+                unsafe { LED_Write(0) }
 
                 if print_cnt > 3 {
                     print_cnt = 0;
                     if Xaxis.get().state != MotorState::IDLE {
                         // uart_printf(format_args!("{},", Xaxis.get().encoder.omega));
                         // uart_send_i32f32_scaled(Xaxis.get().encoder.omega);
-                        uart_send_i32_decimal(Xaxis.get().encoder.omega as i32);
+                        uart_send_i32_decimal(Xaxis.get().encoder.get_pos());
+
+                        uart_put_tx(b',' as u32);
+                        uart_send_i64_decimal(Xaxis.get().encoder.smooth_vel);
+
+                        uart_put_tx(b',' as u32);
+                        // uart_put_tx(b'\n' as u32);
+                        uart_send_i64_decimal(Xaxis.get().encoder.smooth_accel);
 
                         // uart_put_tx(b',' as u32);
+                        uart_put_tx(b'\r' as u32);
                         uart_put_tx(b'\n' as u32);
                     }
                 }

@@ -3,7 +3,6 @@ use crate::Xaxis;
 use crate::*;
 use bitfield_struct::bitfield;
 use fixed::types::I16F16;
-use rust_core::encoder_core::ZERO;
 #[derive(PartialEq, Clone)]
 #[repr(u8)]
 #[cfg_attr(not(target_arch = "arm"), derive(Debug))]
@@ -115,7 +114,7 @@ impl System_T {
                     }
                     MotorState::CONST_SPD => {
                         self.tmr += 1;
-                        if self.tmr >= 800 {
+                        if self.tmr >= 6000 {
                             self.tmr = 0;
                             Xaxis.get_mut().curr_target_speed_hz = 0;
                             uart_put_str("\n\r-End Const Speed\n\r");

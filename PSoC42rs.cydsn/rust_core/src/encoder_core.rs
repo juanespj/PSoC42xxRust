@@ -1,100 +1,23 @@
-use core::ops::Mul;
+use core::{iter::Scan, ops::Mul};
 
 use crate::utils_core::{IirFilter, RingBuf};
 pub const COUNT_PER_REVI32: i32 = 1250;
 
 pub const SCALE: i64 = 65536;
-pub const DT_US: i64 = 600; // 0.6ms in micros
-pub const DT_US2 :i64= DT_US*DT_US; // 0.6ms in micros
+pub const DT_US: i64 = 200; // 0.1ms in micros
+pub const DT_US2: i64 = DT_US * DT_US; // 0.6ms in micros
 
 // Gains (Alpha, Beta, Gamma) scaled by 2^16
 // These are tuned for a Tracking Index of ~0.5
-pub const GA: u64 = 32768; // 0.5 * SCALE
-pub const GB: u64 = 13107; // 0.2 * SCALE
-pub const GC: u64 = 3276; // 0.05 * SCALE
+pub const GA: u64 = 16384; // 0.5 * SCALE
+pub const GB: u64 = 3277; // 0.2 * SCALE
+pub const GC: u64 = 328; // 0.05 * SCALE
 // Pre-calculate: dt/SCALE for multiplication
 pub const DT_SCALED: i64 = (DT_US * SCALE) / 1_000_000; // dt in seconds * SCALE
 // For 1/dt and 1/dt^2 - keep as constants to avoid division
 pub const DT_INV_SCALED: i64 = (1_000_000 * SCALE) / (DT_US); // 1/dt * SCALE
-pub const DT2_INV_SCALED: i64 = (1_000_000_000_000 * SCALE ) / (DT_US2); // 1/dt^2 * SCALE
-#[cfg(feature = "embedded")]
-pub mod config {
+pub const DT2_INV_SCALED: i64 = (1_000_000_000_000 * SCALE) / (DT_US2); // 1/dt^2 * SCALE
 
-    use crate::encoder_core::SCALE;
-
-    pub fn gain_a() -> u64 {
-        32768 //0.5 *scale
-    }
-    pub fn gain_b() -> u64 {
-        13107 //0.2 in fixed point
-    }
-    pub fn gain_c() -> u64 {
-        3276 //0.05 in fixed point
-    }
-}
-
-#[cfg(not(feature = "embedded"))] // PC target
-pub mod config {
-    use core::cell::Cell;
-
-    // We need a wrapper that is Sync so it can live in a static
-    pub struct Tunable {
-        value: Cell<u64>,
-    }
-
-    // This is "unsafe" in theory, but on a single-core MCU like PSoC4,
-    // it is practically safe as long as you aren't writing in an ISR
-    // and reading in the main loop simultaneously.
-    unsafe impl Sync for Tunable {}
-
-    impl Tunable {
-        pub const fn new(default_bits: u64) -> Self {
-            Self {
-                value: Cell::new(default_bits as u64),
-            }
-        }
-
-        #[inline(always)]
-        pub fn get(&self) -> u64 {
-            self.value.get() // Returns a copy (I32F32 is Copy)
-        }
-
-        #[inline(always)]
-        pub fn set(&self, v: u64) {
-            self.value.set(v);
-        }
-    }
-    // Now define your statics with their defaults directly
-    pub static GAIN_A: Tunable = Tunable::new(0);
-    pub static GAIN_B: Tunable = Tunable::new(0);
-    pub static GAIN_C: Tunable = Tunable::new(0);
-    // pub static ALPHA_EPS: Tunable = Tunable::new(32768);
-
-    // Your existing helper functions will now work perfectly:
-    pub fn gain_a() -> u64 {
-        GAIN_A.get()
-    }
-
-    pub fn set_gain_a(v: u64) {
-        GAIN_A.set(v);
-    }
-
-    pub fn gain_b() -> u64 {
-        GAIN_B.get()
-    }
-
-    pub fn set_gain_b(v: u64) {
-        GAIN_B.set(v);
-    }
-    pub fn gain_c() -> u64 {
-        GAIN_C.get()
-    }
-
-    pub fn set_gain_c(v: u64) {
-        GAIN_C.set(v);
-    }
-}
-use config::*;
 pub trait EncoderOps {
     fn init_hardware(&self);
     fn start_hardware(&self);
@@ -106,16 +29,21 @@ pub trait EncoderOps {
 }
 
 pub struct Encoder<T: EncoderOps> {
-    pub counts: RingBuf<i32, 4>, // current raw counter value from hardware
+    // pub counts: RingBuf<i32, 4>, // current raw counter value from hardware
+    pub counts: i64,
     pub prev_enc_counts: i32,
     pub turns: i32, // number of overflows/underflows counted
 
-    pub theta: i64,
-    pub omega: i64,
-    pub prev_omega: i64,
-    pub alpha: i64,
-    pub omega_filter: IirFilter,
-    pub alpha_filter: IirFilter,
+    pub pos: i64,
+    pub vel: i64,
+    pub prev_pos: i64,
+    pub accel: i64,
+    pub g_a: u64,
+    pub g_b: u64,
+    pub g_c: u64,
+
+    pub smooth_vel: i64,
+    pub smooth_accel: i64,
     ops: T,
 }
 
@@ -124,15 +52,20 @@ impl<T: EncoderOps> Encoder<T> {
         ops.init_hardware();
         ops.start_hardware();
         Self {
-            counts: RingBuf::new(0),
+            // counts: RingBuf::new(0),
+            counts: 0,
             turns: 0,
-            theta: 0,
-            omega: 0,
-            alpha: 0,
-            omega_filter: IirFilter::new(0x99999A00), //0.6
-            alpha_filter: IirFilter::new(0x100000000),
+            pos: 0,
+            vel: 0,
+            accel: 0,
+            g_a: 20000, //0.25 * SCALE // >a20000,
+            g_b: 600,   //0.05 //>b600,
+            g_c: 13,    //0.005
+
+            smooth_vel: 0, //0.6
+            smooth_accel: 0,
             ops,
-            prev_omega: 0,
+            prev_pos: 0,
             prev_enc_counts: 0,
         }
     }
@@ -142,11 +75,12 @@ impl<T: EncoderOps> Encoder<T> {
     }
     /// Returns the init of this [`Encoder`].
     pub fn init(&mut self) {
-        self.counts = RingBuf::new(0);
+        // self.counts = RingBuf::new(0);
+        self.counts = 0;
         self.turns = 0;
-        self.theta = 0;
-        self.omega = 0;
-        self.alpha = 0;
+        self.pos = 0;
+        self.vel = 0;
+        self.accel = 0;
         self.ops.init_hardware();
         self.ops.start_hardware();
         self.ops.write_counter(0);
@@ -155,33 +89,70 @@ impl<T: EncoderOps> Encoder<T> {
     }
 
     pub fn update(&mut self) {
-        // --- CONSTANTS (Tuned for 600us) ---
-
-        // 1. Prediction (Physics)
-        // pos = pos + vel*dt + 0.5*accel*dt^2
-        // Using integer math, we keep units in "Counts" and "Counts/ms"
-        let p_pred = self.theta + (self.omega * DT_US / 1000);
-        let v_pred = self.omega + (self.alpha * DT_US / 1000);
+        // 1. Prediction (Physics Update)
+        // Since dt is constant, we don't multiply by dt here to save CPU.
+        // The units of vel/accel are effectively "per sample period".
+        let p_pred = self
+            .pos
+            .saturating_add(self.vel)
+            .saturating_add(self.accel >> 1);
+        let v_pred = self.vel.saturating_add(self.accel);
 
         // 2. Innovation (Residual)
-        // Shift raw count up to match our scaled internal state
-        let z_scaled = (self.counts.curr().unwrap() as i64) * SCALE;
-        let residual = z_scaled - p_pred;
+        let z_scaled = self.counts.saturating_mul(SCALE);
+        let residual = z_scaled.saturating_sub(p_pred);
 
-        // 3. Correction
-        // We use saturating_add to ensure no hardware interrupts/panics
-        // if the encoder skips or glitches.
-        self.theta = p_pred.saturating_add((gain_a() as i64* residual) / SCALE);
-        self.omega = v_pred.saturating_add((gain_b()as i64 * residual) / SCALE);
-        self.alpha = self.alpha.saturating_add((gain_c() as i64* residual) / SCALE);
+        // 3. Correction using i128 to prevent intermediate multiplication overflow
+        let apply_gain =
+            |res: i64, gain: i64| -> i64 { ((res as i128 * gain as i128) / SCALE as i128) as i64 };
+
+        self.pos = p_pred.saturating_add(apply_gain(residual, self.g_a as i64));
+        self.vel = v_pred.saturating_add(apply_gain(residual, self.g_b as i64));
+        self.accel = self
+            .accel
+            .saturating_add(apply_gain(residual, self.g_c as i64));
+
+        // 4. Physical Safety Clamps (Adjust these to your motor specs)
+        // This prevents the filter from "exploding" if the encoder glitches
+        const MAX_V: i64 = 100 * SCALE;
+        const MAX_A: i64 = 100 * SCALE;
+        self.vel = self.vel.clamp(-MAX_V, MAX_V);
+        self.accel = self.accel.clamp(-MAX_A, MAX_A);
+
+        self.smooth_vel = self
+            .smooth_vel
+            .saturating_add((self.vel.saturating_sub(self.smooth_vel)) >> 3);
+
+        // 2. Efficient Acceleration Filter (EMA)
+        // N=5 is a heavier filter to kill high-frequency spikes
+        self.smooth_accel = self
+            .smooth_accel
+            .saturating_add((self.accel.saturating_sub(self.smooth_accel)) >> 5);
+    }
+    // Now these return human-readable values without overflow risk
+    pub fn get_pos(&self) -> i32 {
+        (self.pos / SCALE) as i32 // Result is in Counts/Sec
+    }
+    pub fn get_velocity(&self) -> i32 {
+        (self.smooth_vel / 1000) as i32 // Result is in Counts/Sec
     }
 
+    pub fn get_acceleration(&self) -> i32 {
+        (self.smooth_accel) as i32 // Result is in Counts/Sec^2
+    }
     /// Full encoder position as i32
-    pub fn _read_position(&mut self) -> i32 {
-        match self.counts.curr() {
-            Some(v) => self.turns + (v as i32) - 0x8000, // assuming a 16-bit counter ,
-            None => 0,
-        }
+    pub fn _read_position(&mut self) -> i64 {
+        // match self.counts.curr() {
+        //     Some(v) => self.turns + (v as i32) - 0x8000, // assuming a 16-bit counter ,
+        //     None => 0,
+        // }
+        self.counts
+    }
+    pub fn zero(&mut self) {
+        self.ops.write_counter(0x8000);
+        self.counts = 0;
+        self.prev_enc_counts = 0;
+        self.turns = 0;
     }
 
     /// Reads the current absolute position from the hardware counter.
@@ -193,7 +164,7 @@ impl<T: EncoderOps> Encoder<T> {
         } else if dc1 < -(COUNT_PER_REVI32 >> 1) {
             self.turns += 1;
         }
-        self.counts.push(count + self.turns * COUNT_PER_REVI32);
+        self.counts = count as i64 + (self.turns * COUNT_PER_REVI32) as i64;
         self.prev_enc_counts = count;
         count
     }

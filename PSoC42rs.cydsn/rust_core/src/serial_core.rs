@@ -2,29 +2,145 @@
 use core::fmt;
 use core::prelude::rust_2024::*; // for #[derive] support
 use core::result::Result::Ok;
-pub trait SerialWrite {
-    fn write_bytes(&self, bytes: &[u8]);
-
-    fn write_str(&self, s: &str) {
-        self.write_bytes(s.as_bytes())
-    }
-    fn write_fmt(&self, args: fmt::Arguments<'_>);
+// Core trait that abstracts the hardware interface
+pub trait UartHardware {
+    fn put_str(&self, s: &str);
+    fn init(&self);
+    fn clear_rx_buffer(&self);
 }
 
-pub struct FmtWriter<'a, T: SerialWrite>(pub &'a T);
+// Generic UartIf that works with any hardware implementation
+pub struct UartIf<H: UartHardware> {
+    parser: SerialParser,
+    hardware: H,
+}
 
-impl<T: SerialWrite> fmt::Write for FmtWriter<'_, T> {
+impl<H: UartHardware> Write for UartIf<H> {
     fn write_str(&mut self, s: &str) -> fmt::Result {
-        self.0.write_str(s);
+        self.hardware.put_str(s);
         Ok(())
     }
+}
+
+impl<H: UartHardware> UartIf<H> {
+    pub fn new(hardware: H) -> Self {
+        Self {
+            parser: SerialParser::new(),
+            hardware,
+        }
+    }
+    pub fn UI_init(&mut self) {
+        self.hardware.init();
+        self.hardware.clear_rx_buffer();
+
+        // term(TermCmd::ClearScreen);
+        // term(TermCmd::Home);
+        self.hardware.put_str("\n\r-PSOC RS\r\n");
+    }
+}
+#[derive(Debug, Clone, Copy)]
+pub enum Command {
+    ToggleDir,
+    Kill,
+    ToggleDebug,
+    StartMove,
+    StartSpeed,
+    Stop,
+    Reset,
+    Assign { var: u8, value: u64 },
+    Unknown(u8),
+}
+
+#[derive(Copy, Clone)]
+enum ParseState {
+    Idle,
+    WaitVar,
+    ReadNumber { var: u8, value: u64 },
+}
+
+pub struct SerialParser {
+    pub state: ParseState,
+}
+
+impl SerialParser {
+    pub const fn new() -> Self {
+        Self {
+            state: ParseState::Idle,
+        }
+    }
+
+    pub fn parse_byte(&mut self, b: u8) -> Option<Command> {
+        match self.state {
+            ParseState::Idle => match b {
+                b'd' | b'D' => return Some(Command::ToggleDir),
+                b'k' | b'K' => return Some(Command::Kill),
+                b'p' => return Some(Command::ToggleDebug),
+                b'r' | b'R' => return Some(Command::StartMove),
+                b's' | b'S' => return Some(Command::StartSpeed),
+                b't' | b'T' => return Some(Command::Stop),
+                b'z' | b'Z' => return Some(Command::Reset),
+
+                b'>' => {
+                    self.state = ParseState::WaitVar;
+                }
+
+                0 => {}
+
+                other => return Some(Command::Unknown(other)),
+            },
+
+            ParseState::WaitVar => {
+                if b.is_ascii_alphabetic() {
+                    self.state = ParseState::ReadNumber { var: b, value: 0 };
+                } else {
+                    self.state = ParseState::Idle;
+                }
+            }
+
+            ParseState::ReadNumber { var, mut value } => match b {
+                b'0'..=b'9' => {
+                    value = value * 10 + (b - b'0') as u64;
+                    self.state = ParseState::ReadNumber { var, value };
+                }
+
+                b',' => {
+                    self.state = ParseState::Idle;
+                    return Some(Command::Assign { var, value });
+                }
+
+                _ => {
+                    self.state = ParseState::Idle;
+                }
+            },
+        }
+
+        None
+    }
+}
+
+#[macro_export]
+macro_rules! uart_println {
+    ($writer:expr, $($arg:tt)*) => {{
+        use core::fmt::Write;
+        let mut w = $crate::serial::FmtWriter($writer);
+        let _ = writeln!(w, $($arg)*);
+    }};
 }
 
 pub enum TermCmd {
     ClearScreen,
     Home,
 }
-
+// pub fn term<W: SerialWrite>(w: &mut W, cmd: TermCmd) {
+//     match cmd {
+//         TermCmd::ClearScreen => {
+//             w.write_str("\x1B[2J\x1B[H");
+//         }
+//         TermCmd::Home => {
+//             w.write_str("\x1B[H");
+//         }
+//     }
+// }
 // const CLEAR_LINE: &[u8] = b"\x1B[K";
 
 // const CURSOR_TOP_LEFT: &[u8] = b"\x1B[H";
@@ -48,44 +164,3 @@ pub enum TermCmd {
 // pub const UART_FCLEAR: &[u8; 4] = b"\x1B[m\0";
 // pub const UART_FRED: &[u8; 8] = b"\x1B[0;31m\0";
 // pub const UART_FGRN: &[u8; 8] = b"\x1B[1;32m\0";
-
-pub fn term<W: SerialWrite>(w: &W, cmd: TermCmd) {
-    match cmd {
-        TermCmd::ClearScreen => w.write_str("\x1B[2J\x1B[H"),
-        TermCmd::Home => w.write_str("\x1B[H"),
-    }
-}
-
-// rust_core/src/commands.rs
-#[derive(Debug, Clone, Copy)]
-pub enum Command {
-    ToggleDir,
-    Kill,
-    ToggleDebug,
-    StartMove,
-    StartSpeed,
-    Stop,
-    Unknown(u8),
-}
-
-pub fn parse_byte(b: u8) -> Option<Command> {
-    match b {
-        b'd' | b'D' => Some(Command::ToggleDir),
-        b'k' | b'K' => Some(Command::Kill),
-        b'p' => Some(Command::ToggleDebug),
-        b'r' | b'R' => Some(Command::StartMove),
-        b's' | b'S' => Some(Command::StartSpeed),
-        b't' | b'T' => Some(Command::Stop),
-        0 => None,
-        other => Some(Command::Unknown(other)),
-    }
-}
-
-#[macro_export]
-macro_rules! uart_println {
-    ($writer:expr, $($arg:tt)*) => {{
-        use core::fmt::Write;
-        let mut w = $crate::serial::FmtWriter($writer);
-        let _ = writeln!(w, $($arg)*);
-    }};
-}

@@ -159,9 +159,9 @@ impl<T: EncoderOps> Stepper<T> {
 
         //Pulser Period = 1/24  1200 period -> 50us min, 20ms max
         // Update step interval (ms)
-        let speed_int: u32 = self.current_speed_hz.abs()as u32;
+        let speed_int: u32 = self.current_speed_hz.abs() as u32;
         self.step_interval = if speed_int == 0 {
-            1000 //fastest
+            50 //fastest
         } else {
             (30000_u32 / speed_int).clamp(1, 3000)
         };

@@ -2,7 +2,7 @@ use crate::test_tools::*;
 use eframe::egui;
 use egui_plot::{Legend, Line, Plot, PlotPoints};
 use rust_core::encoder_core::*;
-use rust_core::utils_core::*;
+// use rust_core::utils_core::*;
 
 use fixed::types::I32F32;
 
@@ -43,7 +43,6 @@ struct EncoderApp {
     smooth_ramp: bool,
     sim_data: SimResults,
 }
-const TICK_PER_US: f32 = 1.0 / 24.0; // 24 MHz clock =  1 tick = 0.0416 us (24 MHz clock)
 impl Default for EncoderApp {
     fn default() -> Self {
         Self {
@@ -54,9 +53,9 @@ impl Default for EncoderApp {
             vars: vec![
                 //220 us sample time
                 // TestVariable::new("Sample Rate us", 1200.0, (150.0, 800.0, 1.0)),
-                TestVariable::new("gain A", 0.50, (0.0001, 1.0, 0.00001)),
-                TestVariable::new("gain B", 0.20, (0.0001, 1.0, 0.0001)),
-                TestVariable::new("gain C", 0.05, (0.0001, 1.0, 0.0001)),
+                TestVariable::new("gain A", 0.33, (0.0001, 1.0, 0.00001)),
+                TestVariable::new("gain B", 0.01, (0.0001, 0.01, 0.0001)),
+                TestVariable::new("gain C", 0.00021, (0.00001, 0.001, 0.0001)),
                 // TestVariable::new("Sample Rate", 1.0, (0.5, 3.0, 0.10)),
                 // TestVariable::new("omega_alpha", 0.5, (0.5, 1.0, 0.01)),
                 // TestVariable::new("omega_eps", 0.8, (0.001, 10.0, 0.1)),
@@ -183,10 +182,9 @@ impl EncoderApp {
         // --- Configuration ---
 
         let sample_time_us = DT_US as f32;
-
-        config::set_gain_a((self.vars[0].value as f64 * SCALE as f64) as u64);
-        config::set_gain_b((self.vars[1].value as f64 * SCALE as f64) as u64);
-        config::set_gain_c((self.vars[2].value as f64 * SCALE as f64) as u64);
+        test_encoder.g_a = (self.vars[0].value as f64 * SCALE as f64) as u64;
+        test_encoder.g_b = (self.vars[1].value as f64 * SCALE as f64) as u64;
+        test_encoder.g_c = (self.vars[2].value as f64 * SCALE as f64) as u64;
 
         // --- Simulation state ---
         let mut sim_time_us = 0.0;
@@ -218,9 +216,9 @@ impl EncoderApp {
                 self.sim_data.raw_counts.push(current_sampled_value as f64);
                 self.sim_data
                     .theta
-                    .push(test_encoder.theta as f64 / SCALE as f64);
-                self.sim_data.omega.push(test_encoder.omega as f64);
-                self.sim_data.alpha.push(test_encoder.alpha as f64);
+                    .push(test_encoder.pos as f64 / SCALE as f64);
+                self.sim_data.omega.push(test_encoder.vel as f64);
+                self.sim_data.alpha.push(test_encoder.accel as f64);
             }
             printres += 1;
         }

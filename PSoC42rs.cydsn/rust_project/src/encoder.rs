@@ -1,11 +1,7 @@
 pub struct XEncoder;
-use crate::ffi::*;
 use crate::utils::{IirFilter, RingBuf};
 use crate::Config::*;
-use crate::Xaxis;
-use crate::SYS;
-use bitfield_struct::bitfield;
-// use fixed::{consts, types::I16F16, types::I32F32, FixedI32};
+use crate::{ffi::*, Xaxis};
 use rust_core::encoder_core::{Encoder, EncoderOps};
 
 impl EncoderOps for XEncoder {
@@ -13,8 +9,8 @@ impl EncoderOps for XEncoder {
         unsafe {
             DecL_Init();
             DecL_Start();
-            #[cfg(target_arch = "arm")]
-            ISR_DecL_StartEx(Some(XaxisEncoder_InterruptHandler));
+            // #[cfg(target_arch = "arm")]
+            // ISR_DecL_StartEx(Some(XaxisEncoder_InterruptHandler));
             Pulser_tmr_Start();
         }
     }
@@ -30,16 +26,14 @@ impl EncoderOps for XEncoder {
     }
 }
 
-#[unsafe(no_mangle)]
-extern "C" fn XaxisEncoder_InterruptHandler() {
-    unsafe {
-        // let count = Xaxis.get_mut().encoder.read_counter();
-        // Xaxis.get_mut().encoder.counts.push(count);
-        // Xaxis.get_mut().encoder.update();
-        #[cfg(target_arch = "arm")]
-        ISR_DecL_ClearPending();
-    }
-}
+// #[unsafe(no_mangle)]
+// extern "C" fn XaxisEncoder_InterruptHandler() {
+//     unsafe {
+
+//         #[cfg(target_arch = "arm")]
+//         ISR_DecL_ClearPending();
+//     }
+// }
 
 // fn counts_to_theta(counts: i32) -> I16F16 {
 //     I16F16::from_num(counts) * RAD_TO_COUNTS

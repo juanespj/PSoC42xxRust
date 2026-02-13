@@ -1,12 +1,15 @@
 // use crate::RX_WAKER;
 use crate::SYS;
+use crate::UART;
+
 use crate::*;
 use core::ffi::c_char;
 use core::fmt::{self, Write};
 use core::str;
-use fixed::types::I32F32; //FixedI32, consts,types::I32F32
-
 use ffi::*;
+use fixed::types::I32F32; //FixedI32, consts,types::I32F32
+use rust_core::encoder_core::SCALE;
+use rust_core::serial_core::{Command, SerialParser, TermCmd};
 // use heapless::String;
 // use local_static::LocalStatic; //neded for write!
 //                                // use heapless::String;
@@ -14,29 +17,91 @@ use ffi::*;
 //                                // We use 32, just like your raw_buf size.
 //                                // static mut UART_BUFFER: Option<String<30>> = None;
 
-struct UartWriter;
+pub struct UartIf {
+    parser: SerialParser,
+}
 
-impl Write for UartWriter {
+impl Write for UartIf {
     fn write_str(&mut self, s: &str) -> fmt::Result {
         uart_put_str(s);
         Ok(())
     }
 }
+
+impl UartIf {
+    pub fn new() -> Self {
+        Self {
+            parser: SerialParser::new(),
+        }
+    }
+    pub fn UI_init(&mut self) {
+        unsafe {
+            UART_Start();
+            UART_SetCustomInterruptHandler(Some(RSUARTRX));
+            UART_SpiUartClearRxBuffer();
+        }
+        term(TermCmd::ClearScreen);
+        term(TermCmd::Home);
+        uart_put_str("\n\r-PSOC RS\r\n");
+    }
+    fn serial_event(&mut self, in32: u32) {
+        let ch: u8 = (in32 & 0xFF) as u8;
+
+        // single char (maybe non-printable), then hex
+        // let one = [ch, 0];
+        // unsafe { UART_UartPutString(one.as_ptr() as *const c_char) }
+        match self.parser.parse_byte(ch) {
+            Some(cmd) => match cmd {
+                Command::Assign { var, value } => match var {
+                    b'a' | b'A' => {
+                        Xaxis.get_mut().encoder.g_a = value;
+                        uart_printf(format_args!("\r\n New G_A: {:?}", value));
+                    }
+                    b'b' | b'B' => {
+                        Xaxis.get_mut().encoder.g_b = value;
+                    }
+                    b'c' | b'C' => {
+                        Xaxis.get_mut().encoder.g_c = value;
+                    }
+                    _ => {}
+                },
+                Command::ToggleDir => {
+                    let dir = if Xaxis.get_mut().dir == MotorDirection::BWD {
+                        uart_printf(format_args!("\n\rchange dir: FWD "));
+                        MotorDirection::FWD
+                    } else {
+                        uart_printf(format_args!("\n\rchange dir: BWD "));
+
+                        MotorDirection::BWD
+                    };
+                    Xaxis.get_mut().set_direction(dir);
+                }
+                Command::Kill => SYS.get_mut().next_state = System_State::KILL,
+                Command::ToggleDebug => SYS.get_mut().print_dbg = !SYS.get().print_dbg,
+                Command::StartMove => SYS.get_mut().next_state = System_State::START_MOVE,
+                Command::StartSpeed => SYS.get_mut().next_state = System_State::START_SPD,
+                Command::Stop => SYS.get_mut().next_state = System_State::STOPPING,
+                Command::Reset => Xaxis.get_mut().encoder.zero(),
+                Command::Unknown(unk_cmd) => uart_printf(format_args!(
+                    "\n\rDBG: {} [{}]",
+                    unk_cmd,
+                    (unk_cmd as u8).escape_ascii()
+                )),
+            },
+            None => {}
+        }
+    }
+}
+
 #[inline(always)]
 pub fn uart_printf(args: core::fmt::Arguments<'_>) {
-    let mut writer = UartWriter;
-    writer.write_fmt(args).unwrap();
+    UART.get_mut().write_fmt(args).unwrap();
 }
 enum DebugPrint {
     None,
     X_Motor,
     X_SPD,
     DEBUG,
-}
-enum TermCmd {
-    ClearScreen,
-    // ClearLine,
-    Home,
 }
 
 fn term(cmd: TermCmd) {
@@ -53,46 +118,13 @@ macro_rules! uart_println {
         $crate::uart_printf(format_args!($($arg)*));
     };
 }
-// const CLEAR_LINE: &[u8] = b"\x1B[K";
 
-// const CURSOR_TOP_LEFT: &[u8] = b"\x1B[H";
-// pub const UART_REGION_ON: &[u8; 6] = b"\x1B[?6h\0";
-// pub const UART_REGION_OFF: &[u8; 6] = b"\x1B[?6l\0";
-// pub const CLEARLINE: &[u8; 4] = b"\x1B[K\0";
-// pub const CURSOR_HOME: &[u8; 4] = b"\x1B[H\0";
-// pub const CLEAR_SCN: &[u8; 8] = b"\x1B[2J\x1B[H\0";
-// pub const UART_CLEARSCRN: &[u8; 5] = b"\x1B[2J\0";
-// pub const UART_CURSORHOME: &[u8; 4] = b"\x1B[H\0";
-// pub const UART_VTSTATUS: &[u8; 5] = b"\x1B[c0\0";
-// pub const UART_CLEARLINE: &[u8; 5] = b"\x1B[2K\0";
-// pub const UART_CLEAR_EOL: &[u8; 4] = b"\x1B[K\0";
-// pub const UART_MOVEUP: &[u8; 4] = b"\x1B[A\0";
-// pub const UART_DHTOP: &[u8; 4] = b"\x1B#3\0";
-// pub const UART_DHBOT: &[u8; 4] = b"\x1B#4\0";
-// pub const UART_SWSH: &[u8; 4] = b"\x1B#5\0";
-// pub const UART_DWSH: &[u8; 4] = b"\x1B#6\0";
-// pub const UART_FBOLD: &[u8; 5] = b"\x1B[1m\0";
-// pub const UART_FUNDERL: &[u8; 5] = b"\x1B[4m\0";
-// pub const UART_FCLEAR: &[u8; 4] = b"\x1B[m\0";
-// pub const UART_FRED: &[u8; 8] = b"\x1B[0;31m\0";
-// pub const UART_FGRN: &[u8; 8] = b"\x1B[1;32m\0";
-
-pub fn UI_init() {
-    unsafe {
-        UART_Start();
-        UART_SetCustomInterruptHandler(Some(RSUARTRX));
-        UART_SpiUartClearRxBuffer();
-    }
-    term(TermCmd::ClearScreen);
-    term(TermCmd::Home);
-    uart_put_str("\n\r-PSOC RS\r\n");
-}
 #[unsafe(no_mangle)]
 extern "C" fn RSUARTRX() {
     // RX_WAKER.signal(());
     unsafe {
         let ch: u32 = UART_UartGetChar();
-        serial_event(ch);
+        UART.get_mut().serial_event(ch);
         ClearInterrutpt_RX();
     }
 }
@@ -174,6 +206,14 @@ pub fn uart_send_i32_decimal(mut value: i32) {
     }
     uart_send_u32_decimal(value as u32);
 }
+pub fn uart_send_i64_decimal(mut value: i64) {
+    if value < 0 {
+        uart_put_tx(b'-' as u32);
+        value = -value;
+    }
+    uart_send_u32_decimal((value >> 32) as u32);
+    uart_send_u32_decimal((value & 0xFFFF_FFFF) as u32);
+}
 // Helper: send with leading zeros
 fn uart_send_u32_decimal_padded(value: u32, width: u8) {
     let mut buf = [b'0'; 10];
@@ -222,65 +262,9 @@ pub fn uart_send_f32(value: f32) {
 }
 pub fn uart_send_u32_hex(value: u32) {
     use core::fmt::Write;
-    let mut writer = UartWriter;
-    write!(writer, "0x{:08X}", value).ok();
+    write!(UART.get_mut(), "0x{:08X}", value).ok();
 }
 pub fn uart_send_u16_hex(value: u16) {
     use core::fmt::Write;
-    let mut writer = UartWriter;
-    write!(writer, "0x{:04X}", value).ok();
-}
-
-fn serial_event(in32: u32) {
-    let ch: u8 = (in32 & 0xFF) as u8;
-
-    // single char (maybe non-printable), then hex
-    // let one = [ch, 0];
-    // unsafe { UART_UartPutString(one.as_ptr() as *const c_char) }
-
-    match ch {
-        b'd' | b'D' => {
-            let dir = if Xaxis.get_mut().dir == MotorDirection::BWD {
-                uart_printf(format_args!("\n\rchange dir: FWD "));
-                MotorDirection::FWD
-            } else {
-                uart_printf(format_args!("\n\rchange dir: BWD "));
-
-                MotorDirection::BWD
-            };
-            Xaxis.get_mut().set_direction(dir);
-        }
-
-        b'k' | b'K' => {
-            // k
-            SYS.get_mut().next_state = System_State::KILL;
-        }
-        b'p' => {
-            SYS.get_mut().print_dbg = !SYS.get().print_dbg;
-        }
-
-        b'r' | b'R' => {
-            // r
-            SYS.get_mut().next_state = System_State::START_MOVE;
-        }
-        b's' | b'S' => {
-            // r
-            SYS.get_mut().next_state = System_State::START_SPD;
-        }
-        b't' | b'T' => {
-            // r
-            SYS.get_mut().next_state = System_State::STOPPING;
-        }
-        0 => { //null char, do nothing
-        }
-        other => {
-            // {} calls the Display trait on the iterator, which prints the actual chars.
-
-            uart_printf(format_args!(
-                "\n\rDBG: {} [{}]",
-                other,
-                (other as u8).escape_ascii()
-            ));
-        }
-    }
+    write!(UART.get_mut(), "0x{:04X}", value).ok();
 }
