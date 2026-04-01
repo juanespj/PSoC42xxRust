@@ -17,20 +17,20 @@ pub fn ramp_hold_ramp(
     let value = if t_ms < up_ms {
         // Ramp up
         if smooth {
-            amplitude * smooth_ramp(t_ms  / up_ms )
+            amplitude * smooth_ramp(t_ms / up_ms)
         } else {
-            amplitude * (t_ms  / up_ms )
+            amplitude * (t_ms / up_ms)
         }
     } else if t_ms < up_ms + hold_ms {
         // Hold
         amplitude
     } else if t_ms < up_ms + hold_ms + down_ms {
         // Ramp down
-        let t = (t_ms - up_ms - hold_ms) ;
+        let t = (t_ms - up_ms - hold_ms);
         if smooth {
-            amplitude * smooth_ramp(1.0 - t / down_ms )
+            amplitude * smooth_ramp(1.0 - t / down_ms)
         } else {
-            amplitude * (1.0 - t / down_ms )
+            amplitude * (1.0 - t / down_ms)
         }
     } else {
         // Done

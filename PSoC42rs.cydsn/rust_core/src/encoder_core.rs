@@ -1,17 +1,9 @@
-use core::{iter::Scan, ops::Mul};
-
-use crate::utils_core::{IirFilter, RingBuf};
 pub const COUNT_PER_REVI32: i32 = 1250;
 
 pub const SCALE: i64 = 65536;
 pub const DT_US: i64 = 200; // 0.1ms in micros
 pub const DT_US2: i64 = DT_US * DT_US; // 0.6ms in micros
 
-// Gains (Alpha, Beta, Gamma) scaled by 2^16
-// These are tuned for a Tracking Index of ~0.5
-pub const GA: u64 = 16384; // 0.5 * SCALE
-pub const GB: u64 = 3277; // 0.2 * SCALE
-pub const GC: u64 = 328; // 0.05 * SCALE
 // Pre-calculate: dt/SCALE for multiplication
 pub const DT_SCALED: i64 = (DT_US * SCALE) / 1_000_000; // dt in seconds * SCALE
 // For 1/dt and 1/dt^2 - keep as constants to avoid division
@@ -21,9 +13,9 @@ pub const DT2_INV_SCALED: i64 = (1_000_000_000_000 * SCALE) / (DT_US2); // 1/dt^
 pub trait EncoderOps {
     fn init_hardware(&self);
     fn start_hardware(&self);
-    #[cfg(not(target_os = "windows"))]
+    #[cfg(target_arch = "arm")]
     fn write_counter(&self, value: u32);
-    #[cfg(target_os = "windows")]
+    #[cfg(not(target_arch = "arm"))]
     fn write_counter(&mut self, value: u32);
     fn get_counter(&self) -> u32;
 }
@@ -58,9 +50,9 @@ impl<T: EncoderOps> Encoder<T> {
             pos: 0,
             vel: 0,
             accel: 0,
-            g_a: 20000, //0.25 * SCALE // >a20000,
-            g_b: 600,   //0.05 //>b600,
-            g_c: 13,    //0.005
+            g_a: 21626, //0.25 * SCALE // >a20000,
+            g_b: 655,   //0.05 //>b600,
+            g_c: 14,    //0.005
 
             smooth_vel: 0, //0.6
             smooth_accel: 0,

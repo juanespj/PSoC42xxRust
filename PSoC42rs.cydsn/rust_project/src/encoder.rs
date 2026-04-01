@@ -34,7 +34,3 @@ impl EncoderOps for XEncoder {
 //         ISR_DecL_ClearPending();
 //     }
 // }
-
-// fn counts_to_theta(counts: i32) -> I16F16 {
-//     I16F16::from_num(counts) * RAD_TO_COUNTS
-// }

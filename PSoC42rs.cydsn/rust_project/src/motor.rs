@@ -11,8 +11,7 @@ extern "C" fn Pulser_InterruptHandler() {
     unsafe {
         Xaxis.get_mut().run(&mut SYS.get_mut().step_out);
         StepReg_Write(SYS.get().step_out);
-        /* Clears the Timer terminal count interrupt */
-        Pulser_tmr_ClearInterrupt(Pulser_tmr__INTR_MASK_TC);
+        Pulser_tmr_ClearInterrupt(Pulser_tmr__INTR_MASK_TC); /* Clears the Timer terminal count interrupt */
     }
 }
 

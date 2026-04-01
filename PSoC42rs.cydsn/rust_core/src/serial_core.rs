@@ -10,34 +10,34 @@ pub trait UartHardware {
 }
 
 // Generic UartIf that works with any hardware implementation
-pub struct UartIf<H: UartHardware> {
-    parser: SerialParser,
-    hardware: H,
-}
+// pub struct UartIf<H: UartHardware> {
+//     parser: SerialParser,
+//     hardware: H,
+// }
 
-impl<H: UartHardware> Write for UartIf<H> {
-    fn write_str(&mut self, s: &str) -> fmt::Result {
-        self.hardware.put_str(s);
-        Ok(())
-    }
-}
+// impl<H: UartHardware> Write for UartIf<H> {
+//     fn write_str(&mut self, s: &str) -> fmt::Result {
+//         self.hardware.put_str(s);
+//         Ok(())
+//     }
+// }
 
-impl<H: UartHardware> UartIf<H> {
-    pub fn new(hardware: H) -> Self {
-        Self {
-            parser: SerialParser::new(),
-            hardware,
-        }
-    }
-    pub fn UI_init(&mut self) {
-        self.hardware.init();
-        self.hardware.clear_rx_buffer();
+// impl<H: UartHardware> UartIf<H> {
+//     pub fn new(hardware: H) -> Self {
+//         Self {
+//             parser: SerialParser::new(),
+//             hardware,
+//         }
+//     }
+//     pub fn UI_init(&mut self) {
+//         self.hardware.init();
+//         self.hardware.clear_rx_buffer();
 
-        // term(TermCmd::ClearScreen);
-        // term(TermCmd::Home);
-        self.hardware.put_str("\n\r-PSOC RS\r\n");
-    }
-}
+//         // term(TermCmd::ClearScreen);
+//         // term(TermCmd::Home);
+//         self.hardware.put_str("\n\r-PSOC RS\r\n");
+//     }
+// }
 #[derive(Debug, Clone, Copy)]
 pub enum Command {
     ToggleDir,

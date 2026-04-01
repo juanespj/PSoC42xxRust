@@ -15,7 +15,6 @@ mod encoder_tests {
     use gnuplot::{
         ARGBInteger, AxesCommon, Caption, Color, ColorType, Figure, RGBInteger, RGBString,
     };
-    use rust_core::encoder_core::config::*;
     use std::{iter, ops::Range};
     // IIR filter factors
 
@@ -92,7 +91,8 @@ mod encoder_tests {
 mod encoder_tuning_tests {
 
     use fixed::types::I32F32;
-
+    use rand::Rng;
+    use rand::RngExt;
     /// Test different filter parameters and visualize results
     #[test]
     fn tune_filter_parameters() {
@@ -280,9 +280,6 @@ mod encoder_tuning_tests {
     /// Test with actual noisy encoder data
     #[test]
     fn test_with_noisy_data() {
-        use rand::Rng;
-        let mut rng = rand::thread_rng();
-
         let omega_alpha = I32F32::from_num(0.3);
         let alpha_alpha = I32F32::from_num(0.3);
         let omega_eps = I32F32::from_num(0.01);
@@ -294,10 +291,10 @@ mod encoder_tuning_tests {
 
         let mut omega_history = Vec::new();
         let mut alpha_history = Vec::new();
-
+        let mut rng = rand::rng();
         // Generate noisy encoder data
         for i in 1..1000 {
-            let noise = rng.gen_range(-5..=5);
+            let noise = rng.random_range(-5..=5);
             let count_current = (i * 100 + noise) as u32;
             let count_prev = ((i - 1) * 100) as u32;
 

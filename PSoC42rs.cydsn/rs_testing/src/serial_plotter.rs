@@ -1,390 +1,311 @@
-use chrono::Local;
 use eframe::egui;
-use egui_plot::{Line, Plot, PlotPoints};
 use std::collections::VecDeque;
-use std::fs::OpenOptions;
-use std::io::Write;
 use std::sync::{Arc, Mutex};
-use tokio::io::{AsyncReadExt, AsyncWriteExt};
-use tokio::time::{Duration, timeout};
-use tokio_serial::{SerialPortBuilderExt, SerialStream};
+use tokio::sync::mpsc;
 
-const MAX_PLOT_POINTS: usize = 1000;
+// Your serial trait and implementations (from previous code)
+use async_trait::async_trait;
 
-#[derive(Clone)]
-struct DataPoint {
-    timestamp: f64,
-    value: f64,
+#[derive(Debug, Clone)]
+pub struct DataPoint {
+    pub value: f64,
+    pub timestamp: std::time::SystemTime,
 }
 
-struct SerialPlotterApp {
-    // Serial port state
-    port_path: String,
-    baud_rate: String,
-    is_connected: bool,
-    is_reading: bool,
-
-    // Data storage
-    data_points: Arc<Mutex<VecDeque<DataPoint>>>,
-
-    // UI state
-    log_text: Arc<Mutex<String>>,
-    max_lines: String,
-    log_file: String,
-    enable_logging: bool,
-
-    // Runtime handle for async operations
-    runtime: Arc<tokio::runtime::Runtime>,
-
-    // Control handles - separate ports for reading and writing
-    read_port: Arc<Mutex<Option<SerialStream>>>,
-    write_port: Arc<Mutex<Option<SerialStream>>>,
+#[derive(Debug, Clone)]
+pub enum Control {
+    Start,
+    Stop,
+    Reset,
 }
 
-impl Default for SerialPlotterApp {
-    fn default() -> Self {
-        Self {
-            port_path: "/dev/ttyUSB0".to_string(),
-            baud_rate: "115200".to_string(),
-            is_connected: false,
-            is_reading: false,
-            data_points: Arc::new(Mutex::new(VecDeque::new())),
-            log_text: Arc::new(Mutex::new(String::new())),
-            max_lines: "1000".to_string(),
-            log_file: "serial_log.txt".to_string(),
-            enable_logging: false,
-            runtime: Arc::new(tokio::runtime::Runtime::new().unwrap()),
-            read_port: Arc::new(Mutex::new(None)),
-            write_port: Arc::new(Mutex::new(None)),
+#[cfg_attr(test, mockall::automock)]
+#[async_trait]
+pub trait AsyncSerialPort: Send {
+    async fn read(&mut self, buf: &mut [u8]) -> std::io::Result<usize>;
+    async fn write(&mut self, buf: &[u8]) -> std::io::Result<usize>;
+    async fn flush(&mut self) -> std::io::Result<()>;
+}
+
+#[async_trait]
+impl AsyncSerialPort for tokio_serial::SerialStream {
+    async fn read(&mut self, buf: &mut [u8]) -> std::io::Result<usize> {
+        use tokio::io::AsyncReadExt;
+        AsyncReadExt::read(self, buf).await
+    }
+
+    async fn write(&mut self, buf: &[u8]) -> std::io::Result<usize> {
+        use tokio::io::AsyncWriteExt;
+        AsyncWriteExt::write(self, buf).await
+    }
+
+    async fn flush(&mut self) -> std::io::Result<()> {
+        use tokio::io::AsyncWriteExt;
+        AsyncWriteExt::flush(self).await
+    }
+}
+
+// Reader task
+pub async fn reader_task<P: AsyncSerialPort + 'static>(
+    mut port: P,
+    data_tx: mpsc::Sender<DataPoint>,
+    log_tx: mpsc::Sender<String>,
+    mut control_rx: mpsc::Receiver<Control>,
+) -> Result<(), Box<dyn std::error::Error>> {
+    let mut buffer = [0u8; 64];
+    let mut running = false;
+
+    loop {
+        tokio::select! {
+            Some(cmd) = control_rx.recv() => {
+                match cmd {
+                    Control::Start => {
+                        running = true;
+                        let _ = log_tx.send("Started reading".to_string()).await;
+                    }
+                    Control::Stop => {
+                        running = false;
+                        let _ = log_tx.send("Stopped reading".to_string()).await;
+                    }
+                    Control::Reset => {
+                        let _ = log_tx.send("Reset".to_string()).await;
+                    }
+                }
+            }
+
+            result = port.read(&mut buffer), if running => {
+                match result {
+                    Ok(n) if n > 0 => {
+                        let data_str = String::from_utf8_lossy(&buffer[..n]);
+
+                        if let Ok(value) = data_str.trim().parse::<f64>() {
+                            let dp = DataPoint {
+                                value,
+                                timestamp: std::time::SystemTime::now(),
+                            };
+
+                            if data_tx.send(dp).await.is_err() {
+                                break;
+                            }
+                        } else {
+                            let _ = log_tx.send(format!("Parse error: {}", data_str)).await;
+                        }
+                    }
+                    Ok(_) => {}
+                    Err(e) => {
+                        let _ = log_tx.send(format!("Read error: {}", e)).await;
+                        tokio::time::sleep(tokio::time::Duration::from_millis(100)).await;
+                    }
+                }
+            }
         }
     }
+
+    Ok(())
+}
+
+// Shared application state
+#[derive(Clone)]
+pub struct AppState {
+    data_points: Arc<Mutex<VecDeque<DataPoint>>>,
+    logs: Arc<Mutex<VecDeque<String>>>,
+    is_running: Arc<Mutex<bool>>,
+    max_points: usize,
+}
+
+impl AppState {
+    pub fn new(max_points: usize) -> Self {
+        Self {
+            data_points: Arc::new(Mutex::new(VecDeque::new())),
+            logs: Arc::new(Mutex::new(VecDeque::new())),
+            is_running: Arc::new(Mutex::new(false)),
+            max_points,
+        }
+    }
+
+    pub fn add_data_point(&self, dp: DataPoint) {
+        let mut points = self.data_points.lock().unwrap();
+        points.push_back(dp);
+        while points.len() > self.max_points {
+            points.pop_front();
+        }
+    }
+
+    pub fn add_log(&self, log: String) {
+        let mut logs = self.logs.lock().unwrap();
+        logs.push_back(log);
+        while logs.len() > 100 {
+            logs.pop_front();
+        }
+    }
+
+    fn clear_data(&self) {
+        self.data_points.lock().unwrap().clear();
+    }
+
+    fn set_running(&self, running: bool) {
+        *self.is_running.lock().unwrap() = running;
+    }
+
+    fn is_running(&self) -> bool {
+        *self.is_running.lock().unwrap()
+    }
+}
+
+// Main egui application
+pub struct SerialPlotterApp {
+    state: AppState,
+    control_tx: mpsc::Sender<Control>,
+    command_tx: mpsc::Sender<String>,
+    command_input: String,
+    selected_port: String,
+    baud_rate: u32,
+    available_ports: Vec<String>,
 }
 
 impl SerialPlotterApp {
-    fn connect_serial(&mut self) {
-        let port_path = self.port_path.clone();
-        let baud_rate: u32 = self.baud_rate.parse().unwrap_or(115200);
+    pub fn new(
+        cc: &eframe::CreationContext<'_>,
+        control_tx: mpsc::Sender<Control>,
+        command_tx: mpsc::Sender<String>,
+    ) -> Self {
+        // Get available serial ports
+        let available_ports = tokio_serial::available_ports()
+            .unwrap_or_default()
+            .iter()
+            .map(|p| p.port_name.clone())
+            .collect();
 
-        // Open two ports - one for reading, one for writing
-        // match tokio_serial::new(&port_path, baud_rate).open() {
-        //     Ok(read_port) => match tokio_serial::new(&port_path, baud_rate).open_native_async() {
-        //         Ok(write_port) => {
-        //             *self.read_port.lock().unwrap() = Some(read_port);
-        //             *self.write_port.lock().unwrap() = Some(write_port);
-        //             self.is_connected = true;
-        //             self.append_log(&format!("Connected to {} at {} baud", port_path, baud_rate));
-        //         }
-        //         Err(e) => {
-        //             self.append_log(&format!("Failed to open write port: {}", e));
-        //         }
-        //     },
-        //     Err(e) => {
-        //         self.append_log(&format!("Failed to open read port: {}", e));
-        //     }
-        // }
-    }
-
-    fn disconnect_serial(&mut self) {
-        *self.read_port.lock().unwrap() = None;
-        *self.write_port.lock().unwrap() = None;
-        self.is_connected = false;
-        self.is_reading = false;
-        self.append_log("Disconnected");
-    }
-
-    fn send_command(&self, cmd: &[u8]) {
-        let write_port = self.write_port.clone();
-        let runtime = self.runtime.clone();
-        let log_text = self.log_text.clone();
-        let cmd_vec = cmd.to_vec();
-
-        // runtime.spawn(async move {
-        //     if let Some(mut port) = write_port
-        //         .lock()
-        //         .unwrap()
-        //         .as_ref()
-        //         .map(|p| p.try_clone().unwrap())
-        //     {
-        //         match AsyncWriteExt::write_all(&mut port, &cmd_vec).await {
-        //             Ok(_) => {
-        //                 let _ = AsyncWriteExt::flush(&mut port).await;
-        //                 let msg = format!("Sent command: {:?}", String::from_utf8_lossy(&cmd_vec));
-        //                 log_text.lock().unwrap().push_str(&format!("{}\n", msg));
-        //             }
-        //             Err(e) => {
-        //                 let msg = format!("Failed to send command: {}", e);
-        //                 log_text.lock().unwrap().push_str(&format!("{}\n", msg));
-        //             }
-        //         }
-        //     }
-        // });
-    }
-
-    fn start_reading(&mut self) {
-        if !self.is_connected {
-            self.append_log("Not connected to serial port");
-            return;
+        Self {
+            state: AppState::new(1000),
+            control_tx,
+            command_tx,
+            command_input: String::new(),
+            selected_port: String::new(),
+            baud_rate: 9600,
+            available_ports,
         }
-
-        // Take ownership of the read port for the reading task
-        let port = match self.read_port.lock().unwrap().take() {
-            Some(p) => p,
-            None => {
-                self.append_log("Read port not available");
-                return;
-            }
-        };
-
-        let read_port = self.read_port.clone();
-        let data_points = self.data_points.clone();
-        let log_text = self.log_text.clone();
-        let runtime = self.runtime.clone();
-        let max_lines: usize = self.max_lines.parse().unwrap_or(1000);
-        let log_file = if self.enable_logging {
-            Some(self.log_file.clone())
-        } else {
-            None
-        };
-
-        self.is_reading = true;
-        self.append_log("Started reading data");
-
-        runtime.spawn(async move {
-            let result = serial_read_and_plot(
-                port,
-                log_file.as_deref(),
-                Some(max_lines),
-                data_points,
-                log_text.clone(),
-            )
-            .await;
-
-            // Note: port is consumed by serial_read_and_plot, so we can't put it back
-            // To restart reading, you'll need to reconnect
-
-            if let Err(e) = result {
-                log_text
-                    .lock()
-                    .unwrap()
-                    .push_str(&format!("Error reading serial: {}\n", e));
-            }
-
-            log_text.lock().unwrap().push_str("Reading stopped\n");
-        });
-    }
-
-    fn stop_reading(&mut self) {
-        self.is_reading = false;
-        self.send_command(b"k");
-        self.append_log("Stopped reading data");
-    }
-
-    fn append_log(&self, msg: &str) {
-        let ts = Local::now();
-        let log_line = format!(
-            "{}.{:03}: {}",
-            ts.format("%Y-%m-%d %H:%M:%S"),
-            ts.timestamp_subsec_millis(),
-            msg
-        );
-        self.log_text
-            .lock()
-            .unwrap()
-            .push_str(&format!("{}\n", log_line));
-    }
-
-    fn clear_data(&mut self) {
-        self.data_points.lock().unwrap().clear();
-        self.append_log("Cleared plot data");
     }
 }
 
 impl eframe::App for SerialPlotterApp {
     fn update(&mut self, ctx: &egui::Context, _frame: &mut eframe::Frame) {
-        // Request continuous repaint for real-time updates
+        // Request continuous repaints for real-time updates
         ctx.request_repaint();
 
+        // Top panel - controls
         egui::TopBottomPanel::top("top_panel").show(ctx, |ui| {
-            ui.heading("Serial Port Data Plotter");
-            ui.separator();
-
             ui.horizontal(|ui| {
                 ui.label("Port:");
-                ui.text_edit_singleline(&mut self.port_path);
+                egui::ComboBox::from_id_salt("port_selector")
+                    .selected_text(&self.selected_port)
+                    .show_ui(ui, |ui| {
+                        for port in &self.available_ports {
+                            ui.selectable_value(&mut self.selected_port, port.clone(), port);
+                        }
+                    });
 
                 ui.label("Baud:");
-                ui.text_edit_singleline(&mut self.baud_rate);
+                ui.add(egui::DragValue::new(&mut self.baud_rate).speed(100));
 
-                if self.is_connected {
-                    if ui.button("Disconnect").clicked() {
-                        self.disconnect_serial();
-                    }
-                } else {
-                    if ui.button("Connect").clicked() {
-                        self.connect_serial();
-                    }
+                if ui.button("Refresh Ports").clicked() {
+                    self.available_ports = tokio_serial::available_ports()
+                        .unwrap_or_default()
+                        .iter()
+                        .map(|p| p.port_name.clone())
+                        .collect();
                 }
             });
-
-            ui.separator();
 
             ui.horizontal(|ui| {
-                if ui.button("Send 's' (Start)").clicked() && self.is_connected {
-                    self.send_command(b"s");
-                    if !self.is_reading {
-                        self.start_reading();
-                    }
+                let is_running = self.state.is_running();
+
+                if ui
+                    .button(if is_running { "⏸ Stop" } else { "▶ Start" })
+                    .clicked()
+                {
+                    let _ = self.control_tx.try_send(if is_running {
+                        Control::Stop
+                    } else {
+                        Control::Start
+                    });
+                    self.state.set_running(!is_running);
                 }
 
-                if ui.button("Send 'k' (Stop)").clicked() && self.is_connected {
-                    self.stop_reading();
-                }
-
-                if ui.button("Clear Data").clicked() {
-                    self.clear_data();
+                if ui.button("🔄 Reset").clicked() {
+                    let _ = self.control_tx.try_send(Control::Reset);
+                    self.state.clear_data();
                 }
 
                 ui.separator();
 
-                ui.label("Max Lines:");
-                ui.text_edit_singleline(&mut self.max_lines);
-
-                ui.checkbox(&mut self.enable_logging, "Log to file");
-                if self.enable_logging {
-                    ui.label("File:");
-                    ui.text_edit_singleline(&mut self.log_file);
+                ui.label("Command:");
+                ui.text_edit_singleline(&mut self.command_input);
+                if ui.button("Send").clicked() && !self.command_input.is_empty() {
+                    let _ = self.command_tx.try_send(self.command_input.clone());
+                    self.command_input.clear();
                 }
             });
         });
 
-        egui::SidePanel::right("log_panel")
-            .min_width(300.0)
-            .show(ctx, |ui| {
-                ui.heading("Log");
-                ui.separator();
+        // Bottom panel - logs
+        egui::TopBottomPanel::bottom("bottom_panel").show(ctx, |ui| {
+            ui.heading("Logs");
+            egui::ScrollArea::vertical()
+                .max_height(100.0)
+                .stick_to_bottom(true)
+                .show(ui, |ui| {
+                    let logs = self.state.logs.lock().unwrap();
+                    for log in logs.iter() {
+                        ui.label(log);
+                    }
+                });
+        });
 
-                egui::ScrollArea::vertical()
-                    .stick_to_bottom(true)
-                    .show(ui, |ui| {
-                        let log = self.log_text.lock().unwrap();
-                        ui.label(log.as_str());
-                    });
-            });
-
+        // Central panel - plot
         egui::CentralPanel::default().show(ctx, |ui| {
-            ui.heading("Data Plot");
+            ui.heading("Serial Data Plot");
 
-            let data_points = self.data_points.lock().unwrap();
+            let points = self.state.data_points.lock().unwrap();
 
-            if !data_points.is_empty() {
-                let points: PlotPoints = data_points
+            if points.is_empty() {
+                ui.centered_and_justified(|ui| {
+                    ui.label("No data yet. Press Start to begin collecting data.");
+                });
+            } else {
+                use egui_plot::{Line, Plot, PlotPoints};
+
+                let plot_points: PlotPoints = points
                     .iter()
-                    .map(|dp| [dp.timestamp, dp.value])
+                    .enumerate()
+                    .map(|(i, dp)| [i as f64, dp.value])
                     .collect();
 
-                let line = Line::new(points);
+                let line = Line::new(plot_points);
 
-                Plot::new("serial_plot")
-                    .view_aspect(2.0)
-                    .show(ui, |plot_ui| {
-                        plot_ui.line(line);
-                    });
+                Plot::new("data_plot").view_aspect(2.0).show(ui, |plot_ui| {
+                    plot_ui.line(line);
+                });
 
-                ui.label(format!("Points: {}", data_points.len()));
-            } else {
-                ui.label("No data to display. Send 's' to start reading.");
+                // Statistics
+                ui.horizontal(|ui| {
+                    if let Some(latest) = points.back() {
+                        ui.label(format!("Latest: {:.2}", latest.value));
+                    }
+
+                    let values: Vec<f64> = points.iter().map(|p| p.value).collect();
+                    if !values.is_empty() {
+                        let min = values.iter().fold(f64::INFINITY, |a, &b| a.min(b));
+                        let max = values.iter().fold(f64::NEG_INFINITY, |a, &b| a.max(b));
+                        let avg = values.iter().sum::<f64>() / values.len() as f64;
+
+                        ui.separator();
+                        ui.label(format!("Min: {:.2}", min));
+                        ui.label(format!("Max: {:.2}", max));
+                        ui.label(format!("Avg: {:.2}", avg));
+                    }
+                });
             }
         });
-    }
-}
-
-async fn serial_read_and_plot(
-    mut port: SerialStream,
-    log_file: Option<&str>,
-    max_lines: Option<usize>,
-    data_points: Arc<Mutex<VecDeque<DataPoint>>>,
-    log_text: Arc<Mutex<String>>,
-) -> anyhow::Result<()> {
-    let mut buf = [0u8; 64];
-    let mut line_buf = Vec::new();
-    let mut file = if let Some(filename) = log_file {
-        Some(
-            OpenOptions::new()
-                .create(true)
-                .append(true)
-                .open(filename)?,
-        )
-    } else {
-        None
-    };
-    let mut lines_read = 0;
-    let start_time = std::time::Instant::now();
-
-    loop {
-        let n = match timeout(Duration::from_millis(100), port.read(&mut buf)).await {
-            Ok(Ok(0)) => continue,
-            Ok(Ok(n)) => n,
-            Ok(Err(e)) => return Err(e.into()),
-            Err(_) => continue, // Timeout, continue loop
-        };
-
-        line_buf.extend_from_slice(&buf[..n]);
-
-        while let Some(pos) = line_buf
-            .iter()
-            .position(|&b| b == b'\n' || b == b',' || b == b'\r')
-        {
-            let mut line_bytes: Vec<u8> = line_buf.drain(..=pos).collect();
-            line_bytes.pop(); // Remove delimiter
-
-            if let Ok(line_str) = String::from_utf8(line_bytes) {
-                let trimmed = line_str.trim();
-                if !trimmed.is_empty() {
-                    let ts = Local::now();
-                    let log_line = format!(
-                        "{}.{:03}: {}",
-                        ts.format("%Y-%m-%d %H:%M:%S"),
-                        ts.timestamp_subsec_millis(),
-                        trimmed
-                    );
-
-                    if let Some(f) = file.as_mut() {
-                        writeln!(f, "{}", log_line)?;
-                    }
-
-                    // Try to parse as number for plotting
-                    if let Ok(value) = trimmed.parse::<f64>() {
-                        let elapsed = start_time.elapsed().as_secs_f64();
-                        let mut points = data_points.lock().unwrap();
-                        points.push_back(DataPoint {
-                            timestamp: elapsed,
-                            value,
-                        });
-
-                        // Keep only last MAX_PLOT_POINTS
-                        while points.len() > MAX_PLOT_POINTS {
-                            points.pop_front();
-                        }
-                    }
-
-                    if lines_read % 10 == 0 {
-                        log_text
-                            .lock()
-                            .unwrap()
-                            .push_str(&format!("{}\n", log_line));
-                    }
-
-                    lines_read += 1;
-
-                    if let Some(max) = max_lines {
-                        if lines_read >= max {
-                            let msg = format!("Max lines ({}) reached, stopping", max);
-                            log_text.lock().unwrap().push_str(&format!("{}\n", msg));
-                            return Ok(());
-                        }
-                    }
-                }
-            }
-        }
     }
 }

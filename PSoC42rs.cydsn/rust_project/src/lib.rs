@@ -17,15 +17,14 @@ pub mod utils;
 
 use crate::encoder::*;
 use crate::motor::*;
-// use core::sync::atomic::AtomicU8;
 use local_static::LocalStatic;
+// use rust_core::serial_core::*;
 use serial::*;
-
 use sys::*;
 use ui::*;
+// use core::sync::atomic::AtomicU8;
 static SYS: LocalStatic<System_T> = LocalStatic::new();
 static UART: LocalStatic<UartIf> = LocalStatic::new();
-
 static Xaxis: LocalStatic<Stepper<XEncoder>> = LocalStatic::new();
 
 // static MS_TICK: LocalStatic<u32> = LocalStatic::new();
@@ -76,7 +75,7 @@ pub extern "C" fn main() -> () {
         ADC_SAR_Seq_StartConvert();
     }
     pulser_init();
-
+    // Test printf
     let gpio_pin = || unsafe { BTN_Read() == 0 }; //change polarity if needed
     let mut btn = DebouncedButton::new(gpio_pin);
     // if btn.is_pressed() {
@@ -105,6 +104,7 @@ pub extern "C" fn main() -> () {
             enc_last_upd + (RELOAD - now)
         };
         if dt > 200 {
+            //200us
             //260us idle 800us moving
             if update == 0 {
                 update = 1;
@@ -119,14 +119,14 @@ pub extern "C" fn main() -> () {
                     if Xaxis.get().state != MotorState::IDLE {
                         // uart_printf(format_args!("{},", Xaxis.get().encoder.omega));
                         // uart_send_i32f32_scaled(Xaxis.get().encoder.omega);
-                        uart_send_i32_decimal(Xaxis.get().encoder.get_pos());
+                        uart_send_i32_dec(Xaxis.get().encoder.get_pos());
 
                         uart_put_tx(b',' as u32);
-                        uart_send_i64_decimal(Xaxis.get().encoder.smooth_vel);
+                        uart_send_i64_dec(Xaxis.get().encoder.smooth_vel);
 
                         uart_put_tx(b',' as u32);
                         // uart_put_tx(b'\n' as u32);
-                        uart_send_i64_decimal(Xaxis.get().encoder.smooth_accel);
+                        uart_send_i64_dec(Xaxis.get().encoder.smooth_accel);
 
                         // uart_put_tx(b',' as u32);
                         uart_put_tx(b'\r' as u32);

@@ -4,17 +4,19 @@ mod serial_plotter;
 mod test_tools;
 use chrono::Local;
 use egui_testing::*;
-// use serial_plotter::SerialPlotterApp;
+use serial_plotter::*;
 use std::fs::OpenOptions;
 use std::io::Write;
 use test_tools::*;
 use tokio::io::{AsyncReadExt, AsyncWriteExt};
+use tokio::sync::mpsc;
 use tokio::time::{Duration, timeout};
+
 use tokio_serial::{SerialPortBuilderExt, SerialStream};
-fn main() -> eframe::Result<()> {
-    egui_test();
-    Ok(())
-}
+// fn main() -> eframe::Result<()> {
+//     egui_test();
+//     Ok(())
+// }
 
 // fn main() -> Result<(), eframe::Error> {
 //     let options = eframe::NativeOptions {
@@ -28,7 +30,78 @@ fn main() -> eframe::Result<()> {
 //         Box::new(|_cc| Ok(Box::<SerialPlotterApp>::default())),
 //     )
 // }
+#[tokio::main]
+async fn main() -> Result<(), Box<dyn std::error::Error>> {
+    // Create channels
+    let (data_tx, mut data_rx) = mpsc::channel::<DataPoint>(100);
+    let (log_tx, mut log_rx) = mpsc::channel::<String>(100);
+    let (control_tx, control_rx) = mpsc::channel::<Control>(10);
+    let (command_tx, command_rx) = mpsc::channel::<String>(10);
 
+    // Clone for the GUI
+    let control_tx_gui = control_tx.clone();
+    let command_tx_gui = command_tx.clone();
+
+    // Spawn background tasks
+    let app_state = AppState::new(1000);
+    let state_clone = app_state.clone();
+
+    // Data receiver task
+    tokio::spawn(async move {
+        while let Some(dp) = data_rx.recv().await {
+            state_clone.add_data_point(dp);
+        }
+    });
+
+    // Log receiver task
+    let state_clone = app_state.clone();
+    tokio::spawn(async move {
+        while let Some(log) = log_rx.recv().await {
+            state_clone.add_log(log);
+        }
+    });
+
+    // Serial port task (optional - start when user clicks start)
+    // You could initialize this when user selects a port
+    // For now, this is a placeholder that shows how to connect
+
+    // Uncomment and modify when you have a real serial port:
+    /*
+    tokio::spawn(async move {
+        let port = tokio_serial::new("/dev/ttyUSB0", 9600)
+            .open_native_async()
+            .expect("Failed to open port");
+
+        let _ = reader_task(port, data_tx, log_tx, control_rx).await;
+    });
+    */
+
+    // Run the GUI in a separate thread
+    std::thread::spawn(move || {
+        let native_options = eframe::NativeOptions {
+            viewport: egui::ViewportBuilder::default()
+                .with_inner_size([800.0, 600.0])
+                .with_title("Serial Plotter"),
+            ..Default::default()
+        };
+
+        let _ = eframe::run_native(
+            "Serial Plotter",
+            native_options,
+            Box::new(|cc| {
+                Ok(Box::new(SerialPlotterApp::new(
+                    cc,
+                    control_tx_gui,
+                    command_tx_gui,
+                )))
+            }),
+        );
+    });
+
+    // Keep main thread alive
+    tokio::signal::ctrl_c().await?;
+    Ok(())
+}
 // #[tokio::main]
 // async fn main() -> anyhow::Result<()> {
 //     // Adjust COM port and baud

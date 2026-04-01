@@ -1,13 +1,13 @@
 [workspace]
 resolver = "2" # Note: Resolver 3 is currently only available in nightly/experimental
-members = ["rust_project", "rs_testing", "rust_core"]
+members = ["rust_project", "rs_testing", "rust_core", "test_ui"]
 
 [workspace.dependencies]
 rust_core = { path = "./rust_core", default-features = false }
 
 [profile.release]
 # Optimize for size aggressively
-opt-level = 'z'      # Best balance between size and performance# (Optional) Smallest possible code, may be slower
+opt-level = 2      # Best balance between size and performance# (Optional) Smallest possible code, may be slower
 # codegen-units = 1    # Enables more aggressive cross-module optimization
 lto = true#"fat"          # Enable Link-Time Optimization (critical for size)
 debug = true         # (Optional) Keep debug info for debugging release builds

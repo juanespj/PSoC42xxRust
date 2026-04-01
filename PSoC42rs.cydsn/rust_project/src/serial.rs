@@ -59,9 +59,11 @@ impl UartIf {
                     }
                     b'b' | b'B' => {
                         Xaxis.get_mut().encoder.g_b = value;
+                        uart_printf(format_args!("\r\n New G_B: {:?}", value));
                     }
                     b'c' | b'C' => {
                         Xaxis.get_mut().encoder.g_c = value;
+                        uart_printf(format_args!("\r\n New G_C: {:?}", value));
                     }
                     _ => {}
                 },
@@ -178,7 +180,7 @@ pub fn uart_send_i32f32_hex(value: I32F32) {
     }
 }
 // Helper: send u32 as decimal ASCII
-pub fn uart_send_u32_decimal(mut value: u32) {
+pub fn uart_send_u32_dec(mut value: u32) {
     if value == 0 {
         uart_put_tx(b'0' as u32);
         return;
@@ -199,23 +201,23 @@ pub fn uart_send_u32_decimal(mut value: u32) {
         uart_put_tx(buf[i] as u32);
     }
 }
-pub fn uart_send_i32_decimal(mut value: i32) {
+pub fn uart_send_i32_dec(mut value: i32) {
     if value < 0 {
         uart_put_tx(b'-' as u32);
         value = -value;
     }
-    uart_send_u32_decimal(value as u32);
+    uart_send_u32_dec(value as u32);
 }
-pub fn uart_send_i64_decimal(mut value: i64) {
+pub fn uart_send_i64_dec(mut value: i64) {
     if value < 0 {
         uart_put_tx(b'-' as u32);
         value = -value;
     }
-    uart_send_u32_decimal((value >> 32) as u32);
-    uart_send_u32_decimal((value & 0xFFFF_FFFF) as u32);
+    uart_send_u32_dec((value >> 32) as u32);
+    uart_send_u32_dec((value & 0xFFFF_FFFF) as u32);
 }
 // Helper: send with leading zeros
-fn uart_send_u32_decimal_padded(value: u32, width: u8) {
+fn uart_send_u32_dec_padded(value: u32, width: u8) {
     let mut buf = [b'0'; 10];
     let mut temp = value;
     let mut i = width as usize;
@@ -233,7 +235,7 @@ fn uart_send_u32_decimal_padded(value: u32, width: u8) {
 // Send scaled integer (multiply by 100, send as integer)
 pub fn uart_send_i32f32_scaled(value: I32F32) {
     let scaled = (value * I32F32::from_num(100)).to_num::<i32>();
-    uart_send_i32_decimal(scaled);
+    uart_send_i32_dec(scaled);
 }
 // Send multiple values in one packet
 pub fn uart_send_i32f32_array(values: &[I32F32]) {
