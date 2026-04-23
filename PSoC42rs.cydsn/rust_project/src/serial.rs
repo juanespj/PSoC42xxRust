@@ -54,21 +54,21 @@ impl UartIf {
             Some(cmd) => match cmd {
                 Command::Assign { var, value } => match var {
                     b'a' | b'A' => {
-                        Xaxis.get_mut().encoder.g_a = value;
+                        with_xaxis_mut(|axis| axis.encoder.g_a = value);
                         uart_printf(format_args!("\r\n New G_A: {:?}", value));
                     }
                     b'b' | b'B' => {
-                        Xaxis.get_mut().encoder.g_b = value;
+                        with_xaxis_mut(|axis| axis.encoder.g_b = value);
                         uart_printf(format_args!("\r\n New G_B: {:?}", value));
                     }
                     b'c' | b'C' => {
-                        Xaxis.get_mut().encoder.g_c = value;
+                        with_xaxis_mut(|axis| axis.encoder.g_c = value);
                         uart_printf(format_args!("\r\n New G_C: {:?}", value));
                     }
                     _ => {}
                 },
                 Command::ToggleDir => {
-                    let dir = if Xaxis.get_mut().dir == MotorDirection::BWD {
+                    let dir = if Xaxis.get().dir == MotorDirection::BWD {
                         uart_printf(format_args!("\n\rchange dir: FWD "));
                         MotorDirection::FWD
                     } else {
@@ -76,14 +76,14 @@ impl UartIf {
 
                         MotorDirection::BWD
                     };
-                    Xaxis.get_mut().set_direction(dir);
+                    with_xaxis_mut(|axis| axis.set_direction(dir));
                 }
                 Command::Kill => SYS.get_mut().next_state = System_State::KILL,
                 Command::ToggleDebug => SYS.get_mut().print_dbg = !SYS.get().print_dbg,
                 Command::StartMove => SYS.get_mut().next_state = System_State::START_MOVE,
                 Command::StartSpeed => SYS.get_mut().next_state = System_State::START_SPD,
                 Command::Stop => SYS.get_mut().next_state = System_State::STOPPING,
-                Command::Reset => Xaxis.get_mut().encoder.zero(),
+                Command::Reset => with_xaxis_mut(|axis| axis.encoder.zero()),
                 Command::Unknown(unk_cmd) => uart_printf(format_args!(
                     "\n\rDBG: {} [{}]",
                     unk_cmd,

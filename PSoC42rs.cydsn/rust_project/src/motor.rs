@@ -2,8 +2,23 @@ use crate::*;
 // use core::marker::PhantomData;
 use crate::SYS;
 use ffi::*;
-use fixed::{consts, types::I16F16, types::I32F32, FixedI32};
 use rust_core::encoder_core::{Encoder, EncoderOps};
+
+pub fn with_xaxis_mut<R>(f: impl FnOnce(&mut Stepper<XEncoder>) -> R) -> R {
+    unsafe {
+        #[cfg(target_arch = "arm")]
+        {
+            let saved_intr = CyEnterCriticalSection();
+            let result = f(Xaxis.get_mut());
+            CyExitCriticalSection(saved_intr);
+            result
+        }
+        #[cfg(not(target_arch = "arm"))]
+        {
+            f(Xaxis.get_mut())
+        }
+    }
+}
 
 #[unsafe(no_mangle)]
 extern "C" fn Pulser_InterruptHandler() {
@@ -59,6 +74,27 @@ pub struct Stepper<T: EncoderOps> {
 }
 
 impl<T: EncoderOps> Stepper<T> {
+    #[inline(always)]
+    fn dir_sign(&self) -> i64 {
+        match self.dir {
+            MotorDirection::FWD => 1,
+            MotorDirection::BWD => -1,
+        }
+    }
+
+    pub fn sync_run_target_from_command(&mut self) {
+        self.curr_target_speed_hz = self.dir_sign() * self.target_speed_hz;
+    }
+
+    pub fn start_motion(&mut self) {
+        self.sync_run_target_from_command();
+        if self.curr_target_speed_hz == 0 && self.current_speed_hz == 0 {
+            self.state = MotorState::IDLE;
+            return;
+        }
+        self.state = MotorState::ACCEL;
+    }
+
     pub fn new(ops: T, ix: u8) -> Self {
         Self {
             encoder: Encoder::new(ops),
@@ -87,10 +123,10 @@ impl<T: EncoderOps> Stepper<T> {
         self.curr_pos_steps
     }
     pub fn set_speed(&mut self, speed_hz: u32) {
-        if self.state != MotorState::IDLE {
-            self.curr_target_speed_hz = (speed_hz as i64) / 2;
-        }
         self.target_speed_hz = (speed_hz as i64) / 2;
+        if self.state != MotorState::IDLE {
+            self.sync_run_target_from_command();
+        }
     }
     /// Sets the motor movement direction.
     pub fn set_direction(&mut self, direction: MotorDirection) {
@@ -112,12 +148,8 @@ impl<T: EncoderOps> Stepper<T> {
                 self.curr_target_speed_hz = 0;
             } else {
                 self.state = MotorState::CONST_SPD;
-                let dir = match self.dir {
-                    MotorDirection::FWD => 1,
-                    MotorDirection::BWD => -1,
-                };
-                self.curr_target_speed_hz = dir * self.target_speed_hz;
-                Xaxis.get_mut().set_direction(self.dir.clone());
+                self.sync_run_target_from_command();
+                self.set_direction(self.dir.clone());
                 self.old_dir = self.dir.clone();
             }
         }
@@ -146,7 +178,7 @@ impl<T: EncoderOps> Stepper<T> {
                 self.state = match self.curr_target_speed_hz.cmp(&self.current_speed_hz) {
                     core::cmp::Ordering::Greater => MotorState::ACCEL,
                     core::cmp::Ordering::Less => MotorState::DECEL,
-                    core::cmp::Ordering::Equal if self.curr_target_speed_hz == I16F16::ZERO => {
+                    core::cmp::Ordering::Equal if self.curr_target_speed_hz == 0 => {
                         MotorState::IDLE
                     }
                     _ => MotorState::CONST_SPD,
@@ -156,11 +188,18 @@ impl<T: EncoderOps> Stepper<T> {
             _ => {}
         }
 
+        if self.curr_target_speed_hz == 0 && self.current_speed_hz == 0 {
+            self.state = MotorState::IDLE;
+            self.step_interval = u32::MAX;
+            self.timer = 0;
+            return;
+        }
+
         //Pulser Period = 1/24  1200 period -> 50us min, 20ms max
         // Update step interval (ms)
         let speed_int: u32 = self.current_speed_hz.abs() as u32;
         self.step_interval = if speed_int == 0 {
-            50 //fastest
+            u32::MAX
         } else {
             (30000_u32 / speed_int).clamp(1, 3000)
         };
@@ -191,7 +230,9 @@ impl<T: EncoderOps> Stepper<T> {
                     *out &= !mask;
                 }
             }
-            _ => {}
+            _ => {
+                *out &= !(1 << self.step_pin);
+            }
         }
     }
 }
@@ -276,6 +317,6 @@ mod tests {
         // Speed = 0Hz -> Interval should be the default 20,000
         motor.current_speed_hz = 0;
         motor.update_spd();
-        assert_eq!(motor.step_interval, 20000);
+        assert_eq!(motor.step_interval, u32::MAX);
     }
 }

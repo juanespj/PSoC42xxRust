@@ -116,7 +116,7 @@ impl System_T {
                         self.tmr += 1;
                         if self.tmr >= 6000 {
                             self.tmr = 0;
-                            Xaxis.get_mut().curr_target_speed_hz = 0;
+                            with_xaxis_mut(|axis| axis.control_stop());
                             uart_put_str("\n\r-End Const Speed\n\r");
                         }
                     }
@@ -142,7 +142,7 @@ impl System_T {
                 if self.new_state {
                     self.new_state = false;
                     uart_put_str("\n\r-KILL\n\r");
-                    Xaxis.get_mut().stop();
+                    with_xaxis_mut(|axis| axis.stop());
                     unsafe { EN_Write(1) };
                     SYS.get_mut().print_dbg = 0;
                 }
@@ -152,7 +152,7 @@ impl System_T {
                 if self.new_state {
                     self.new_state = false;
                     uart_put_str("\n\r-Stopping\n\r");
-                    Xaxis.get_mut().control_stop();
+                    with_xaxis_mut(|axis| axis.control_stop());
                 }
                 if Xaxis.get().state == MotorState::IDLE {
                     uart_put_str("\n\r-Stopped\n\r");
@@ -169,8 +169,9 @@ impl System_T {
                     SYS.get_mut().print_dbg = 1;
                     uart_put_str("\n\r-Run\n\r");
                 }
-
-                Xaxis.get_mut().state = MotorState::ACCEL;
+                with_xaxis_mut(|axis| {
+                    axis.start_motion();
+                });
 
                 self.next_state = System_State::MOVING;
             }
@@ -182,10 +183,10 @@ impl System_T {
                     }
                     SYS.get_mut().print_dbg = 1;
                     uart_put_str("\n\r-Move_speed\n\r");
-                    Xaxis.get_mut().curr_target_speed_hz = Xaxis.get().target_speed_hz;
                 }
-
-                Xaxis.get_mut().state = MotorState::ACCEL;
+                with_xaxis_mut(|axis| {
+                    axis.start_motion();
+                });
 
                 self.next_state = System_State::SPEED;
             }

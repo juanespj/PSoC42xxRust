@@ -110,8 +110,10 @@ pub extern "C" fn main() -> () {
                 update = 1;
                 //highest priority
                 unsafe { LED_Write(1) }
-                Xaxis.get_mut().encoder.read_counter(); //profiled 3.87 us
-                Xaxis.get_mut().encoder.update(); //226us
+                with_xaxis_mut(|axis| {
+                    axis.encoder.read_counter(); //profiled 3.87 us
+                    axis.encoder.update(); //226us
+                });
                 unsafe { LED_Write(0) }
 
                 if print_cnt > 3 {
@@ -160,7 +162,7 @@ pub extern "C" fn main() -> () {
                         if (count - old_count).saturating_abs() > 10 {
                             spd_ref = ADC_SAR_Seq_CountsTo_mVolts(0, count).saturating_abs() as u16;
                             // spd_ref = count as u32;
-                            Xaxis.get_mut().set_speed(spd_ref as u32 * 4);
+                            with_xaxis_mut(|axis| axis.set_speed(spd_ref as u32 * 4));
                             // uart_printf(format_args!("SPD:{}\n\r", spd_ref));
 
                             old_count = count;
