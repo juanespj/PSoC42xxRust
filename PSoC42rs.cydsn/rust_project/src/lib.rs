@@ -18,6 +18,7 @@ pub mod utils;
 use crate::encoder::*;
 use crate::motor::*;
 use local_static::LocalStatic;
+use rust_core::encoder_core::DT_US;
 // use rust_core::serial_core::*;
 use serial::*;
 use sys::*;
@@ -113,6 +114,7 @@ pub extern "C" fn main() -> () {
                 with_xaxis_mut(|axis| {
                     axis.encoder.read_counter(); //profiled 3.87 us
                     axis.encoder.update(); //226us
+                    axis.adrc_cycle(DT_US); // ~2us when Off, more when active
                 });
                 unsafe { LED_Write(0) }
 

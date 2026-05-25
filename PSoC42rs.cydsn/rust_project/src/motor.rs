@@ -2,6 +2,8 @@ use crate::*;
 // use core::marker::PhantomData;
 use crate::SYS;
 use ffi::*;
+use rust_core::adrc::Adrc;
+use rust_core::encoder_core::SCALE;
 use rust_core::encoder_core::{Encoder, EncoderOps};
 
 pub fn with_xaxis_mut<R>(f: impl FnOnce(&mut Stepper<XEncoder>) -> R) -> R {
@@ -52,6 +54,14 @@ pub enum MotorDirection {
     FWD,
     BWD,
 }
+
+#[derive(PartialEq, Clone, Copy)]
+pub enum AdrcMode {
+    Off,
+    Speed,
+    Position,
+}
+
 // In your application library or module
 // #[bitfield(u8)]
 pub struct Stepper<T: EncoderOps> {
@@ -62,15 +72,18 @@ pub struct Stepper<T: EncoderOps> {
     pub dir: MotorDirection,
     pub old_dir: MotorDirection,
     step_pin: u8,
-    target_pos_steps: i32, // Target speed in Hz
+    pub target_pos_steps: i32, // Target position in steps
     curr_pos_steps: i32,   // Target speed in Hz
     pub current_speed_hz: i64,
     pub curr_target_speed_hz: i64,
     pub target_speed_hz: i64,
     pub acceleration_hz_ms: i64, // Store as Hz/ms to avoid dividing by 1000 in the loop
     pub deceleration_hz_ms: i64,
-    step_interval: u32, // Current step interval (ms)
-    timer: u32,         // Last step time (ms)
+    step_interval: u32, // Current step interval (ISR ticks)
+    timer: u32,         // Last step time (ISR ticks)
+
+    pub adrc: Adrc,
+    pub adrc_mode: AdrcMode,
 }
 
 impl<T: EncoderOps> Stepper<T> {
@@ -96,6 +109,7 @@ impl<T: EncoderOps> Stepper<T> {
     }
 
     pub fn new(ops: T, ix: u8) -> Self {
+        let adrc = Adrc::new();
         Self {
             encoder: Encoder::new(ops),
             state: MotorState::IDLE,
@@ -113,6 +127,9 @@ impl<T: EncoderOps> Stepper<T> {
             deceleration_hz_ms: 1,
             step_interval: 1000, // Start with 1Hz (1000ms interval,
             timer: 0,
+
+            adrc,
+            adrc_mode: AdrcMode::Off,
         }
     }
 
@@ -139,9 +156,63 @@ impl<T: EncoderOps> Stepper<T> {
         self.dir = direction;
     }
 
+    /// Convert Hz to per-sample × SCALE units (matching encoder.smooth_vel).
+    fn hz_to_ps_scaled(hz: i64, dt_us: i64) -> i64 {
+        hz * dt_us * SCALE / 1_000_000
+    }
+
+    /// Convert per-sample × SCALE to Hz.
+    fn ps_scaled_to_hz(v: i64, dt_us: i64) -> i64 {
+        v * 1_000_000 / (SCALE * dt_us)
+    }
+
+    /// Run one ADRC cycle. Call from main loop after encoder update.
+    /// dt_us: encoder sample period in µs (typically DT_US = 200).
+    pub fn adrc_cycle(&mut self, dt_us: i64) {
+        if self.adrc_mode == AdrcMode::Off {
+            return;
+        }
+
+        match self.adrc_mode {
+            AdrcMode::Speed => {
+                let r = Self::hz_to_ps_scaled(self.curr_target_speed_hz, dt_us);
+                let y = self.encoder.smooth_vel;
+                let u = self.adrc.update_speed(r, y);
+                self.current_speed_hz = Self::ps_scaled_to_hz(u, dt_us);
+            }
+            AdrcMode::Position => {
+                let r = (self.target_pos_steps as i64) * SCALE;
+                let y = self.encoder.pos;
+                let u = self.adrc.update_position(r, y);
+                self.current_speed_hz = Self::ps_scaled_to_hz(u, dt_us);
+
+                // Auto-stop when within tolerance and stationary
+                let pos_err = (self.encoder.pos - r).abs();
+                if pos_err < SCALE && self.current_speed_hz.abs() < 5 {
+                    self.state = MotorState::IDLE;
+                    self.current_speed_hz = 0;
+                }
+            }
+            AdrcMode::Off => {}
+        }
+
+        // Auto-set direction pin based on speed sign
+        if self.current_speed_hz < 0 && self.dir == MotorDirection::FWD {
+            self.set_direction(MotorDirection::BWD);
+            self.old_dir = MotorDirection::BWD;
+        } else if self.current_speed_hz > 0 && self.dir == MotorDirection::BWD {
+            self.set_direction(MotorDirection::FWD);
+            self.old_dir = MotorDirection::FWD;
+        }
+    }
+
     // Update motor speed based on acceleration/deceleration
     // 32us
     pub fn update_spd(&mut self) {
+        if self.adrc_mode != AdrcMode::Off {
+            self.compute_step_interval();
+            return;
+        }
         if self.old_dir != self.dir {
             if self.current_speed_hz != 0 {
                 //need to decel to 0 first
@@ -195,8 +266,38 @@ impl<T: EncoderOps> Stepper<T> {
             return;
         }
 
-        //Pulser Period = 1/24  1200 period -> 50us min, 20ms max
-        // Update step interval (ms)
+        self.compute_step_interval();
+    }
+
+    pub fn adrc_set_mode(&mut self, mode: AdrcMode) {
+        self.adrc_mode = mode;
+        let ts = 13u64; // ≈ DT_US * SCALE / 1_000_000
+        if ts > 0 {
+            match mode {
+                AdrcMode::Speed => {
+                    self.adrc.tune_speed(self.adrc.w0, self.adrc.wc, self.adrc.b0, ts);
+                }
+                AdrcMode::Position => {
+                    self.adrc.tune_position(self.adrc.w0, self.adrc.wc, self.adrc.b0, ts);
+                }
+                AdrcMode::Off => {}
+            }
+        }
+    }
+
+    pub fn adrc_update_w0(&mut self, wo: u64) {
+        self.adrc.w0 = wo;
+    }
+
+    pub fn adrc_update_wc(&mut self, wc: u64) {
+        self.adrc.wc = wc;
+    }
+
+    pub fn adrc_update_b0(&mut self, b0: u64) {
+        self.adrc.b0 = b0;
+    }
+
+    fn compute_step_interval(&mut self) {
         let speed_int: u32 = self.current_speed_hz.abs() as u32;
         self.step_interval = if speed_int == 0 {
             u32::MAX

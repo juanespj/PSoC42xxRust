@@ -65,6 +65,39 @@ impl UartIf {
                         with_xaxis_mut(|axis| axis.encoder.g_c = value);
                         uart_printf(format_args!("\r\n New G_C: {:?}", value));
                     }
+                    b'w' | b'W' => {
+                        with_xaxis_mut(|axis| axis.adrc_update_w0(value));
+                        uart_printf(format_args!("\r\n ADRC w0: {:?}", value));
+                    }
+                    b'v' | b'V' => {
+                        with_xaxis_mut(|axis| axis.adrc_update_wc(value));
+                        uart_printf(format_args!("\r\n ADRC wc: {:?}", value));
+                    }
+                    b'o' | b'O' => {
+                        with_xaxis_mut(|axis| axis.adrc_update_b0(value));
+                        uart_printf(format_args!("\r\n ADRC b0: {:?}", value));
+                    }
+                    b'm' | b'M' => {
+                        let mode = match value {
+                            1 => crate::motor::AdrcMode::Speed,
+                            2 => crate::motor::AdrcMode::Position,
+                            _ => crate::motor::AdrcMode::Off,
+                        };
+                        with_xaxis_mut(|axis| axis.adrc_set_mode(mode));
+                        uart_printf(format_args!(
+                            "\r\n ADRC mode: {}",
+                            match value {
+                                0 => "Off",
+                                1 => "Speed",
+                                2 => "Position",
+                                _ => "?",
+                            }
+                        ));
+                    }
+                    b'q' | b'Q' => {
+                        with_xaxis_mut(|axis| axis.target_pos_steps = value as i32);
+                        uart_printf(format_args!("\r\n Target pos: {:?}", value));
+                    }
                     _ => {}
                 },
                 Command::ToggleDir => {
