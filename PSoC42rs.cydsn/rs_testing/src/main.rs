@@ -13,94 +13,73 @@ use tokio::sync::mpsc;
 use tokio::time::{Duration, timeout};
 
 use tokio_serial::{SerialPortBuilderExt, SerialStream};
-// fn main() -> eframe::Result<()> {
-//     egui_test();
-//     Ok(())
-// }
 
-// fn main() -> Result<(), eframe::Error> {
-//     let options = eframe::NativeOptions {
-//         viewport: egui::ViewportBuilder::default().with_inner_size([1200.0, 800.0]),
-//         ..Default::default()
-//     };
-
-//     eframe::run_native(
-//         "Serial Port Data Plotter",
-//         options,
-//         Box::new(|_cc| Ok(Box::<SerialPlotterApp>::default())),
-//     )
-// }
-#[tokio::main]
-async fn main() -> Result<(), Box<dyn std::error::Error>> {
+fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Create channels
-    let (data_tx, mut data_rx) = mpsc::channel::<DataPoint>(100);
-    let (log_tx, mut log_rx) = mpsc::channel::<String>(100);
+    let (data_tx, data_rx) = mpsc::channel::<DataPoint>(100);
+    let (log_tx, log_rx) = mpsc::channel::<String>(100);
     let (control_tx, control_rx) = mpsc::channel::<Control>(10);
     let (command_tx, command_rx) = mpsc::channel::<String>(10);
 
-    // Clone for the GUI
+    // Clone for the GUI (runs on main thread)
     let control_tx_gui = control_tx.clone();
     let command_tx_gui = command_tx.clone();
 
-    // Spawn background tasks
     let app_state = AppState::new(1000);
-    let state_clone = app_state.clone();
 
-    // Data receiver task
-    tokio::spawn(async move {
-        while let Some(dp) = data_rx.recv().await {
-            state_clone.add_data_point(dp);
-        }
-    });
-
-    // Log receiver task
-    let state_clone = app_state.clone();
-    tokio::spawn(async move {
-        while let Some(log) = log_rx.recv().await {
-            state_clone.add_log(log);
-        }
-    });
-
-    // Serial port task (optional - start when user clicks start)
-    // You could initialize this when user selects a port
-    // For now, this is a placeholder that shows how to connect
-
-    // Uncomment and modify when you have a real serial port:
-    /*
-    tokio::spawn(async move {
-        let port = tokio_serial::new("/dev/ttyUSB0", 9600)
-            .open_native_async()
-            .expect("Failed to open port");
-
-        let _ = reader_task(port, data_tx, log_tx, control_rx).await;
-    });
-    */
-
-    // Run the GUI in a separate thread
+    // Spawn tokio runtime on a background thread
+    let state_data = app_state.clone();
+    let state_log = app_state.clone();
     std::thread::spawn(move || {
-        let native_options = eframe::NativeOptions {
-            viewport: egui::ViewportBuilder::default()
-                .with_inner_size([800.0, 600.0])
-                .with_title("Serial Plotter"),
-            ..Default::default()
-        };
+        let rt = tokio::runtime::Runtime::new().expect("Failed to create tokio runtime");
+        rt.block_on(async {
+            let mut data_rx = data_rx;
+            tokio::spawn(async move {
+                while let Some(dp) = data_rx.recv().await {
+                    state_data.add_data_point(dp);
+                }
+            });
 
-        let _ = eframe::run_native(
-            "Serial Plotter",
-            native_options,
-            Box::new(|cc| {
-                Ok(Box::new(SerialPlotterApp::new(
-                    cc,
-                    control_tx_gui,
-                    command_tx_gui,
-                )))
-            }),
-        );
+            let mut log_rx = log_rx;
+            tokio::spawn(async move {
+                while let Some(log) = log_rx.recv().await {
+                    state_log.add_log(log);
+                }
+            });
+
+            // Serial port task placeholder
+            /*
+            let reader = reader_task(port, data_tx, log_tx, control_rx);
+            tokio::spawn(reader);
+            */
+
+            // Keep the runtime alive until process exit
+            loop {
+                tokio::time::sleep(tokio::time::Duration::from_secs(u64::MAX)).await;
+            }
+        });
     });
 
-    // Keep main thread alive
-    tokio::signal::ctrl_c().await?;
-    Ok(())
+    // Run GUI on the main thread (required by macOS/winit)
+    let native_options = eframe::NativeOptions {
+        viewport: egui::ViewportBuilder::default()
+            .with_inner_size([800.0, 600.0])
+            .with_title("Serial Plotter"),
+        ..Default::default()
+    };
+
+    eframe::run_native(
+        "Serial Plotter",
+        native_options,
+        Box::new(|cc| {
+            Ok(Box::new(SerialPlotterApp::new(
+                cc,
+                control_tx_gui,
+                command_tx_gui,
+            )))
+        }),
+    )
+    .map_err(|e| e.into())
 }
 // #[tokio::main]
 // async fn main() -> anyhow::Result<()> {
@@ -139,7 +118,7 @@ async fn serial_read_log_bytes(
     loop {
         // Apply timeout if requested
         let n = if let Some(timeout_ms) = max_duration_ms {
-            match timeout(Duration::from_millis(timeout_ms), port.read(&mut buf)).await {
+            match timeout(Duration::from_millis(timeout_ms), AsyncReadExt::read(&mut port, &mut buf)).await {
                 Ok(Ok(0)) => continue,
                 Ok(Ok(n)) => n,
                 Ok(Err(e)) => return Err(e.into()),
@@ -151,7 +130,7 @@ async fn serial_read_log_bytes(
                 }
             }
         } else {
-            let n = port.read(&mut buf).await?;
+            let n = AsyncReadExt::read(&mut port, &mut buf).await?;
             if n == 0 {
                 continue;
             }

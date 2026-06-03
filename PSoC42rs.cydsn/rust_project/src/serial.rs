@@ -66,15 +66,33 @@ impl UartIf {
                         uart_printf(format_args!("\r\n New G_C: {:?}", value));
                     }
                     b'w' | b'W' => {
-                        with_xaxis_mut(|axis| axis.adrc_update_w0(value));
+                        with_xaxis_mut(|axis| {
+                            axis.adrc_update_w0(value);
+                            if axis.adrc_mode != crate::motor::AdrcMode::Off {
+                                let mode = axis.adrc_mode;
+                                axis.adrc_set_mode(mode);
+                            }
+                        });
                         uart_printf(format_args!("\r\n ADRC w0: {:?}", value));
                     }
                     b'v' | b'V' => {
-                        with_xaxis_mut(|axis| axis.adrc_update_wc(value));
+                        with_xaxis_mut(|axis| {
+                            axis.adrc_update_wc(value);
+                            if axis.adrc_mode != crate::motor::AdrcMode::Off {
+                                let mode = axis.adrc_mode;
+                                axis.adrc_set_mode(mode);
+                            }
+                        });
                         uart_printf(format_args!("\r\n ADRC wc: {:?}", value));
                     }
                     b'o' | b'O' => {
-                        with_xaxis_mut(|axis| axis.adrc_update_b0(value));
+                        with_xaxis_mut(|axis| {
+                            axis.adrc_update_b0(value);
+                            if axis.adrc_mode != crate::motor::AdrcMode::Off {
+                                let mode = axis.adrc_mode;
+                                axis.adrc_set_mode(mode);
+                            }
+                        });
                         uart_printf(format_args!("\r\n ADRC b0: {:?}", value));
                     }
                     b'm' | b'M' => {
@@ -97,6 +115,13 @@ impl UartIf {
                     b'q' | b'Q' => {
                         with_xaxis_mut(|axis| axis.target_pos_steps = value as i32);
                         uart_printf(format_args!("\r\n Target pos: {:?}", value));
+                    }
+                    b'p' | b'P' => {
+                        with_xaxis_mut(|axis| {
+                            axis.target_speed_hz = value as i64;
+                            axis.curr_target_speed_hz = axis.dir_sign() * value as i64;
+                        });
+                        uart_printf(format_args!("\r\n Speed setpoint: {} Hz", value));
                     }
                     _ => {}
                 },

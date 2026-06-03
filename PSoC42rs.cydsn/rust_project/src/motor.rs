@@ -88,7 +88,7 @@ pub struct Stepper<T: EncoderOps> {
 
 impl<T: EncoderOps> Stepper<T> {
     #[inline(always)]
-    fn dir_sign(&self) -> i64 {
+    pub fn dir_sign(&self) -> i64 {
         match self.dir {
             MotorDirection::FWD => 1,
             MotorDirection::BWD => -1,
