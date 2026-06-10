@@ -5,6 +5,15 @@
 Hybrid C/Rust firmware for Cypress PSoC4 (ARM Cortex-M0). Rust is the app entrypoint; C provides the HAL via PSoC Creator-generated code. Rust compiles to a `staticlib` linked into the final ELF by CMake.
 
 ```
+../../rs-embedded/      # Shared Rust workspace (sibling repo)
+├── rust_core/          # Shared library (no_std, firmware + host tests)
+│   └── src/
+│       ├── adrc.rs          # 1st/2nd-order LADRC controller (i64 fixed-point)
+│       ├── encoder_core.rs  # Encoder struct + tracking (i64-based, NOT I32F32)
+│       ├── serial_core.rs   # SerialParser, Command enum
+│       └── utils_core.rs    # IIR filter, RingBuf (u64-based)
+└── rs_testing/         # Host-side testing + egui serial plotter
+
 PSoC42rs.cydsn/
 ├── rust_project/       # Firmware staticlib (no_std, thumbv6m-none-eabi)
 │   └── src/
@@ -18,13 +27,6 @@ PSoC42rs.cydsn/
 │       ├── Config.rs   # Fixed-point constants for encoder filters
 │       ├── ffi.rs      # `include!("bindings.rs")` — generated C bindings
 │       └── host_stubs.rs # Mock C functions for host compilation
-├── rust_core/          # Shared library (no_std, used by firmware + testing)
-│   └── src/
-│       ├── adrc.rs          # 1st/2nd-order LADRC controller (i64 fixed-point)
-│       ├── encoder_core.rs  # Encoder struct + tracking (i64-based, NOT I32F32)
-│       ├── serial_core.rs   # SerialParser, Command enum
-│       └── utils_core.rs    # IIR filter, RingBuf (u64-based)
-├── rs_testing/         # Host-side testing + egui serial plotter
 ├── test_ui/            # Separate host UI with async serial
 ├── cmakebuild.bat      # Full build: cargo + CMake/Ninja → .elf
 ├── rustbuild.bat       # Cargo build only (staticlib)
@@ -32,6 +34,8 @@ PSoC42rs.cydsn/
 ├── bindgen_wrappers.h  # C→Rust FFI bridge header
 └── toolchain-arm-none-eabi.cmake
 ```
+
+`rust_core` and `rs_testing` live in **`../../rs-embedded/`** (path dependency in `Cargo.toml`). Run host tests from that workspace: `cd ../../rs-embedded && cargo test -p rs_testing`.
 
 ## Build commands (Windows)
 
@@ -52,7 +56,7 @@ cargo test-host             # alias
 
 ## Testing
 
-- All tests run on host (`cargo test -p rs_testing`). No on-device tests.
+- All tests run on host from **`../../rs-embedded`**: `cargo test -p rs_testing`. No on-device tests.
 - `rs_testing` uses `gnuplot` for visualization — `cargo test` will pop gnuplot windows.
 - `host_stubs.rs` provides mock C functions for host compilation (only when `cfg(not(target_arch = "arm"))`).
 - Encoder filter tuning tests live in `rs_testing/src/encoder_tests.rs`.

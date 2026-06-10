@@ -1,9 +1,9 @@
 [workspace]
 resolver = "2" # Note: Resolver 3 is currently only available in nightly/experimental
-members = ["rust_project", "rs_testing", "rust_core", "test_ui"]
+members = ["rust_project", "test_ui"]
 
 [workspace.dependencies]
-rust_core = { path = "./rust_core", default-features = false }
+rust_core = { path = "../../rs-embedded/rust_core", default-features = false }
 
 [profile.release]
 # Optimize for size aggressively
