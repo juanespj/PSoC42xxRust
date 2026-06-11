@@ -1,31 +1,21 @@
 {
-	 "folders": [
+    "folders": [
         {
             "path": ".",
-            "name": "PSoCProject"
+            "name": "PSoC Creator"
         },
         {
-            "path": "rust_project",
-            "name": "rust_project (ARM)"
+            "path": "../rust/rust_firmware",
+            "name": "rust_firmware (ARM)"
         },
         {
-            "path": "rs_testing",
-            "name": "rs_testing (Windows)"
+            "path": "../rust",
+            "name": "rust workspace"
         },
         {
-            "path": "rust_core",
-            "name": "rust_core (Common)"
+            "path": "../hal",
+            "name": "hal"
         }
     ],
-    "settings": {
-        "rust-analyzer.linkedProjects": [
-        "Cargo.toml"
-        ],
-
-		"files.associations": {
-			"new": "cpp",
-			"system_error": "c",
-			"type_traits": "c"
-		}
-	}
+    "settings": {}
 }

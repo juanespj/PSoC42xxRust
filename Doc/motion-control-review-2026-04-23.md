@@ -4,7 +4,7 @@ Scope reviewed:
 - `PSoC42rs.cydsn/rust_project/src/motor.rs`
 - `PSoC42rs.cydsn/rust_project/src/encoder.rs`
 - Integration context in `rust_project/src/lib.rs`, `sys.rs`, `serial.rs`
-- Shared encoder logic in `PSoC42rs.cydsn/rust_core/src/encoder_core.rs`
+- Shared encoder logic in `rs-embedded/rs-core/src/encoder_core.rs`
 
 ## Key Findings
 

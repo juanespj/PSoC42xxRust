@@ -1,0 +1,15 @@
+[workspace]
+resolver = "2"
+members = ["rust_firmware", "test_ui"]
+
+[workspace.dependencies]
+rs-core = { path = "../../rs-embedded/rs-core", default-features = false }
+
+[profile.dev]
+panic = "abort"
+
+[profile.release]
+panic = "abort"
+opt-level = 2
+lto = true
+debug = true

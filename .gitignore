@@ -11,4 +11,11 @@ target/rust-analyzer/
 target/
 CortexM0p/
 BUILD.log
+REBUILD.log
+CLEAN.log
+serial_log.txt
+*.cydwr.bak
+.ipynb_checkpoints/
+**/* copy.*
+**/* copy *
 test_build/

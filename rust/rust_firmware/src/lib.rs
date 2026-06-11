@@ -6,32 +6,36 @@
 //pub
 pub mod ffi;
 use crate::ffi::*;
-pub mod Config;
 pub mod encoder;
 pub mod motor;
 pub mod serial;
 pub mod sys;
 pub mod ui;
-pub mod utils;
 // use cortex_m_rt::entry;
 
 use crate::encoder::*;
 use crate::motor::*;
 use local_static::LocalStatic;
-use rust_core::encoder_core::DT_US;
-// use rust_core::serial_core::*;
+use rs_core::encoder_core::DT_US;
+// use rs_core::serial_core::*;
 use serial::*;
 use sys::*;
 use ui::*;
 // use core::sync::atomic::AtomicU8;
 static SYS: LocalStatic<System_T> = LocalStatic::new();
 static UART: LocalStatic<UartIf> = LocalStatic::new();
-static Xaxis: LocalStatic<Stepper<XEncoder>> = LocalStatic::new();
+static Xaxis: LocalStatic<Stepper<XEncoder, XMotorIo>> = LocalStatic::new();
 
 // static MS_TICK: LocalStatic<u32> = LocalStatic::new();
 // ... SysTick() and systick_handler ...
 #[unsafe(no_mangle)]
 pub extern "C" fn tick_callback() {}
+
+#[cfg(not(target_arch = "arm"))]
+#[panic_handler]
+fn panic(_info: &core::panic::PanicInfo) -> ! {
+    loop {}
+}
 
 #[cfg(target_arch = "arm")]
 #[panic_handler]
@@ -58,7 +62,7 @@ const RELOAD: u32 = 24_000;
 pub extern "C" fn main() -> () {
     *SYS.get_mut() = System_T::new();
     let mut led = LED_CTRL::new();
-    *Xaxis.get_mut() = Stepper::new(XEncoder, 0);
+    *Xaxis.get_mut() = Stepper::new(XEncoder, XMotorIo, 0);
     *UART.get_mut() = UartIf::new();
     UART.get_mut().UI_init();
     unsafe {
@@ -151,7 +155,7 @@ pub extern "C" fn main() -> () {
                 }
                 1 => {
                     // profiled @2us IDLE
-                    SYS.get_mut().sys_task();
+                    SYS.get_mut().sys_task(&mut XSysHal);
                 }
                 2 => {
                     //profiled @3.38us
@@ -178,3 +182,6 @@ pub extern "C" fn main() -> () {
         }
     }
 }
+
+#[cfg(not(target_arch = "arm"))]
+mod host_stubs;

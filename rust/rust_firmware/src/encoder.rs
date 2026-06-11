@@ -1,8 +1,6 @@
 pub struct XEncoder;
-use crate::utils::{IirFilter, RingBuf};
-use crate::Config::*;
-use crate::{ffi::*, Xaxis};
-use rust_core::encoder_core::{Encoder, EncoderOps};
+use crate::ffi::*;
+use rs_core::encoder_core::{Encoder, EncoderOps};
 
 impl EncoderOps for XEncoder {
     fn init_hardware(&self) {
@@ -17,7 +15,7 @@ impl EncoderOps for XEncoder {
     fn start_hardware(&self) {
         unsafe { DecL_Start() }
     }
-    fn write_counter(&self, value: u32) {
+    fn write_counter(&mut self, value: u32) {
         unsafe { DecL_WriteCounter(value) }
     }
     #[inline(always)]

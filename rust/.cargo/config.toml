@@ -1,0 +1,4 @@
+[alias]
+build-firmware = "build -p rust_firmware --target thumbv6m-none-eabi --release"
+test-host = "test -p rs-testiing --manifest-path ../../../rs-embedded/Cargo.toml"
+run-host = "run -p rs-testiing --manifest-path ../../../rs-embedded/Cargo.toml"

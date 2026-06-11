@@ -89,7 +89,7 @@ set(PSOC_GENERATED_C_SRC
 # User-provided source files from the build output
 set(USER_SRC
     ${PROJECT_SOURCE_DIR}/main.c
-    ${PROJECT_SOURCE_DIR}/bindgen_wrappers.c
+    ${PROJECT_SOURCE_DIR}/../hal/bindgen_wrappers.c
 )
 
 set(PSOC_CREATOR_INCLUDE_DIRS
@@ -122,7 +122,7 @@ target_include_directories(PSOC4_GEN_LIB PRIVATE
 )
 
 set(RUST_LIB_PATH 
-    "${PROJECT_SOURCE_DIR}/target/thumbv6m-none-eabi/release/librust_project.a"
+    "${PROJECT_SOURCE_DIR}/../rust/rust_firmware/build/thumbv6m-none-eabi/release/librust_firmware.a"
 )
 
 # Build all in one project
