@@ -34,7 +34,7 @@ extern "C" fn Pulser_InterruptHandler() {
     //10us
     unsafe {
         Xaxis.get_mut().run(&mut SYS.get_mut().step_out);
-        StepReg_Write(SYS.get().step_out);
+        StepReg_Write(SYS.get().step_out as u8);
         Pulser_tmr_ClearInterrupt(Pulser_tmr__INTR_MASK_TC); /* Clears the Timer terminal count interrupt */
     }
 }

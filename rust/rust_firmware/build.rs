@@ -82,6 +82,7 @@ fn generate_bindings() {
             "-mfloat-abi=soft",
             "-mcpu=cortex-m0",
             "-mthumb",
+            &format!("-I{}", creator.display()),
             &format!("-I{}", codegen.display()),
             &format!("-I{}", generated.display()),
             &format!("-I{}", gnu_include),

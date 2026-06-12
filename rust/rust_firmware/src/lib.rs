@@ -61,7 +61,7 @@ const RELOAD: u32 = 24_000;
 #[unsafe(no_mangle)]
 pub extern "C" fn main() -> () {
     *SYS.get_mut() = System_T::new();
-    let mut led = LED_CTRL::new();
+    let _led = LED_CTRL::new();
     *Xaxis.get_mut() = Stepper::new(XEncoder, XMotorIo, 0);
     *UART.get_mut() = UartIf::new();
     UART.get_mut().UI_init();

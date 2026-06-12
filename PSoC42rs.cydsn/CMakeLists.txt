@@ -122,7 +122,7 @@ target_include_directories(PSOC4_GEN_LIB PRIVATE
 )
 
 set(RUST_LIB_PATH 
-    "${PROJECT_SOURCE_DIR}/../rust/rust_firmware/build/thumbv6m-none-eabi/release/librust_firmware.a"
+    "${PROJECT_SOURCE_DIR}/../rust/target/thumbv6m-none-eabi/release/librust_firmware.a"
 )
 
 # Build all in one project

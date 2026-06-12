@@ -4,7 +4,7 @@ setlocal enabledelayedexpansion
 @REM Full firmware build: Rust staticlib (rustbuild.bat) + CMake/Ninja ELF.
 set "CYDSN_DIR=%~dp0"
 set "REPO_ROOT=%CYDSN_DIR%.."
-set "RUST_LIB=%REPO_ROOT%\rust\rust_firmware\build\thumbv6m-none-eabi\release\librust_firmware.a"
+set "RUST_LIB=%REPO_ROOT%\rust\target\thumbv6m-none-eabi\release\librust_firmware.a"
 set "CMAKE_BUILD_DIR=%CYDSN_DIR%build"
 set "ELF_FILE=%CMAKE_BUILD_DIR%\PSoC4rs.elf"
 

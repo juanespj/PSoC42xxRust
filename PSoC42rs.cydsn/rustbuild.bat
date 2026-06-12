@@ -5,8 +5,8 @@ setlocal enabledelayedexpansion
 set "CYDSN_DIR=%~dp0"
 set "REPO_ROOT=%CYDSN_DIR%.."
 set "RUST_WS=%REPO_ROOT%\rust"
-set "RS_CORE=%REPO_ROOT%\..\rs-embedded\rs-core"
-set "RUST_LIB=%RUST_WS%\rust_firmware\build\thumbv6m-none-eabi\release\librust_firmware.a"
+set "RS_CORE=J:/Projects/rs-embedded\rs-core"
+set "RUST_LIB=%RUST_WS%\target\thumbv6m-none-eabi\release\librust_firmware.a"
 
 @REM Toolchain paths (override via environment if needed)
 if not defined PSOC_GNU_PATH (
